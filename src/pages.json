@@ -1,0 +1,219 @@
+{
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^u-(.*)": "uview-plus/components/u-$1/u-$1.vue",
+			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue"
+		}
+	},
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/merchant/merchant-list",
+			"style": {
+				"navigationBarTitleText": "婚礼服务",
+				"navigationStyle": "custom"
+			}	
+		},
+		{
+			"path": "pages/merchant/hotel",
+			"style": {
+				"navigationBarTitleText": "婚庆酒店",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/merchant/hotelDetail",
+			"style": {
+				"navigationBarTitleText": "婚庆酒店详情",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/merchant/plan",
+			"style": {
+				"navigationBarTitleText": "婚礼策划",
+				"navigationStyle": "custom"
+			}
+		},
+		
+				{
+			"path": "pages/merchant/planDetail",
+			"style": {
+				"navigationBarTitleText": "婚礼策划详情",
+				"navigationStyle": "custom"
+			}
+		},
+				{
+			"path": "pages/merchant/planItem",
+			"style": {
+				"navigationBarTitleText": "婚礼案例",
+				"navigationStyle": "custom"
+			}
+		},
+
+				{
+			"path": "pages/merchant/search",
+			"style": {
+				"navigationBarTitleText": "搜索页",
+				"navigationStyle": "custom"
+			}
+		},
+						{
+			"path": "pages/merchant/host",
+			"style": {
+				"navigationBarTitleText": "婚礼主持人"
+			}
+		},
+		{
+			"path": "pages/merchant-detail/merchant-detail",
+			"style": {
+				"navigationBarTitleText": "商家详情"
+			}
+		},
+		{
+			"path": "pages/product-list/product-list",
+			"style": {
+				"navigationBarTitleText": "服务产品"
+			}
+		},
+		{
+			"path": "pages/product-detail/product-detail",
+			"style": {
+				"navigationBarTitleText": "产品详情"
+			}
+		},
+		{
+			"path": "pages/butler/butler",
+			"style": {
+				"navigationBarTitleText": "婚礼管家"
+			}
+		},
+		{
+			"path": "pages/butler-order/butler-order",
+			"style": {
+				"navigationBarTitleText": "管家订单"
+			}
+		},
+		{
+			"path": "pages/expo/expo",
+			"style": {
+				"navigationBarTitleText": "婚博会",
+				"navigationStyle": "custom"
+			}
+		},
+				{
+			"path": "pages/expo/expodetail",
+			"style": {
+				"navigationBarTitleText": "婚博会详情"
+			}
+		},
+		{
+			"path": "pages/expo/exchange",
+			"style": {
+				"navigationBarTitleText": "好礼兑换"
+			}
+		},
+		{
+			"path": "pages/lottery/lottery",
+			"style": {
+				"navigationBarTitleText": "幸运抽奖"
+			}
+		},
+		{
+			"path": "pages/user/user",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
+			}
+		},
+				{
+			"path": "pages/user/butler",
+			"style": {
+				"navigationBarTitleText": "婚礼管家",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/user/butlerDetail",
+			"style": {
+				"navigationBarTitleText": "婚礼管家详情",
+				"navigationStyle": "custom"
+			}
+		},
+				{
+			"path": "pages/user/order",
+			"style": {
+				"navigationBarTitleText": "婚礼管家订单",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/my-coupon/my-coupon",
+			"style": {
+				"navigationBarTitleText": "我的优惠券"
+			}
+		},
+		{
+			"path": "pages/my-order/my-order",
+			"style": {
+				"navigationBarTitleText": "我的订单"
+			}
+		},
+		{
+			"path": "pages/wedding-plan/wedding-plan",
+			"style": {
+				"navigationBarTitleText": "婚礼计划表"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		}
+	],
+	"tabBar": {
+		"color": "#808080",
+		"selectedColor": "#BF974A",
+		"backgroundColor": "#FFFFFF",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/images/1.png",
+				"selectedIconPath": "static/images/5.png"
+			},
+			{
+				"pagePath": "pages/merchant/merchant-list",
+				"text": "婚礼服务",
+				"iconPath": "static/images/2.png",
+				"selectedIconPath": "static/images/6.png"
+			},
+			{
+				"pagePath": "pages/expo/expo",
+				"text": "婚博会",
+				"iconPath": "static/images/3.png",
+				"selectedIconPath": "static/images/7.png"
+			},
+			{
+				"pagePath": "pages/user/user",
+				"text": "我的",
+				"iconPath": "static/images/4.png",
+				"selectedIconPath": "static/images/8.png"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "婚庆服务平台",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#F8F8F8"
+	}
+}

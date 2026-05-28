@@ -1,0 +1,98 @@
+@import './variables.scss';
+@import './mixins.scss';
+
+// 页面容器
+.page-container {
+  min-height: 100vh;
+  background-color: $bg-color;
+  padding: $spacing-md;
+}
+
+// 卡片通用样式
+.card {
+  background-color: $bg-white;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-sm;
+}
+
+// 按钮通用样式
+.btn-primary {
+  background-color: $primary-color;
+  color: #fff;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-lg;
+  text-align: center;
+  font-size: $font-md;
+  
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.btn-secondary {
+  background-color: $bg-white;
+  color: $primary-color;
+  border: 2rpx solid $primary-color;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-lg;
+  text-align: center;
+  font-size: $font-md;
+  
+  &:active {
+    background-color: $bg-light;
+  }
+}
+
+// 列表项
+.list-item {
+  background-color: $bg-white;
+  padding: $spacing-md;
+  margin-bottom: $spacing-sm;
+  border-radius: $radius-sm;
+  
+  &:active {
+    background-color: $bg-light;
+  }
+}
+
+// 文本样式
+.text-primary {
+  color: $text-primary;
+}
+
+.text-regular {
+  color: $text-regular;
+}
+
+.text-secondary {
+  color: $text-secondary;
+}
+
+.text-ellipsis {
+  @include text-ellipsis(1);
+}
+
+.text-ellipsis-2 {
+  @include text-ellipsis(2);
+}
+
+// Flex 布局
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  @include flex-center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
