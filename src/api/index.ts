@@ -11,6 +11,12 @@ export function casesFeatured() {
   })
 }
 
-
+// 获取首页信息
+export function getHomeInfo() {
+  return request<any>({
+    url: '/wechat/pages/home',
+    method: 'GET'
+  })
+}
 
 

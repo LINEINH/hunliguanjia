@@ -3,8 +3,13 @@
     <!-- 轮播图 -->
     <view class="banner">
       <swiper class="banner-swiper" autoplay circular indicator-dots>
-        <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image" mode="aspectFill" class="banner-image" />
+        <swiper-item v-for="(banner, index) in banners" :key="index">
+          <image
+            :src="baseUrl + banner.image"
+            mode="aspectFill"
+            class="banner-image"
+            @click="navigateToLink(banner.link)"
+          />
         </swiper-item>
       </swiper>
     </view>
@@ -139,7 +144,7 @@
         <template v-for="(moment, index) in momentsList" :key="index">
           <view class="moment-item" @click="navigateToPlanItem()">
             <image
-              :src="moment.image"
+              :src="baseUrl + moment.image"
               class="moment-image"
               mode="aspectFill"
             ></image>
@@ -210,24 +215,36 @@
     >
       <view class="budget-picker-container" @click.stop>
         <view class="budget-picker-header">
-          <text class="budget-picker-title">选择预算</text>
+          <text class="budget-picker-title">填写桌数</text>
           <text class="budget-picker-close" @click="showBudgetPicker = false"
             >×</text
           >
         </view>
         <view class="budget-picker-content">
-          <view
-            v-for="(budget, index) in budgetOptions"
-            :key="index"
-            class="budget-option"
-            :class="{ 'budget-option-selected': tempBudgetIndex === index }"
-            @click="tempBudgetIndex = index"
-          >
-            <text class="budget-option-text">{{ budget }}</text>
+          <view class="budget-input-section">
+            <view class="input-label">填写桌数</view>
+            <input
+              type="number"
+              class="budget-input"
+              placeholder="桌数"
+              v-model="tableCount"
+            />
+          </view>
+          <view class="budget-input-section">
+            <view class="input-label">填写总预算</view>
+            <input
+              type="text"
+              class="budget-input"
+              placeholder="总预算（单位：万元）"
+              v-model="totalBudget"
+            />
           </view>
         </view>
         <view class="budget-picker-footer">
-          <button class="budget-picker-btn confirm-btn" @click="confirmBudget">
+          <button
+            class="budget-picker-btn confirm-btn"
+            @click="confirmBudgetInput"
+          >
             确定
           </button>
         </view>
@@ -238,10 +255,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { casesFeatured } from "@/api/index";
+import { casesFeatured, getHomeInfo } from "@/api/index";
 import type { Merchant } from "@/types/merchant";
 import type { ServiceProduct } from "@/types/product";
 import type { WeddingExpo } from "@/types/expo";
+
+// 基础URL
+const baseUrl = ref<string>("");
 
 // 添加案例数据的响应式变量
 const featuredCases = ref<any[]>([]);
@@ -258,6 +278,10 @@ const showBudgetPicker = ref<boolean>(false);
 // 已选预算
 const selectedBudget = ref<string>("");
 
+// 桌数和总预算输入
+const tableCount = ref<string>("");
+const totalBudget = ref<string>("");
+
 // 预算选项
 const budgetOptions = [
   "5万以内",
@@ -270,6 +294,10 @@ const budgetOptions = [
 
 // 临时选中的预算索引
 const tempBudgetIndex = ref<number>(-1);
+
+// 临时存储的桌数和预算
+const tempTableCount = ref<string>("");
+const tempTotalBudget = ref<string>("");
 
 // 日期选择器的值 [年索引, 月索引, 日索引]
 const pickerValue = ref<number[]>([0, 0, 0]);
@@ -290,6 +318,86 @@ const currentWeekDays = ref<any[]>([]);
 
 // 解析婚期日期
 const weddingDateObj = ref<Date | null>(null);
+
+// 首页数据
+const homeData = ref<any>(null);
+
+// 轮播图数据
+const banners = ref<any[]>([]);
+
+// 美好瞬间数据
+interface Moment {
+  image: string;
+  title: string;
+  description: string;
+}
+
+const momentsList = ref<Moment[]>([]);
+
+// 获取首页数据
+async function loadHomeInfo() {
+  try {
+    const response = await getHomeInfo();
+    homeData.value = response.data;
+
+    // 解析轮播图数据
+    const bannerBlock = response.data.content.blocks.find(
+      (block: any) => block.type === "banner"
+    );
+    if (bannerBlock) {
+      banners.value = bannerBlock.content;
+    }
+
+    // 解析推荐商家数据
+    const merchantsBlock = response.data.content.blocks.find(
+      (block: any) => block.type === "merchants"
+    );
+    if (merchantsBlock) {
+      // 根据商家块的内容获取推荐商家
+      // 这里可以根据实际需求实现商家数据的获取
+    }
+
+    // 解析美好瞬间数据（如果接口有提供此数据的话）
+    // 如果接口没有专门的美好瞬间数据，则使用默认数据
+    if (
+      !response.data.content.blocks.some(
+        (block: any) => block.type === "moments"
+      )
+    ) {
+      // 默认的美好瞬间数据
+      momentsList.value = [
+        {
+          image: "/static/images/banner1.png",
+          title: "浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场",
+          description: "精心布置的婚礼场地，见证幸福时刻",
+        },
+        {
+          image: "/static/images/banner.png",
+          title: "甜蜜婚纱照",
+          description: "专业摄影师捕捉每一个动人瞬间",
+        },
+        {
+          image: "/static/images/banner.png",
+          title: "温馨家庭聚会",
+          description: "亲朋好友共同见证的美好时光",
+        },
+        {
+          image: "/static/images/banner.png",
+          title: "梦幻婚礼策划",
+          description: "量身定制的专属婚礼方案",
+        },
+      ];
+    }
+
+    console.log("首页数据:", response);
+  } catch (error) {
+    console.error("获取首页数据失败:", error);
+    uni.showToast({
+      title: "获取首页数据失败",
+      icon: "none",
+    });
+  }
+}
 
 // 获取推荐案例
 async function loadFeaturedCases() {
@@ -495,44 +603,12 @@ pickerValue.value = [
   0, // 第一天（今天是第一个可选日期）
 ];
 
-// 轮播图数据
-const banners = ref([
-  { image: "/static/images/banner1.png" },
-  { image: "/static/images/banner.png" },
-]);
-
-// 婚博会
-const expos = ref<WeddingExpo[]>([]);
-
-// 美好瞬间数据
-interface Moment {
-  image: string;
-  title: string;
-  description: string;
+// 导航到链接
+function navigateToLink(link: string) {
+  if (link) {
+    uni.navigateTo({ url: link });
+  }
 }
-
-const momentsList = ref<Moment[]>([
-  {
-    image: "/static/images/banner1.png",
-    title: "浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场",
-    description: "精心布置的婚礼场地，见证幸福时刻",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "甜蜜婚纱照",
-    description: "专业摄影师捕捉每一个动人瞬间",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "温馨家庭聚会",
-    description: "亲朋好友共同见证的美好时光",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "梦幻婚礼策划",
-    description: "量身定制的专属婚礼方案",
-  },
-]);
 
 // 导航到分类
 function navigateToCategory(category: any) {
@@ -600,6 +676,30 @@ function confirmBudget() {
   }
 }
 
+// 新增预算输入确认函数
+const confirmBudgetInput = () => {
+  // 验证输入是否为空
+  if (!tableCount.value.trim()) {
+    uni.showToast({
+      title: "请填写桌数",
+      icon: "none",
+    });
+    return;
+  }
+
+  if (!totalBudget.value.trim()) {
+    uni.showToast({
+      title: "请填写总预算",
+      icon: "none",
+    });
+    return;
+  }
+
+  // 将桌数和预算设置为已选预算
+  selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
+  showBudgetPicker.value = false;
+};
+
 // 初始化日历
 function initCalendar() {
   if (weddingDate.value) {
@@ -613,8 +713,7 @@ function initCalendar() {
 
 // 加载数据
 onMounted(() => {
-  // TODO: 调用 API 加载数据
-  console.log("首页加载");
+  loadHomeInfo();
   loadFeaturedCases();
 });
 </script>
@@ -1204,5 +1303,28 @@ onMounted(() => {
       }
     }
   }
+}
+
+.budget-input-section {
+  display: flex;
+  margin-bottom: 20rpx;
+  padding: 0 40rpx;
+  flex-direction: column;
+  width: 100%;
+}
+
+.input-label {
+  font-size: 32rpx;
+  color: #212121;
+  margin-bottom: 30rpx;
+}
+
+.budget-input {
+  flex: 1;
+  height: 80rpx;
+  border: 1rpx solid #bcbcbc;
+  border-radius: 10rpx;
+  padding: 0 20rpx;
+  font-size: 32rpx;
 }
 </style>

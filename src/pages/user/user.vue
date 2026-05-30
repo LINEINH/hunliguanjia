@@ -60,7 +60,7 @@
 
     <!-- 其他功能 -->
     <view class="card menu-list">
-      <view class="menu-item" @click="navigateTo('/pages/user/order')">
+      <view class="menu-item" @click="navigateTo('/pages/user/butler')">
         <image
           src="/static/images/11.png"
           mode="aspectFill"
@@ -69,7 +69,7 @@
         <text class="menu-text">婚礼品鉴官</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
-      <view class="menu-item">
+      <view class="menu-item" @click="navigateTo('/pages/user/coupon')">
         <image
           src="/static/images/12.png"
           mode="aspectFill"

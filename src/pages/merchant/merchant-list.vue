@@ -23,14 +23,14 @@
         <view class="tag">婚礼策划 </view>
         <image :src="item.image" class="goods-image" mode="aspectFill" />
         <view class="goods-info">
-          <view class="goods-name">{{ item.name }}</view>
+          <view class="goods-name">{{ item.personal_intro }}</view>
           <view class="goods-intro">
             <image
               src="/static/images/user.png"
               mode="aspectFill"
               class="user-icon"
             ></image>
-            <text class="user-name">{{ item.price }}</text>
+            <text class="user-name">{{ item.name }}</text>
             <image
               src="/static/images/like.png"
               mode="aspectFill"
@@ -48,6 +48,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { getGoldRecommend } from "@/api/product";
+
 // TODO: 实现商家列表功能
 // 轮播图数据
 const banners = ref([
@@ -122,29 +124,29 @@ function navigateToCategory(category: any) {
   uni.navigateTo({ url: category.path });
 }
 
-const goodsList = ref([
-  {
-    id: 1,
-    name: "壹桁奖年度最佳婚礼主持中国金标奖年度活力红人亚洲婚礼风尚主持创造营导师",
-    price: "婚礼主持-晓腾",
-    sales: 150,
-    image: "/static/images/bg4.png",
-  },
-  {
-    id: 2,
-    name: "壹桁奖年度最佳婚礼主持中国金标奖年度活力红人亚洲婚礼风尚主持创造营导师",
-    price: 3999,
-    sales: 120,
-    image: "/static/images/bg4.png",
-  },
-  {
-    id: 3,
-    name: "壹桁奖年度最佳婚礼主持中国金标奖年度活力红人亚洲婚礼风尚主持创造营导师",
-    price: 4999,
-    sales: 80,
-    image: "/static/images/bg4.png",
-  },
-]);
+// 商品列表数据
+const goodsList = ref<any[]>([]);
+
+// 获取推荐的黄金商家数据
+const loadGoldRecommendData = async () => {
+  try {
+    const response = await getGoldRecommend();
+    // 假设响应数据格式为 { data: [...] } 或直接是数组
+    if (response.data && Array.isArray(response.data)) {
+      goodsList.value = response.data;
+    } else if (Array.isArray(response)) {
+      goodsList.value = response;
+    } else {
+      console.error("获取推荐商家数据失败:", response);
+    }
+  } catch (error) {
+    console.error("请求推荐商家数据出错:", error);
+  }
+};
+
+onMounted(() => {
+  loadGoldRecommendData();
+});
 </script>
 
 <style lang="scss" scoped>

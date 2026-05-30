@@ -72,36 +72,6 @@
 			}
 		},
 		{
-			"path": "pages/merchant-detail/merchant-detail",
-			"style": {
-				"navigationBarTitleText": "商家详情"
-			}
-		},
-		{
-			"path": "pages/product-list/product-list",
-			"style": {
-				"navigationBarTitleText": "服务产品"
-			}
-		},
-		{
-			"path": "pages/product-detail/product-detail",
-			"style": {
-				"navigationBarTitleText": "产品详情"
-			}
-		},
-		{
-			"path": "pages/butler/butler",
-			"style": {
-				"navigationBarTitleText": "婚礼管家"
-			}
-		},
-		{
-			"path": "pages/butler-order/butler-order",
-			"style": {
-				"navigationBarTitleText": "管家订单"
-			}
-		},
-		{
 			"path": "pages/expo/expo",
 			"style": {
 				"navigationBarTitleText": "婚博会",
@@ -118,12 +88,6 @@
 			"path": "pages/expo/exchange",
 			"style": {
 				"navigationBarTitleText": "好礼兑换"
-			}
-		},
-		{
-			"path": "pages/lottery/lottery",
-			"style": {
-				"navigationBarTitleText": "幸运抽奖"
 			}
 		},
 		{
@@ -152,24 +116,6 @@
 			"style": {
 				"navigationBarTitleText": "婚礼管家订单",
 				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/my-coupon/my-coupon",
-			"style": {
-				"navigationBarTitleText": "我的优惠券"
-			}
-		},
-		{
-			"path": "pages/my-order/my-order",
-			"style": {
-				"navigationBarTitleText": "我的订单"
-			}
-		},
-		{
-			"path": "pages/wedding-plan/wedding-plan",
-			"style": {
-				"navigationBarTitleText": "婚礼计划表"
 			}
 		},
 		{
@@ -207,7 +153,13 @@
 				"text": "我的",
 				"iconPath": "static/images/4.png",
 				"selectedIconPath": "static/images/8.png"
+			},
+			{
+			"path": "pages/my-coupon/coupon",
+			"style": {
+				"navigationBarTitleText": "我的优惠券"
 			}
+		}
 		]
 	},
 	"globalStyle": {

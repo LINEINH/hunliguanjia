@@ -2,105 +2,82 @@
 <template>
   <view class="hotel-detail-page">
     <up-navbar
-      title="盛唐宴礼宴中心(太华南路店)"
+      :title="hotelData.name || '酒店详情'"
       @rightClick="rightClick"
       :autoBack="true"
     >
     </up-navbar>
     <view class="banner">
-      <image
-        src="/static/images/banner1.png"
-        mode="aspectFill"
-        class="banner"
-      ></image>
+      <image :src="hotelData.logo" mode="aspectFill" class="banner"></image>
     </view>
     <view class="hotel-info">
-      <view class="hotel-name"
-        >盛唐宴礼宴中心(太华南路店)
-        <text class="price">¥1280/桌</text>
+      <view class="hotel-name">
+        {{ hotelData.name }}
+        <text class="price">¥1000起</text>
       </view>
-      <view class="hotel-time"> 营业中 09:00-21:00 </view>
-      <view class="hotel-rate"
-        ><text class="rate">4.5分</text> “环境雍容华贵，菜品食材上乘”
+      <view class="hotel-time">
+        {{ hotelData.business_status }} {{ hotelData.business_hours }}
+      </view>
+      <view class="hotel-rate">
+        <text class="rate">{{ hotelData.rating }}分</text> "{{
+          hotelData.short_description
+        }}"
       </view>
       <view class="hotel-highlights">
-        <text class="highlight">大厅无柱</text>
-        <text class="highlight">西式婚礼</text>
-        <text class="highlight">西式婚礼</text>
+        <text
+          v-for="(feature, index) in hotelData.features"
+          :key="index"
+          class="highlight"
+        >
+          {{ feature }}
+        </text>
       </view>
-      <view class="hotel-address"
-        >地址：西安市雁塔区太华南路与科技二路交叉口西北角</view
+      <view class="hotel-address">{{ hotelData.address }}</view>
+      <view class="hotel-intro">{{ hotelData.description }}</view>
+      <view
+        class="hotel-fuli"
+        v-if="hotelData.products && hotelData.products.length > 0"
       >
-      <view class="hotel-intro">距地铁4号线含元殿站D东北口步行230m</view>
-      <view class="hotel-fuli">
         <view class="hotel-fuli-title">特惠福利</view>
-        <view class="hotel-fuli-item">
-          <text>新客专享·200元优惠券</text>
-          <view class="recive"
-            >领取
-            <up-icon name="arrow-right" size="16" color="#BF974A"></up-icon
-          ></view>
+        <view
+          v-for="(product, index) in hotelData.products"
+          :key="index"
+          class="hotel-fuli-item"
+        >
+          <text>{{ product.title }} ¥{{ product.price }}</text>
+          <view class="recive">
+            了解
+            <up-icon name="arrow-right" size="16" color="#BF974A"></up-icon>
+          </view>
         </view>
       </view>
-      <view class="hotel-list">
-        <view class="hotel-list-item">
+      <view
+        class="hotel-list"
+        v-if="hotelData.products && hotelData.products.length > 0"
+      >
+        <view
+          v-for="(caseItem, index) in hotelData.products"
+          :key="index"
+          class="hotel-list-item"
+        >
           <image
-            src="/static/images/banner1.png"
+            :src="caseItem.cover_image"
             mode="aspectFill"
             class="image"
           ></image>
           <view class="hotel-list-item-info">
             <view class="hotel-list-item-title">
-              盛唐宴礼宴中心(太华南路店)盛唐宴礼宴中心(太华南路店)
+              {{ caseItem.name }}
             </view>
-            <view class="hotel-list-item-intro"> 可容纳20-25桌 无柱子 </view>
+            <view
+              class="hotel-list-item-intro"
+              v-if="caseItem.tags && caseItem.tags.length"
+            >
+              {{ caseItem.tags.join(",") }}
+            </view>
             <view class="hotel-list-item-price">
               <view class="price-wrap">
-                参考价
-                <text class="price">250000</text>
-                <text class="danwei">起</text>
-              </view>
-              <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-            </view>
-          </view>
-        </view>
-        <view class="hotel-list-item">
-          <image
-            src="/static/images/banner1.png"
-            mode="aspectFill"
-            class="image"
-          ></image>
-          <view class="hotel-list-item-info">
-            <view class="hotel-list-item-title">
-              盛唐宴礼宴中心(太华南路店)盛唐宴礼宴中心(太华南路店)
-            </view>
-            <view class="hotel-list-item-intro"> 可容纳20-25桌 无柱子 </view>
-            <view class="hotel-list-item-price">
-              <view class="price-wrap">
-                参考价
-                <text class="price">250000</text>
-                <text class="danwei">起</text>
-              </view>
-              <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-            </view>
-          </view>
-        </view>
-        <view class="hotel-list-item">
-          <image
-            src="/static/images/banner1.png"
-            mode="aspectFill"
-            class="image"
-          ></image>
-          <view class="hotel-list-item-info">
-            <view class="hotel-list-item-title">
-              盛唐宴礼宴中心(太华南路店)盛唐宴礼宴中心(太华南路店)
-            </view>
-            <view class="hotel-list-item-intro"> 可容纳20-25桌 无柱子 </view>
-            <view class="hotel-list-item-price">
-              <view class="price-wrap">
-                参考价
-                <text class="price">250000</text>
-                <text class="danwei">起</text>
+                <text class="price">¥{{ caseItem.price }}</text>
               </view>
               <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
             </view>
@@ -118,7 +95,7 @@
         <text>收藏</text>
       </view>
 
-      <view class="hotel-footer-tel button" @click="openDetail()">
+      <view class="hotel-footer-tel button" @click="makePhoneCall()">
         电话咨询
       </view>
       <view class="hotel-footer-online button"> 在线管家 </view>
@@ -126,16 +103,85 @@
   </view>
 </template>
 
-<script setup>
-import { ref, reactive, computed } from "vue";
-const show = ref(false);
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { getProductDetail } from "@/api/product";
 
-function openDetail(hotel) {
-  if (hotel && hotel.id) {
-    uni.navigateTo({
-      url: `/pages/merchant/hotel-detail?id=${hotel.id}`,
+// 基础URL
+const baseUrl = ref<string>("");
+
+// 酒店数据
+const hotelData = ref<any>({});
+
+// 酒店ID
+const hotelId = ref<number | null>(null);
+
+// onLoad 参数接收器
+const props = defineProps<{
+  id?: string;
+}>();
+
+// 加载酒店详情
+async function loadHotelDetail() {
+  if (!hotelId.value) {
+    uni.showToast({
+      title: "缺少酒店ID",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: "加载中...",
+    });
+
+    const response = await getProductDetail(hotelId.value);
+
+    hotelData.value = response;
+    console.log("酒店详情:", response);
+  } catch (error) {
+    console.error("获取酒店详情失败:", error);
+    uni.showToast({
+      title: "获取酒店详情失败",
+      icon: "none",
+    });
+  } finally {
+    uni.hideLoading();
+  }
+}
+
+// 页面加载时获取酒店详情
+onMounted(() => {
+  if (props.id) {
+    hotelId.value = Number(props.id);
+    loadHotelDetail();
+  } else {
+    uni.showToast({
+      title: "缺少酒店ID",
+      icon: "none",
     });
   }
+});
+
+function rightClick() {
+  console.log("right click");
+}
+
+function makePhoneCall() {
+  // 这里可以添加电话咨询的功能
+  uni.showModal({
+    title: "电话咨询",
+    content: "是否拨打酒店联系电话？",
+    success: function (res) {
+      if (res.confirm) {
+        // 实际项目中这里应该替换成酒店的真实电话
+        uni.makePhoneCall({
+          phoneNumber: "13800138000", // 示例电话号码
+        });
+      }
+    },
+  });
 }
 </script>
 
@@ -156,10 +202,8 @@ function openDetail(hotel) {
     background: #fff;
     padding: $spacing-md;
     border-radius: 30rpx;
-    margin-top: -100rpx;
-    position: absolute;
-    z-index: 10;
-    padding-bottom: 180rpx;
+    padding-bottom: 50rpx;
+    margin-bottom: 50rpx;
     .hotel-name {
       font-size: 32rpx;
       font-weight: bold;
@@ -293,6 +337,7 @@ function openDetail(hotel) {
             font-size: 24rpx;
             color: #808080;
             margin-bottom: 10rpx;
+            height: 30rpx;
           }
         }
       }
