@@ -5,7 +5,7 @@
       <swiper class="banner-swiper" autoplay circular indicator-dots>
         <swiper-item v-for="(banner, index) in banners" :key="index">
           <image
-            :src="baseUrl + banner.image"
+            :src="banner.image_url"
             mode="aspectFill"
             class="banner-image"
             @click="navigateToLink(banner.link)"
@@ -144,7 +144,7 @@
         <template v-for="(moment, index) in momentsList" :key="index">
           <view class="moment-item" @click="navigateToPlanItem()">
             <image
-              :src="baseUrl + moment.image"
+              :src="moment.cover_image"
               class="moment-image"
               mode="aspectFill"
             ></image>
@@ -153,11 +153,11 @@
 
               <view class="moment-intro">
                 <image
-                  src="/static/images/user.png"
+                  :src="moment.merchant.logo"
                   mode="aspectFill"
                   class="user-icon"
                 ></image>
-                <text class="user-name">测试测试</text>
+                <text class="user-name">{{ moment.merchant.name }}</text>
               </view>
             </view>
           </view>
@@ -255,16 +255,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { casesFeatured, getHomeInfo } from "@/api/index";
-import type { Merchant } from "@/types/merchant";
-import type { ServiceProduct } from "@/types/product";
-import type { WeddingExpo } from "@/types/expo";
-
-// 基础URL
-const baseUrl = ref<string>("");
-
-// 添加案例数据的响应式变量
-const featuredCases = ref<any[]>([]);
+import { getHomeInfo } from "@/api/index";
 
 // 婚期日期
 const weddingDate = ref<string>("");
@@ -327,9 +318,13 @@ const banners = ref<any[]>([]);
 
 // 美好瞬间数据
 interface Moment {
-  image: string;
+  cover_image: string;
+  id: number;
   title: string;
-  description: string;
+  merchant: {
+    logo: string;
+    name: string;
+  };
 }
 
 const momentsList = ref<Moment[]>([]);
@@ -338,55 +333,16 @@ const momentsList = ref<Moment[]>([]);
 async function loadHomeInfo() {
   try {
     const response = await getHomeInfo();
-    homeData.value = response.data;
-
-    // 解析轮播图数据
-    const bannerBlock = response.data.content.blocks.find(
-      (block: any) => block.type === "banner"
-    );
-    if (bannerBlock) {
-      banners.value = bannerBlock.content;
+    homeData.value = response;
+    console.log(response);
+    if (response.banners) {
+      banners.value = response.banners;
     }
 
     // 解析推荐商家数据
-    const merchantsBlock = response.data.content.blocks.find(
-      (block: any) => block.type === "merchants"
-    );
-    if (merchantsBlock) {
-      // 根据商家块的内容获取推荐商家
-      // 这里可以根据实际需求实现商家数据的获取
-    }
 
-    // 解析美好瞬间数据（如果接口有提供此数据的话）
-    // 如果接口没有专门的美好瞬间数据，则使用默认数据
-    if (
-      !response.data.content.blocks.some(
-        (block: any) => block.type === "moments"
-      )
-    ) {
-      // 默认的美好瞬间数据
-      momentsList.value = [
-        {
-          image: "/static/images/banner1.png",
-          title: "浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场",
-          description: "精心布置的婚礼场地，见证幸福时刻",
-        },
-        {
-          image: "/static/images/banner.png",
-          title: "甜蜜婚纱照",
-          description: "专业摄影师捕捉每一个动人瞬间",
-        },
-        {
-          image: "/static/images/banner.png",
-          title: "温馨家庭聚会",
-          description: "亲朋好友共同见证的美好时光",
-        },
-        {
-          image: "/static/images/banner.png",
-          title: "梦幻婚礼策划",
-          description: "量身定制的专属婚礼方案",
-        },
-      ];
+    if (response.featured_cases) {
+      momentsList.value = response.featured_cases;
     }
 
     console.log("首页数据:", response);
@@ -394,23 +350,6 @@ async function loadHomeInfo() {
     console.error("获取首页数据失败:", error);
     uni.showToast({
       title: "获取首页数据失败",
-      icon: "none",
-    });
-  }
-}
-
-// 获取推荐案例
-async function loadFeaturedCases() {
-  try {
-    // 注意：casesFeatured 函数似乎不需要参数，但定义中有参数
-    const response = await casesFeatured();
-
-    featuredCases.value = response || [];
-    console.log("推荐案例数据:", response);
-  } catch (error) {
-    console.error("获取推荐案例失败:", error);
-    uni.showToast({
-      title: "获取推荐案例失败",
       icon: "none",
     });
   }
@@ -714,7 +653,6 @@ function initCalendar() {
 // 加载数据
 onMounted(() => {
   loadHomeInfo();
-  loadFeaturedCases();
 });
 </script>
 
@@ -725,7 +663,7 @@ onMounted(() => {
     margin-bottom: $spacing-md;
 
     .banner-swiper {
-      height: 320rpx;
+      height: 500rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

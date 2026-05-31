@@ -3,7 +3,7 @@
     <view class="banner">
       <swiper class="banner-swiper" autoplay circular indicator-dots>
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image" mode="aspectFill" class="banner-image" />
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
         </swiper-item>
       </swiper>
     </view>
@@ -48,14 +48,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getGoldRecommend } from "@/api/product";
+import { getBanners, merchants } from "@/api/product";
 
 // TODO: 实现商家列表功能
 // 轮播图数据
-const banners = ref([
-  { image: "/static/images/banner1.png" },
-  { image: "/static/images/banner.png" },
-]);
+const banners = ref<any[]>([]);
 // 服务分类
 const categories = ref([
   {
@@ -127,25 +124,20 @@ function navigateToCategory(category: any) {
 // 商品列表数据
 const goodsList = ref<any[]>([]);
 
-// 获取推荐的黄金商家数据
-const loadGoldRecommendData = async () => {
+// 获取banner
+const loadGetBanner = async () => {
   try {
-    const response = await getGoldRecommend();
+    const response = await getBanners(1);
     // 假设响应数据格式为 { data: [...] } 或直接是数组
-    if (response.data && Array.isArray(response.data)) {
-      goodsList.value = response.data;
-    } else if (Array.isArray(response)) {
-      goodsList.value = response;
-    } else {
-      console.error("获取推荐商家数据失败:", response);
-    }
+    banners.value = response || [];
+    console.log("banner:", response);
   } catch (error) {
     console.error("请求推荐商家数据出错:", error);
   }
 };
 
 onMounted(() => {
-  loadGoldRecommendData();
+  loadGetBanner();
 });
 </script>
 

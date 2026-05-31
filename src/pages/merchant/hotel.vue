@@ -242,24 +242,28 @@ async function loadMerchants(params = {}, resetPage = true) {
       // 加载更多时显示加载状态
       loadingMore.value = true;
     }
+    params.service_category_id = 2;
 
     // 调用 merchants 接口，获取指定页码和数量的数据
     const response = await merchants(currentPage.value, pageSize.value, params);
-
-    if (response && response.data) {
+    console.log(response, "response");
+    if (response) {
       if (resetPage) {
         // 重置数据
-        merchantList.value = response.data.list || response.data;
+        merchantList.value = response.list || [];
         total.value =
-          response.total ||
-          (response.data && response.data.length ? response.data.length : 0);
+          response.pagination.total ||
+          (response.list && response.list.length ? response.list.length : 0);
       } else {
         // 追加数据
-        const newData = response.data.list || response.data;
+        const newData = response.list || [];
         merchantList.value = [...merchantList.value, ...newData];
 
         // 判断是否还有更多数据
-        if (response.total && merchantList.value.length >= response.total) {
+        if (
+          response.pagination.total &&
+          merchantList.value.length >= response.pagination.total
+        ) {
           noMore.value = true;
         }
       }

@@ -13,7 +13,7 @@ export function getHotelFilter() {
 }
 
 
-// 获取酒店
+// 按服务类别筛选商家列表
 export function merchants(page: number, per_page: number, params?: any) {
   // 构建基础查询参数
   const queryParams: any = {
@@ -41,8 +41,21 @@ export function merchants(page: number, per_page: number, params?: any) {
   })
 }
 
+// 获取banner
+export function getBanners(type:number) {
+  return request<any>({
+    url: `/wechat/banners/category/${type}`,
+    method: 'GET'
+  })
+}
 
-
+// 获取筛选条件
+export function getDictionary() {
+  return request<any>({
+    url: '/wechat/dictionary',
+    method: 'GET'
+  })
+}
 
 // 获取筛金牌服务人
 export function getGoldRecommend() {

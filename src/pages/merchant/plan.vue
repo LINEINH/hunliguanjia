@@ -1,50 +1,52 @@
 
 <template>
   <view class="page">
-    <up-navbar title="婚礼策划" @rightClick="rightClick" :autoBack="true">
-    </up-navbar>
-    <view class="search-bar">
-      <view class="search-box">
-        <view class="search-box-left">
-          <up-icon name="search" size="20" color="#BCBCBC"></up-icon>
-          <input
-            class="uni-input"
-            confirm-type="search"
-            placeholder="搜索商家/服务"
-          />
+    <view class="fixedcon">
+      <up-navbar title="婚礼策划" @rightClick="rightClick" :autoBack="true">
+      </up-navbar>
+      <view class="search-bar">
+        <view class="search-box">
+          <view class="search-box-left">
+            <up-icon name="search" size="20" color="#BCBCBC"></up-icon>
+            <input
+              class="uni-input"
+              confirm-type="search"
+              placeholder="搜索商家/服务"
+            />
+          </view>
+          <view class="search-box-btn" @click="onSearch">搜索</view>
         </view>
-        <view class="search-box-btn" @click="onSearch">搜索</view>
       </view>
-    </view>
-    <view class="filters">
-      <template v-for="filter in filtersList" :key="filter.id">
-        <view
-          class="filter-item"
-          @click="showOptions(filter)"
-          :class="{ active: tempSelectedfilters === filter.id }"
-        >
-          <up-icon
-            name="map"
-            size="14"
-            :color="tempSelectedfilters === filter.id ? '#AB7E2B' : '#383838'"
-            v-if="filter.id === 1"
+      <view class="filters">
+        <template v-for="filter in filtersList" :key="filter.id">
+          <view
+            class="filter-item"
+            @click="showOptions(filter)"
+            :class="{ active: tempSelectedfilters === filter.id }"
           >
-          </up-icon>
-          {{ filter.name }}
-          <up-icon
-            name="arrow-down"
-            size="14"
-            :color="tempSelectedfilters === filter.id ? '#AB7E2B' : '#383838'"
-          >
-          </up-icon
-        ></view>
-      </template>
+            <up-icon
+              name="map"
+              size="14"
+              :color="tempSelectedfilters === filter.id ? '#AB7E2B' : '#383838'"
+              v-if="filter.id === 1"
+            >
+            </up-icon>
+            {{ filter.name }}
+            <up-icon
+              name="arrow-down"
+              size="14"
+              :color="tempSelectedfilters === filter.id ? '#AB7E2B' : '#383838'"
+            >
+            </up-icon
+          ></view>
+        </template>
+      </view>
     </view>
 
     <view class="banner">
       <swiper class="banner-swiper" autoplay circular indicator-dots>
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image" mode="aspectFill" class="banner-image" />
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
         </swiper-item>
       </swiper>
     </view>
@@ -111,37 +113,31 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, onMounted } from "vue";
+import { getBanners, merchants, getDictionary } from "@/api/product";
+
 const show = ref(false);
 const showOptionsList = ref([]);
-const tempSelectedfilters = ref([0]); // 临时存储选中的筛选项
-const filtersList = ref([
-  {
-    id: 1,
-    name: "区域",
-    options: ["全部", "市中心", "近郊", "机场周边", "高铁站附近"],
-  },
-  {
-    id: 2,
-    name: "预算区间",
-    options: ["全部", "10桌以下", "10-20桌", "20-50桌", "50桌以上"],
-  },
-  {
-    id: 3,
-    name: "从业时长",
-    options: ["全部", "经济餐标", "标准餐标", "高档餐标"],
-  },
-  {
-    id: 4,
-    name: "场地类型",
-    options: ["全部", "宴会厅", "会议室", "多功能厅", "户外场地"],
-  },
-]);
+// 轮播图数据
+const banners = ref([]);
+const tempSelectedfilters = ref(null); // 临时存储选中的筛选项ID
+const filtersList = ref([]); // 动态筛选项列表
 
 const showOptions = (filter) => {
   console.log("显示选项：", filter);
   tempSelectedfilters.value = filter.id;
-  showOptionsList.value = filter.options;
+  // 根据筛选类型提供相应选项，移除"全部"选项实现单选
+  if (filter.type === "district") {
+    showOptionsList.value = filter.options.map((item) => item.name);
+  } else if (filter.type === "venue_type") {
+    showOptionsList.value = filter.options;
+  } else if (filter.type === "feature") {
+    showOptionsList.value = filter.options;
+  } else if (filter.type === "service_category") {
+    showOptionsList.value = filter.options.map((item) => item.name);
+  } else {
+    showOptionsList.value = filter.options || [];
+  }
   show.value = true;
 };
 
@@ -195,12 +191,6 @@ const hotels = ref([
     type: "户外场地",
     price: 2200,
   },
-]);
-
-// 轮播图数据
-const banners = ref([
-  { image: "/static/images/banner1.png" },
-  { image: "/static/images/banner.png" },
 ]);
 
 const areaLabel = computed(
@@ -353,13 +343,131 @@ function openDetail(hotel) {
     });
   }
 }
+// 获取banner
+const loadGetBanner = async () => {
+  try {
+    const response = await getBanners(1);
+    banners.value = response || [];
+    console.log("banner:", response);
+  } catch (error) {
+    console.error("请求推荐商家数据出错:", error);
+  }
+};
 
+// 获取筛选条件
+const loadGetDictionary = async () => {
+  try {
+    const response = await getDictionary();
+    // 处理接口返回的数据，构建筛选列表
+    const { district, venue_type, feature, service_category } = response.data;
+
+    // 构建筛选项列表
+    const newFiltersList = [];
+
+    if (district && district.length > 0) {
+      newFiltersList.push({
+        id: 1,
+        name: "区域",
+        type: "district",
+        options: district,
+      });
+    }
+
+    if (venue_type && venue_type.length > 0) {
+      newFiltersList.push({
+        id: 2,
+        name: "场地类型",
+        type: "venue_type",
+        options: venue_type,
+      });
+    }
+
+    if (feature && feature.length > 0) {
+      newFiltersList.push({
+        id: 3,
+        name: "特色服务",
+        type: "feature",
+        options: feature,
+      });
+    }
+
+    if (service_category && service_category.length > 0) {
+      newFiltersList.push({
+        id: 4,
+        name: "服务分类",
+        type: "service_category",
+        options: service_category,
+      });
+    }
+
+    filtersList.value = newFiltersList;
+    console.log("筛选条件:", response);
+  } catch (error) {
+    console.error("请求筛选条件数据出错:", error);
+    // 如果接口失败，使用默认数据
+    filtersList.value = [
+      {
+        id: 1,
+        name: "区域",
+        type: "district",
+        options: [
+          { id: 1, name: "新城區" },
+          { id: 2, name: "碑林區" },
+          { id: 3, name: "蓮湖區" },
+        ],
+      },
+      {
+        id: 2,
+        name: "场地类型",
+        type: "venue_type",
+        options: [
+          "宴会厅",
+          "户外草坪",
+          "中式园林",
+          "西式教堂",
+          "酒店宴会厅",
+          "特色场地",
+        ],
+      },
+      {
+        id: 3,
+        name: "特色服务",
+        type: "feature",
+        options: [
+          "可停车",
+          "可住宿",
+          "有化妆间",
+          "可布置现场",
+          "可带酒水",
+          "有投影仪",
+          "有音响设备",
+          "有灯光设备",
+        ],
+      },
+      {
+        id: 4,
+        name: "服务分类",
+        type: "service_category",
+        options: [
+          { id: 1, name: "婚宴酒店" },
+          { id: 2, name: "婚礼策划" },
+          { id: 3, name: "婚礼主持" },
+        ],
+      },
+    ];
+  }
+};
 // 搜索框点击事件
 function onSearchClick() {
   uni.navigateTo({
     url: "/pages/merchant/search",
   });
 }
+
+onMounted(() => {
+  loadGetBanner();
+  loadGetDictionary();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -369,9 +477,17 @@ function onSearchClick() {
   min-height: 100vh;
 }
 
+.fixedcon {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 150rpx;
+  z-index: 99999;
+}
+
 .banner {
   margin-bottom: $spacing-md;
-
+  margin-top: 380rpx;
   .banner-swiper {
     height: 320rpx;
     border-radius: $radius-md;
@@ -387,7 +503,6 @@ function onSearchClick() {
   display: flex;
   padding: 20rpx;
   background: #fff;
-  margin-top: 150rpx;
   .search-box {
     display: flex;
     align-items: center;
@@ -592,7 +707,7 @@ function onSearchClick() {
   padding-right: 0;
   border-radius: 0 0 20rpx 20rpx;
   position: fixed;
-  top: 296rpx;
+  top: 346rpx;
   width: 100%;
   .filter-content {
     border-top: 1px solid #e5e5e5;

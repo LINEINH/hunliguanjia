@@ -118,6 +118,18 @@
 				"navigationStyle": "custom"
 			}
 		},
+			{
+			"path": "pages/user/coupon",
+			"style": {
+				"navigationBarTitleText": "我的优惠券"
+			}
+		},
+			{
+			"path": "pages/user/gift",
+			"style": {
+				"navigationBarTitleText": "我的礼品"
+			}
+		},
 		{
 			"path": "pages/login/login",
 			"style": {
@@ -153,13 +165,7 @@
 				"text": "我的",
 				"iconPath": "static/images/4.png",
 				"selectedIconPath": "static/images/8.png"
-			},
-			{
-			"path": "pages/my-coupon/coupon",
-			"style": {
-				"navigationBarTitleText": "我的优惠券"
 			}
-		}
 		]
 	},
 	"globalStyle": {

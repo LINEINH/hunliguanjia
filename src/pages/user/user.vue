@@ -78,7 +78,7 @@
         <text class="menu-text">我的优惠券</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
-      <view class="menu-item">
+      <view class="menu-item" @click="navigateTo('/pages/user/gift')">
         <image
           src="/static/images/13.png"
           mode="aspectFill"
