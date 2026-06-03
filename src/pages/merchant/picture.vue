@@ -2,7 +2,7 @@
 <template>
   <view class="page">
     <view class="fixedcon">
-      <up-navbar :title="pageTitle" @rightClick="rightClick" :autoBack="true">
+      <up-navbar title="婚礼策划" @rightClick="rightClick" :autoBack="true">
       </up-navbar>
       <view class="search-bar">
         <view class="search-box">
@@ -99,12 +99,7 @@
       >
         <image
           class="hotel-img"
-          :src="
-            merchant.cover_image ||
-            (merchant.images && merchant.images.length > 0
-              ? merchant.images[0]
-              : '')
-          "
+          :src="merchant.cover_image"
           mode="aspectFill"
         />
         <view class="hotel-info">
@@ -115,9 +110,7 @@
           </view>
           <view class="hotel-time">
             <text class="rate">{{ merchant.rating }}分</text>
-            <text class="description">{{
-              merchant.description || "暂无描述"
-            }}</text>
+            {{ merchant.description || "暂无描述" }}
           </view>
           <view class="hotel-desc">
             <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
@@ -142,23 +135,9 @@
   </view>
 </template>
 
-<script setup >
+<script setup>
 import { ref, reactive, onMounted, watch } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
 import { getBanners, merchants, getDictionary } from "@/api/product";
-
-// 页面标题
-const pageTitle = ref("婚礼策划");
-const category = ref(null);
-
-// 接收页面参数
-onLoad((options) => {
-  console.log("页面参数:", options);
-  if (options && options.title) {
-    pageTitle.value = options.title;
-    category.value = options.category || "1";
-  }
-});
 
 const show = ref(false);
 const showOptionsList = ref([]);
@@ -268,17 +247,34 @@ const loadMerchants = async (page = 1) => {
       page: page,
       per_page: 10,
     };
+
     // 添加关键词搜索
     if (searchKeyword.value) {
       params.keyword = searchKeyword.value;
     }
-
+    // params.service_category_id = 3; // 固定为婚礼策划服务分类ID
+    // 动态筛选参数映射 (例如将 activeFilters 中的选择映射到 API 参数)
     for (const filterId in activeFilters) {
       const selectedValue = activeFilters[filterId];
       if (selectedValue === null || selectedValue === undefined) continue;
 
       const filterDef = filtersList.value.find((f) => f.id == filterId);
       if (!filterDef) continue;
+
+      // 根据筛选类型添加到API参数中
+      if (filterDef.type === "district") {
+        const targetId =
+          typeof selectedValue === "object" ? selectedValue.id : selectedValue;
+        params.district_id = targetId;
+      } else if (filterDef.type === "venue_type") {
+        params.venue_type = selectedValue;
+      } else if (filterDef.type === "feature") {
+        params.feature = selectedValue;
+      } else if (filterDef.type === "service_category") {
+        const targetId =
+          typeof selectedValue === "object" ? selectedValue.id : selectedValue;
+        params.service_category_id = targetId;
+      }
     }
 
     const response = await merchants(page, 10, params);
@@ -364,7 +360,7 @@ function openDetail(hotel) {
   console.log("打开详情：", hotel);
   if (hotel && hotel.id) {
     uni.navigateTo({
-      url: `/pages/merchant/planDetail?id=${hotel.id}`,
+      url: `/pages/merchant/planItem?id=${hotel.id}`,
     });
   }
 }
@@ -633,13 +629,13 @@ onMounted(() => {
 .hotel-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 6px;
-  height: 80rpx;
-  margin-top: 20rpx;
 }
 .hotel-name {
   font-size: 32rpx;
   font-weight: 600;
+  margin-top: 30rpx;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -650,8 +646,6 @@ onMounted(() => {
   font-size: 26rpx;
   font-weight: 500;
   margin-top: 30rpx;
-  display: flex;
-  align-items: center;
   .rate {
     border-radius: 20rpx;
     background: linear-gradient(
@@ -662,15 +656,6 @@ onMounted(() => {
     );
     padding: 6rpx 20rpx;
     color: #d43030;
-  }
-  .description {
-    // 一行省略
-    width: 60%;
-    font-weight: 400;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    overflow: hidden;
   }
 }
 .hotel-desc {
@@ -795,8 +780,7 @@ onMounted(() => {
     }
   }
 }
-.no-more,
-.loading {
+.no-more {
   text-align: center;
   font-size: 26rpx;
   color: #999;
