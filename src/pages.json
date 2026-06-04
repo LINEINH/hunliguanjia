@@ -68,7 +68,8 @@
 						{
 			"path": "pages/merchant/host",
 			"style": {
-				"navigationBarTitleText": "婚礼主持人"
+				"navigationBarTitleText": "婚礼主持人",
+				"navigationStyle": "custom"
 			}
 		},
 		{

@@ -22,11 +22,16 @@
       <view v-if="goodsList.length === 0" class="empty-state">
         <text class="empty-text">暂无数据</text>
       </view>
-      <view class="goods-item" v-for="(item, index) in goodsList" :key="index">
-        <view class="tag">婚礼策划 </view>
-        <image :src="item.image" class="goods-image" mode="aspectFill" />
+      <view
+        class="goods-item"
+        v-for="(item, index) in goodsList"
+        :key="index"
+        @click="openDetail(item)"
+      >
+        <view class="tag">{{ getCategoryName(item.category_id) }}</view>
+        <image :src="item.cover_image" class="goods-image" mode="aspectFill" />
         <view class="goods-info">
-          <view class="goods-name">{{ item.personal_intro }}</view>
+          <view class="goods-name">{{ item.description }}</view>
           <view class="goods-intro">
             <image
               src="/static/images/user.png"
@@ -92,7 +97,7 @@ const categories = ref([
     id: 6,
     name: "婚礼主持",
     icon: "/static/images/24.png",
-    path: "/pages/merchant/host",
+    path: "/pages/merchant/host?title=婚礼主持",
   },
   {
     id: 7,
@@ -127,6 +132,25 @@ function navigateToCategory(category: any) {
 // 商品列表数据
 const goodsList = ref<any[]>([]);
 
+// 分类名称映射
+const categoryNames: Record<number, string> = {
+  1: "婚纱照",
+  2: "婚礼酒店",
+  3: "婚礼策划",
+  4: "婚纱礼服",
+  5: "目的地婚礼",
+  6: "婚礼主持",
+  7: "婚礼跟妆",
+  8: "婚礼摄影",
+  9: "婚礼摄像",
+  10: "婚礼周边",
+};
+
+// 根据 category_id 获取分类名称
+const getCategoryName = (categoryId: number): string => {
+  return categoryNames[categoryId] || "未知分类";
+};
+
 // 获取banner
 const loadGetBanner = async () => {
   try {
@@ -150,6 +174,14 @@ const loadGetProductRecommend = async () => {
     console.error("请求推荐产品数据出错:", error);
   }
 };
+
+function openDetail(item: any) {
+  if (item && item.id) {
+    uni.navigateTo({
+      url: `/pages/merchant/planItem?id=${item.id}`,
+    });
+  }
+}
 
 onMounted(() => {
   loadGetBanner();
@@ -259,6 +291,7 @@ onMounted(() => {
       .goods-name {
         font-size: $font-sm;
         color: #383838;
+        height: 70rpx;
         // 限制两行文本显示，超出部分显示省略号
         display: -webkit-box;
         -webkit-box-orient: vertical;

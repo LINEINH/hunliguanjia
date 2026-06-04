@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getProductDetail } from "@/api/product";
+import { getHotelDetail } from "@/api/product";
 
 // 基础URL
 const baseUrl = ref<string>("");
@@ -136,7 +136,7 @@ async function loadHotelDetail() {
       title: "加载中...",
     });
 
-    const response = await getProductDetail(hotelId.value);
+    const response = await getHotelDetail(hotelId.value);
 
     hotelData.value = response;
     console.log("酒店详情:", response);

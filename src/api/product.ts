@@ -41,6 +41,36 @@ export function merchants(page: number, per_page: number, params?: any) {
   })
 }
 
+
+
+// 获取产品 /api/v1/wechat/products?keyword=&category_id=&merchant_id=&min_price=&max_price=&per_page=
+export function getProducts(page: number, per_page: number, params?: any) {
+  // 构建基础查询参数
+  const queryParams: any = {
+    page,
+    per_page
+  };
+  
+  // 添加筛选参数，避免覆盖page和per_page
+  if (params) {
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+        queryParams[key] = params[key];
+      }
+    });
+  }
+
+  // 将查询参数拼接到URL中
+  const queryString = Object.keys(queryParams)
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
+    .join('&');
+    
+  return request<any>({
+    url: `/wechat/products${queryString ? '?' + queryString : ''}`,
+    method: 'GET'
+  })
+}
+
 // 获取banner
 export function getBanners(type:number) {
   return request<any>({
@@ -78,11 +108,21 @@ export function getGoldRecommend() {
  */
 
 /**
+ * 获取商户详情
+ */
+export function getHotelDetail(id: number) {
+  return request<any>({
+    url: `/wechat/merchants/${id}`,
+    method: 'GET'
+  })
+}
+
+/**
  * 获取产品详情
  */
 export function getProductDetail(id: number) {
   return request<any>({
-    url: `/wechat/merchants/${id}`,
+    url: `/wechat/products/${id}`,
     method: 'GET'
   })
 }

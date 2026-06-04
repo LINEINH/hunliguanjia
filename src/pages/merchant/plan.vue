@@ -199,20 +199,57 @@ const showOptions = (filter) => {
 
 // 弹窗中选择某一项
 function selectOption(item) {
-  // 临时存储选择，这里我们直接操作一个临时变量或者直接在UI上反馈
-  // 由于是单选且立即生效或点击确定生效，我们可以先存到一个临时状态
-  // 但为了简化，我们在点击确定时再统一处理，或者在这里更新一个临时选中状态
-  // 鉴于现有UI结构，我们用一个临时的 ref 来存储弹窗内的选中值
   if (currentFilterType.value) {
-    // 这里我们需要一个临时状态来配合弹窗的 "确定" 按钮
-    // 但由于原代码结构是点击即选中样式变化，最后点确定
-    // 我们修改 selectArea 的逻辑为 selectOption
     tempSelectedValue.value = item;
   }
 }
 
 // 临时存储弹窗内选中的值
 const tempSelectedValue = ref(null);
+
+// 处理预算区间筛选
+const handleBudgetFilter = (value, params) => {
+  if (typeof value !== "string") return;
+
+  // 解析预算区间字符串
+  if (value === "1000以下") {
+    params.meal_standard_max = 1000;
+  } else if (value === "5000以上") {
+    params.meal_standard_min = 5000;
+  } else if (value.includes("-")) {
+    // 去除非数字和横杠的字符后再转换数字
+    const cleanValue = value.replace(/[^\d-]/g, "");
+    const [min, max] = cleanValue.split("-").map(Number);
+    params.meal_standard_min = min;
+    params.meal_standard_max = max;
+  }
+};
+
+// 处理从业时长筛选
+const handleExperienceFilter = (value, params) => {
+  if (typeof value !== "string") return;
+
+  // 解析从业时长字符串
+  if (value === "10年以上") {
+    params.experience_years_min = 10;
+  } else if (value.includes("-")) {
+    // 去除中文字符后再转换数字
+    const cleanValue = value.replace(/[^\d-]/g, "");
+    const [min, max] = cleanValue.split("-").map(Number);
+    params.experience_years_min = min;
+    params.experience_years_max = max;
+  }
+};
+
+// 处理综合排序筛选
+const handleSortFilter = (value, params) => {
+  if (typeof value !== "string") return;
+
+  // 高分优先使用desc排序
+  if (value === "高分优先") {
+    params.sort_order = "desc";
+  }
+};
 
 // 当打开弹窗时，初始化临时选中值为当前已选中的值
 watch(show, (newVal) => {
@@ -228,7 +265,8 @@ function resetAreaSelection() {
   if (activeFilterId.value !== null) {
     delete activeFilters[activeFilterId.value];
   }
-
+  // 关闭弹窗
+  show.value = false;
   // 重置页码并重新加载数据
   currentPage.value = 1;
   loadMerchants(1);
@@ -276,12 +314,34 @@ const loadMerchants = async (page = 1) => {
       params.service_category_id = category.value;
     }
 
+    // 处理筛选条件
     for (const filterId in activeFilters) {
       const selectedValue = activeFilters[filterId];
       if (selectedValue === null || selectedValue === undefined) continue;
 
       const filterDef = filtersList.value.find((f) => f.id == filterId);
       if (!filterDef) continue;
+
+      // 根据筛选类型处理不同的参数
+      if (filterDef.type === "meal_standard") {
+        // 预算区间处理
+        handleBudgetFilter(selectedValue, params);
+      } else if (filterDef.type === "experience") {
+        // 从业时长处理
+        handleExperienceFilter(selectedValue, params);
+      } else if (filterDef.type === "sort_order") {
+        // 综合排序处理
+        handleSortFilter(selectedValue, params);
+      } else if (
+        filterDef.type === "district" &&
+        typeof selectedValue === "object"
+      ) {
+        // 区域筛选(对象类型，取id)
+        params.district_id = selectedValue.id;
+      } else if (typeof selectedValue === "string") {
+        // 其他字符串类型直接传值
+        params[filterDef.type] = selectedValue;
+      }
     }
 
     const response = await merchants(page, 10, params);
@@ -293,7 +353,7 @@ const loadMerchants = async (page = 1) => {
 
     if (response) {
       // 正确提取商家数据
-      merchantsData = response.list;
+      merchantsData = response.list || [];
       // 提取分页信息
       paginationInfo = response.pagination || {}; // 如果response.data不是数组而是包含分页信息的对象
     } else {

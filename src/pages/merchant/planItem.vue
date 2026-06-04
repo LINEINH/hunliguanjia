@@ -2,14 +2,16 @@
 <template>
   <view class="planItem">
     <up-navbar
-      title="盛唐宴礼宴中心(太华南路店)"
+      :title="productData.name || '产品详情'"
       @rightClick="rightClick"
       :autoBack="true"
     >
     </up-navbar>
     <view class="banner">
       <image
-        src="/static/images/banner1.png"
+        :src="
+          productData.images[0].image_url || '/static/images/default-banner.jpg'
+        "
         mode="aspectFill"
         class="banner"
       ></image>
@@ -17,35 +19,26 @@
     <view class="hotel-info">
       <view class="hotel-intro">
         <image
-          src="/static/images/user.png"
+          :src="productData.merchant.logo"
           mode="aspectFill"
           class="user-icon"
         ></image>
         <view class="right">
-          <text class="user-name">测试测试</text>
-          <text class="id">ID:3821918</text>
+          <text class="user-name">{{ productData.merchant.name }}</text>
+          <!-- <text class="id">ID:{{ productData.merchant.contact_name }}</text> -->
         </view>
       </view>
-      <view class="hotel-name">盛唐宴礼宴中心(太华南路店) </view>
+      <view class="hotel-name">{{ productData.name }} </view>
       <view class="hotel-address">
-        是谁婚礼结束两个月了还在为日照金山疯狂心动是专属于我俩的日照金山婚庆布置真的超级超级满意结婚可太好玩啦</view
-      >
+        {{ productData.description }}
+      </view>
       <view class="hotel-highlights">
         <text class="highlight">大厅无柱</text>
         <text class="highlight">西式婚礼</text>
         <text class="highlight">西式婚礼</text>
       </view>
-      <view class="hotel-fuli">
-        <view class="hotel-fuli-title">特惠福利</view>
-        <view class="hotel-fuli-item">
-          <text>新客专享·200元优惠券</text>
-          <view class="recive"
-            >领取
-            <up-icon name="arrow-right" size="16" color="#BF974A"></up-icon
-          ></view>
-        </view>
-      </view>
     </view>
+
     <view class="hotel-footer">
       <view class="hotel-footer-item">
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
@@ -56,28 +49,88 @@
         <text>收藏</text>
       </view>
 
-      <view class="hotel-footer-tel button" @click="openDetail()">
-        电话咨询
-      </view>
+      <view class="hotel-footer-tel button"> 电话咨询 </view>
       <view class="hotel-footer-online button"> 在线管家 </view>
     </view>
   </view>
 </template>
 
-<script setup>
-import { ref, reactive, computed } from "vue";
-const show = ref(false);
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { getProductDetail } from "@/api/product";
 
-// 定义方法
-const rightClick = () => {
-  console.log("rightClick");
-};
-function openDetail(hotel) {
-  if (hotel && hotel.id) {
-    uni.navigateTo({
-      url: `/pages/merchant/hotel-detail?id=${hotel.id}`,
+// 产品数据
+const productData = ref<any>({});
+
+// 产品ID
+const hotelId = ref<number | null>(null);
+
+// onLoad 参数接收器
+const props = defineProps<{
+  id?: string;
+}>();
+
+// 加载产品详情
+async function loadProductDetail() {
+  if (!hotelId.value) {
+    uni.showToast({
+      title: "缺少产品ID",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: "加载中...",
+    });
+
+    const response = await getProductDetail(hotelId.value);
+
+    productData.value = response;
+    console.log("产品详情:", response);
+  } catch (error) {
+    console.error("获取产品详情失败:", error);
+    uni.showToast({
+      title: "获取产品详情失败",
+      icon: "none",
+    });
+  } finally {
+    uni.hideLoading();
+  }
+}
+
+// 页面加载时获取产品详情
+onMounted(() => {
+  if (props.id) {
+    hotelId.value = Number(props.id);
+    loadProductDetail();
+  } else {
+    uni.showToast({
+      title: "缺少产品ID",
+      icon: "none",
     });
   }
+});
+
+function rightClick() {
+  console.log("right click");
+}
+
+function makePhoneCall() {
+  // 这里可以添加电话咨询的功能
+  uni.showModal({
+    title: "电话咨询",
+    content: "是否拨打产品联系电话？",
+    success: function (res) {
+      if (res.confirm) {
+        // 实际项目中这里应该替换成产品的真实电话
+        uni.makePhoneCall({
+          phoneNumber: "13800138000", // 示例电话号码
+        });
+      }
+    },
+  });
 }
 </script>
 
