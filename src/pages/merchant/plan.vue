@@ -272,6 +272,9 @@ const loadMerchants = async (page = 1) => {
     if (searchKeyword.value) {
       params.keyword = searchKeyword.value;
     }
+    if (category.value) {
+      params.service_category_id = category.value;
+    }
 
     for (const filterId in activeFilters) {
       const selectedValue = activeFilters[filterId];
@@ -385,7 +388,6 @@ const loadGetDictionary = async () => {
     const response = await getDictionary();
     // 处理接口返回的数据，构建筛选列表
     const { district, venue_type, feature, service_category } = response;
-
     // 构建筛选项列表
     const newFiltersList = [];
 
@@ -398,32 +400,33 @@ const loadGetDictionary = async () => {
       });
     }
 
-    if (venue_type && venue_type.length > 0) {
-      newFiltersList.push({
-        id: 2,
-        name: "场地类型",
-        type: "venue_type",
-        options: venue_type, // 直接使用API返回的venue_type数组
-      });
-    }
+    newFiltersList.push({
+      id: 2,
+      name: "预算区间",
+      type: "meal_standard",
+      options: [
+        "1000以下",
+        "1000-2000",
+        "2000-3000",
+        "3000-4000",
+        "4000-5000",
+        "5000以上",
+      ], // 直接使用API返回的venue_type数组
+    });
 
-    if (feature && feature.length > 0) {
-      newFiltersList.push({
-        id: 3,
-        name: "特色服务",
-        type: "feature",
-        options: feature, // 直接使用API返回的feature数组
-      });
-    }
+    newFiltersList.push({
+      id: 3,
+      name: "从业时长",
+      type: "experience",
+      options: ["1-3年", "3-5年", "5-10年", "10年以上"], // 直接使用API返回的feature数组
+    });
 
-    if (service_category && service_category.length > 0) {
-      newFiltersList.push({
-        id: 4,
-        name: "服务分类",
-        type: "service_category",
-        options: service_category, // 直接使用API返回的service_category数组
-      });
-    }
+    newFiltersList.push({
+      id: 4,
+      name: "综合排序",
+      type: "sort_order",
+      options: ["高分优先"], // 直接使用API返回的service_category数组
+    });
 
     filtersList.value = newFiltersList;
 

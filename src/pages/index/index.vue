@@ -355,9 +355,9 @@ async function loadHomeInfo() {
   }
 }
 
-// 获取当前周的7天数据
-function getCurrentWeekDays() {
-  const today = new Date();
+// 获取当前周的7天数据（基于指定日期）
+function getCurrentWeekDays(baseDate?: Date) {
+  const today = baseDate || new Date();
   today.setHours(0, 0, 0, 0);
 
   const days = [];
@@ -378,7 +378,9 @@ function getCurrentWeekDays() {
     const date = currentDate.getDate();
 
     // 判断是否是今天
-    const isToday = currentDate.getTime() === today.getTime();
+    const realToday = new Date();
+    realToday.setHours(0, 0, 0, 0);
+    const isToday = currentDate.getTime() === realToday.getTime();
 
     // 判断是否是婚期
     let isWeddingDay = false;
@@ -642,11 +644,14 @@ const confirmBudgetInput = () => {
 // 初始化日历
 function initCalendar() {
   if (weddingDate.value) {
-    const [year, month] = weddingDate.value.split("-").map(Number);
+    const [year, month, day] = weddingDate.value.split("-").map(Number);
     calendarYear.value = year;
     calendarMonth.value = month;
     generateCalendar(year, month);
-    getCurrentWeekDays(); // 初始化周视图
+
+    // 基于婚期日期生成本周视图
+    const weddingDateObj = new Date(year, month - 1, day);
+    getCurrentWeekDays(weddingDateObj);
   }
 }
 

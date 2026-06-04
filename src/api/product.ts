@@ -57,6 +57,13 @@ export function getDictionary() {
   })
 }
 
+// 推荐产品列表
+export function getProductRecommend() {
+  return request<any>({
+    url: '/wechat/products/recommend',
+    method: 'GET'
+  })
+}
 // 获取筛金牌服务人
 export function getGoldRecommend() {
   return request<any>({

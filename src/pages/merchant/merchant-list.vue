@@ -19,6 +19,9 @@
       </view>
     </view>
     <view class="goods-list">
+      <view v-if="goodsList.length === 0" class="empty-state">
+        <text class="empty-text">暂无数据</text>
+      </view>
       <view class="goods-item" v-for="(item, index) in goodsList" :key="index">
         <view class="tag">婚礼策划 </view>
         <image :src="item.image" class="goods-image" mode="aspectFill" />
@@ -48,7 +51,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getBanners, merchants } from "@/api/product";
+import { getBanners, getProductRecommend } from "@/api/product";
 
 // TODO: 实现商家列表功能
 // 轮播图数据
@@ -89,7 +92,7 @@ const categories = ref([
     id: 6,
     name: "婚礼主持",
     icon: "/static/images/24.png",
-    path: "/pages/merchant/plan?title=婚礼主持&category=6",
+    path: "/pages/merchant/host",
   },
   {
     id: 7,
@@ -136,8 +139,21 @@ const loadGetBanner = async () => {
   }
 };
 
+// 获取推荐产品
+const loadGetProductRecommend = async () => {
+  try {
+    const response = await getProductRecommend();
+    // 假设响应数据格式为 { data: [...] } 或直接是数组
+    goodsList.value = response || [];
+    console.log("推荐产品:", response);
+  } catch (error) {
+    console.error("请求推荐产品数据出错:", error);
+  }
+};
+
 onMounted(() => {
   loadGetBanner();
+  loadGetProductRecommend();
 });
 </script>
 
@@ -147,6 +163,7 @@ onMounted(() => {
 .merchant-list-page {
   .banner {
     margin-bottom: $spacing-md;
+
     .banner-swiper {
       height: 320rpx;
       overflow: hidden;
@@ -181,33 +198,25 @@ onMounted(() => {
       }
     }
   }
+
   .goods-list {
     display: flex;
     flex-wrap: wrap;
     margin-top: 40rpx;
 
-    .tag {
-      border-radius: 0 0 20rpx 20rpx;
-      background: linear-gradient(
-        213.75deg,
-        #3e3e3e 0%,
-        #393939 44.44%,
-        #000000 100%
-      );
-      color: #fff;
-      font-size: $font-xs;
-      z-index: 1;
-      width: 140rpx;
-      height: 40rpx;
-      text-align: center;
-      color: #e9cc90;
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translate(-50%, 0%);
+    .empty-state {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 100rpx 0;
 
-      //
+      .empty-text {
+        font-size: $font-sm;
+        color: $text-secondary;
+      }
     }
+
     .goods-item {
       position: relative;
       width: 47%;
@@ -218,12 +227,35 @@ onMounted(() => {
       background: #fff;
       margin-bottom: 20rpx;
       margin-left: 2%;
+
+      .tag {
+        border-radius: 0 0 20rpx 20rpx;
+        background: linear-gradient(
+          213.75deg,
+          #3e3e3e 0%,
+          #393939 44.44%,
+          #000000 100%
+        );
+        font-size: $font-xs;
+        z-index: 1;
+        width: 140rpx;
+        height: 40rpx;
+        text-align: center;
+        color: #e9cc90;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0%);
+      }
+
       .goods-image {
         width: 100%;
       }
+
       .goods-info {
         padding: $spacing-md;
       }
+
       .goods-name {
         font-size: $font-sm;
         color: #383838;
@@ -233,27 +265,32 @@ onMounted(() => {
         -webkit-line-clamp: 2;
         overflow: hidden;
       }
+
       .goods-price {
         font-size: $font-xs;
         color: $text-primary;
       }
+
       .goods-intro {
         display: flex;
         align-items: center;
         margin-top: $spacing-sm;
         border-top: 1px solid #e5e5e5;
         padding-top: $spacing-sm;
+
         .user-icon {
           width: 30rpx;
           height: 30rpx;
           border-radius: 50%;
           margin-right: $spacing-sm;
         }
+
         .user-name {
           font-size: $font-xs;
           color: $text-secondary;
           margin-right: auto;
         }
+
         .like {
           width: 30rpx;
           height: 30rpx;
