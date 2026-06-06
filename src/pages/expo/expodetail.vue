@@ -107,6 +107,8 @@
   </view>
 </template>
 <script setup lang="ts">
+import { getExpoDetail } from "@/api/expo";
+
 // 导航到商家列表
 function navigateToDetail() {
   uni.navigateTo({ url: "/pages/expo/expodetail" });

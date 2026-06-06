@@ -7,20 +7,25 @@
       :autoBack="true"
     >
     </up-navbar>
+
     <view class="banner">
-      <image :src="hotelData.logo" mode="aspectFill" class="banner"></image>
+      <swiper class="banner-swiper" autoplay circular indicator-dots>
+        <swiper-item v-for="(item, index) in hotelData.images" :key="index">
+          <image :src="item" mode="aspectFill" class="banner-image" />
+        </swiper-item>
+      </swiper>
     </view>
     <view class="hotel-info">
       <view class="hotel-name">
         {{ hotelData.name }}
-        <text class="price">¥1000起</text>
+        <text class="price">¥{{ hotelData.starting_price }}起</text>
       </view>
       <view class="hotel-time">
         {{ hotelData.business_status }} {{ hotelData.business_hours }}
       </view>
       <view class="hotel-rate">
         <text class="rate">{{ hotelData.rating }}分</text> "{{
-          hotelData.short_description
+          hotelData.description
         }}"
       </view>
       <view class="hotel-highlights">
@@ -59,6 +64,7 @@
           v-for="(caseItem, index) in hotelData.products"
           :key="index"
           class="hotel-list-item"
+          @click="openDetail(caseItem)"
         >
           <image
             :src="caseItem.cover_image"
@@ -69,15 +75,12 @@
             <view class="hotel-list-item-title">
               {{ caseItem.name }}
             </view>
-            <view
-              class="hotel-list-item-intro"
-              v-if="caseItem.tags && caseItem.tags.length"
-            >
-              {{ caseItem.tags.join(",") }}
+            <view class="hotel-list-item-intro">
+              {{ caseItem.description }}
             </view>
             <view class="hotel-list-item-price">
               <view class="price-wrap">
-                <text class="price">¥{{ caseItem.price }}</text>
+                <text class="price">参考价{{ caseItem.price }}起</text>
               </view>
               <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
             </view>
@@ -105,13 +108,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getHotelDetail } from "@/api/product";
+import { getHotelDetail, getProducts } from "@/api/product";
 
 // 基础URL
 const baseUrl = ref<string>("");
 
 // 酒店数据
 const hotelData = ref<any>({});
+const productsData = ref<any>({});
 
 // 酒店ID
 const hotelId = ref<number | null>(null);
@@ -151,11 +155,37 @@ async function loadHotelDetail() {
   }
 }
 
+async function loadHotelProducts() {
+  console.log("酒店产品列表:", 22);
+  try {
+    const params = {
+      merchant_id: hotelId.value,
+    };
+    const response = await getProducts(1, 10, params);
+    console.log("酒店产品列表:", response);
+    productsData.value = response;
+  } catch (error) {
+    uni.showToast({
+      title: "获取酒店产品列表失败",
+      icon: "none",
+    });
+  }
+}
+
+function openDetail(caseItem: any) {
+  if (caseItem && caseItem.id) {
+    uni.navigateTo({
+      url: `/pages/merchant/planItem?id=${caseItem.id}`,
+    });
+  }
+}
+
 // 页面加载时获取酒店详情
 onMounted(() => {
   if (props.id) {
     hotelId.value = Number(props.id);
     loadHotelDetail();
+    loadHotelProducts();
   } else {
     uni.showToast({
       title: "缺少酒店ID",
@@ -193,9 +223,16 @@ function makePhoneCall() {
   padding-bottom: 100rpx;
 
   .banner {
-    width: 100%;
-    height: 600rpx;
-    margin-bottom: 20px;
+    margin-top: 80rpx;
+    margin-bottom: 40rpx;
+    .banner-swiper {
+      height: 1200rpx;
+      overflow: hidden;
+    }
+    .banner-image {
+      width: 100%;
+      height: 100%;
+    }
   }
   .hotel-info {
     margin: 0 $spacing-md;

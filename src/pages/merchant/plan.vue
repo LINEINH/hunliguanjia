@@ -427,7 +427,7 @@ function openDetail(hotel) {
   console.log("打开详情：", hotel);
   if (hotel && hotel.id) {
     uni.navigateTo({
-      url: `/pages/merchant/planDetail?id=${hotel.id}`,
+      url: `/pages/merchant/hotelDetail?id=${hotel.id}`,
     });
   }
 }

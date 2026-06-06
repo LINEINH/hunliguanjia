@@ -7,14 +7,13 @@
       :autoBack="true"
     >
     </up-navbar>
+
     <view class="banner">
-      <image
-        :src="
-          productData.images[0].image_url || '/static/images/default-banner.jpg'
-        "
-        mode="aspectFill"
-        class="banner"
-      ></image>
+      <swiper class="banner-swiper" autoplay circular indicator-dots>
+        <swiper-item v-for="(item, index) in productData.images" :key="index">
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
+        </swiper-item>
+      </swiper>
     </view>
     <view class="hotel-info">
       <view class="hotel-intro">
@@ -32,10 +31,19 @@
       <view class="hotel-address">
         {{ productData.description }}
       </view>
-      <view class="hotel-highlights">
-        <text class="highlight">大厅无柱</text>
-        <text class="highlight">西式婚礼</text>
-        <text class="highlight">西式婚礼</text>
+      <view
+        class="hotel-highlights"
+        v-if="productData.tags && productData.tags.length"
+      >
+        <text
+          class="highlight"
+          v-for="(tag, index) in productData.tags"
+          :key="index"
+          >{{ tag }}</text
+        >
+      </view>
+      <view class="content" v-if="cleanedContent">
+        <rich-text :nodes="cleanedContent"></rich-text>
       </view>
     </view>
 
@@ -49,14 +57,16 @@
         <text>收藏</text>
       </view>
 
-      <view class="hotel-footer-tel button"> 电话咨询 </view>
+      <view class="hotel-footer-tel button" @click="makePhoneCall">
+        电话咨询
+      </view>
       <view class="hotel-footer-online button"> 在线管家 </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { getProductDetail } from "@/api/product";
 
 // 产品数据
@@ -69,6 +79,36 @@ const hotelId = ref<number | null>(null);
 const props = defineProps<{
   id?: string;
 }>();
+
+// 清理HTML中的图片内联样式并添加宽度控制
+function cleanHtmlContent(html: string): string {
+  if (!html) return html;
+
+  // 移除img标签中的style属性
+  let cleaned = html.replace(
+    /<img([^>]*)\s+style\s*=\s*["'][^"']*["']/gi,
+    "<img$1"
+  );
+
+  // 如果style是空的,也移除
+  cleaned = cleaned.replace(
+    /<img([^>]*)\s+style\s*=\s*["']\s*["']/gi,
+    "<img$1"
+  );
+
+  // 为所有img标签添加width:100%的style属性
+  cleaned = cleaned.replace(
+    /<img([^>]*?)>/gi,
+    '<img$1 style="width:100%;height:auto;display:block;">'
+  );
+
+  return cleaned;
+}
+
+// 计算属性:清理后的内容
+const cleanedContent = computed(() => {
+  return cleanHtmlContent(productData.value.content || "");
+});
 
 // 加载产品详情
 async function loadProductDetail() {
@@ -126,10 +166,17 @@ function makePhoneCall() {
       if (res.confirm) {
         // 实际项目中这里应该替换成产品的真实电话
         uni.makePhoneCall({
-          phoneNumber: "13800138000", // 示例电话号码
+          phoneNumber: productData.value.merchant?.phone || "13800138000", // 尝试获取真实电话，否则使用示例
         });
       }
     },
+  });
+}
+
+function handleOnlineService() {
+  uni.showToast({
+    title: "在线管家功能开发中",
+    icon: "none",
   });
 }
 </script>
@@ -142,8 +189,15 @@ function makePhoneCall() {
   padding-bottom: 100rpx;
 
   .banner {
-    width: 100%;
-    height: 600rpx;
+    margin-top: 80rpx;
+    .banner-swiper {
+      height: 1200rpx;
+      overflow: hidden;
+    }
+    .banner-image {
+      width: 100%;
+      height: 100%;
+    }
   }
   .hotel-info {
     background: #fff;
@@ -171,6 +225,44 @@ function makePhoneCall() {
       padding: 10rpx 20rpx;
       border-radius: 24rpx;
       margin-top: 20rpx;
+    }
+    .content {
+      margin-top: $spacing-md;
+      background: #fff;
+      border-radius: 20rpx;
+      padding-bottom: $spacing-md;
+      :deep(rich-text) {
+        line-height: 1.8;
+        font-size: 28rpx;
+        color: #383838;
+
+        // 强制所有图片元素宽度100%
+        img,
+        image,
+        [class*="img"],
+        [class*="image"] {
+          max-width: 100% !important;
+          width: 100% !important;
+          height: auto !important;
+          display: block !important;
+          border-radius: 10rpx;
+          object-fit: contain;
+        }
+
+        // 处理 div 容器中的图片
+        div img,
+        p img,
+        span img {
+          max-width: 100% !important;
+          width: 100% !important;
+          height: auto !important;
+          display: block !important;
+        }
+
+        p {
+          margin-bottom: $spacing-sm;
+        }
+      }
     }
     .hotel-address {
       font-size: 28rpx;

@@ -15,8 +15,8 @@ export function getExpoList() {
  * 获取婚博会详情
  */
 export function getExpoDetail(id: number) {
-  return request<WeddingExpo>({
-    url: `/api/expo/${id}`,
+  return request<any>({
+    url: `/wechat/expo/activities/${id}`,
     method: 'GET'
   })
 }

@@ -8,12 +8,12 @@
         </swiper-item>
       </swiper>
     </view>
-    <view class="ad">
+    <view class="ad" v-if="ongoingExpos && ongoingExpos.length">
       <image
-        src="/static/images/banner1.png"
+        :src="ongoingExpos[0].cover_image"
         mode="aspectFill"
         class="ad-image"
-        @click="navigateToDetail"
+        @click="navigateToDetail(ongoingExpos[0].id)"
       />
     </view>
     <view class="cardtitle">精彩回顾</view>
@@ -28,43 +28,6 @@
         bgColor="#ffffff"
       ></up-swiper>
     </view>
-
-    <!-- 婚博会活动列表 -->
-    <view class="expo-list">
-      <view class="cardtitle">婚博会活动</view>
-      <view v-if="loading" class="loading">加载中...</view>
-      <view v-else-if="expos.length === 0" class="no-data">暂无活动数据</view>
-      <view v-else class="expo-items">
-        <view
-          v-for="expo in expos"
-          :key="expo.id"
-          class="expo-item"
-          @click="goToExpoDetail(expo)"
-        >
-          <view class="expo-header">
-            <text class="expo-title">{{ expo.title }}</text>
-            <text class="expo-status" :class="getStatusClass(expo.status)">{{
-              expo.status
-            }}</text>
-          </view>
-          <view class="expo-meta">
-            <text class="expo-time"
-              >{{ formatDate(expo.startTime) }} 至
-              {{ formatDate(expo.endTime) }}</text
-            >
-            <text class="expo-location"
-              >{{ expo.province }}{{ expo.city }}{{ expo.venue }}</text
-            >
-          </view>
-
-          <view class="expo-stats">
-            <text class="stat-item">报名: {{ expo.registerCount }}</text>
-            <text class="stat-item">签到: {{ expo.checkinCount }}</text>
-            <text class="stat-item">抽奖: {{ expo.lotteryCount }}</text>
-          </view>
-        </view>
-      </view>
-    </view>
   </view>
 </template>
 <script setup lang="ts">
@@ -76,6 +39,8 @@ import { reactive } from "vue";
 
 // 婚博会
 const expos = ref<WeddingExpo[]>([]);
+const ongoingExpos = ref<WeddingExpo[]>([]); // 进行中的活动
+const completedExpos = ref<WeddingExpo[]>([]); // 已完成的活动
 const loading = ref(true);
 const banners = ref([
   { image: "/static/images/banner1.png" },
@@ -88,8 +53,8 @@ function navigateToCategory(category: any) {
 }
 
 // 导航到商家列表
-function navigateToDetail() {
-  uni.navigateTo({ url: "/pages/expo/exchange" });
+function navigateToDetail(expoId: number) {
+  uni.navigateTo({ url: `/pages/expo/expodetail?id=${expoId}` });
 }
 
 // 导航到婚博会详情页
@@ -128,12 +93,23 @@ const list3 = reactive([
   "/static/images/banner1.png",
 ]);
 
-// 页面加载时获取婚博会列表
-onMounted(async () => {
+// 获取婚博会列表
+async function fetchExpoList() {
   try {
     loading.value = true;
     const response = await getExpoList();
-    expos.value = response.data;
+    console.log("婚博会列表:", response);
+
+    // 存储所有活动
+    expos.value = response || [];
+
+    ongoingExpos.value =
+      response.filter((item: any) => item.status === 1) || [];
+    // 根据状态筛选：status为1是进行中，2是已完成
+    completedExpos.value =
+      response.filter((item: any) => item.status === 2) || [];
+
+    console.log("进行中的活动:", ongoingExpos.value);
   } catch (error) {
     console.error("获取婚博会列表失败:", error);
     uni.showToast({
@@ -143,6 +119,11 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+}
+
+// 页面加载时获取婚博会列表
+onMounted(() => {
+  fetchExpoList();
 });
 </script>
 

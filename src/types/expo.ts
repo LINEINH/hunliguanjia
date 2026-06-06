@@ -19,6 +19,7 @@ export interface WeddingExpo {
   lotteryCount: number
   totalRedPacket: number
   welfareProducts?: any[]
+  cover_image: string
 }
 
 /**
