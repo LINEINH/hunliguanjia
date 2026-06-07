@@ -142,7 +142,7 @@
       </view>
       <view class="moments-grid">
         <template v-for="(moment, index) in momentsList" :key="index">
-          <view class="moment-item" @click="navigateToPlanItem()">
+          <view class="moment-item" @click="navigateToPlanItem(moment)">
             <image
               :src="moment.cover_image"
               class="moment-image"
@@ -557,8 +557,8 @@ function navigateToCategory(category: any) {
 }
 
 // 导航到商家列表
-function navigateToPlanItem() {
-  uni.navigateTo({ url: "/pages/merchant/planItem" });
+function navigateToPlanItem(item: any) {
+  uni.navigateTo({ url: `/pages/index/case?id=${item.id}` });
 }
 
 // picker-view 值改变事件

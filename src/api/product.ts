@@ -79,6 +79,24 @@ export function getBanners(type:number) {
   })
 }
 
+
+// 获取优惠券 /api/v1/wechat/coupons/available?merchant_id=1
+export function getCoupons(id: number) {
+  return request<any>({
+    url: `/wechat/coupons/available?merchant_id=${id}`,
+    method: 'GET'
+  })
+}
+
+
+// 领取优惠券 /api/v1/wechat/coupons/1/receive
+export function receiveCoupons(id: number) {
+  return request<any>({
+    url: `/wechat/coupons/${id}/receive`,
+    method: 'POST'
+  })
+}
+
 // 获取筛选条件
 export function getDictionary() {
   return request<any>({

@@ -28,9 +28,12 @@
           hotelData.description
         }}"
       </view>
-      <view class="hotel-highlights">
+      <view
+        class="hotel-highlights"
+        v-if="hotelData.personnel_tags && hotelData.personnel_tags.length > 0"
+      >
         <text
-          v-for="(feature, index) in hotelData.features"
+          v-for="(feature, index) in hotelData.personnel_tags"
           :key="index"
           class="highlight"
         >
@@ -45,13 +48,17 @@
       >
         <view class="hotel-fuli-title">特惠福利</view>
         <view
-          v-for="(product, index) in hotelData.products"
+          v-for="(product, index) in CouponsData"
           :key="index"
           class="hotel-fuli-item"
         >
-          <text>{{ product.title }} ¥{{ product.price }}</text>
-          <view class="recive">
-            了解
+          <text
+            >{{ product.name }} ：满¥{{ product.min_amount }}立减¥{{
+              product.value
+            }}</text
+          >
+          <view class="recive" @click="receiveCoupon(product.id)">
+            领取
             <up-icon name="arrow-right" size="16" color="#BF974A"></up-icon>
           </view>
         </view>
@@ -87,6 +94,18 @@
           </view>
         </view>
       </view>
+      <view
+        class="detailImage"
+        v-if="hotelData.detail_images && hotelData.detail_images.length > 0"
+      >
+        <image
+          :src="item"
+          mode="widthFix"
+          class="detail-image"
+          v-for="(item, index) in hotelData.detail_images"
+          :key="index"
+        />
+      </view>
     </view>
     <view class="hotel-footer">
       <view class="hotel-footer-item">
@@ -108,14 +127,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getHotelDetail, getProducts } from "@/api/product";
+import { getHotelDetail, getCoupons, receiveCoupons } from "@/api/product";
 
 // 基础URL
 const baseUrl = ref<string>("");
 
 // 酒店数据
 const hotelData = ref<any>({});
-const productsData = ref<any>({});
+const CouponsData = ref<any>({});
 
 // 酒店ID
 const hotelId = ref<number | null>(null);
@@ -155,15 +174,12 @@ async function loadHotelDetail() {
   }
 }
 
-async function loadHotelProducts() {
-  console.log("酒店产品列表:", 22);
+async function loadCoupons() {
   try {
-    const params = {
-      merchant_id: hotelId.value,
-    };
-    const response = await getProducts(1, 10, params);
-    console.log("酒店产品列表:", response);
-    productsData.value = response;
+    const id = Number(hotelId.value) || 0;
+    const response = await getCoupons(id);
+    console.log("优惠券列表:", response.data);
+    CouponsData.value = response.data || [];
   } catch (error) {
     uni.showToast({
       title: "获取酒店产品列表失败",
@@ -185,7 +201,7 @@ onMounted(() => {
   if (props.id) {
     hotelId.value = Number(props.id);
     loadHotelDetail();
-    loadHotelProducts();
+    loadCoupons();
   } else {
     uni.showToast({
       title: "缺少酒店ID",
@@ -212,6 +228,23 @@ function makePhoneCall() {
       }
     },
   });
+}
+
+async function receiveCoupon(couponId: number) {
+  try {
+    const response = await receiveCoupons(couponId);
+    console.log("领取优惠券:", response);
+    uni.showToast({
+      title: "领取成功",
+      icon: "success",
+    });
+  } catch (error) {
+    console.error("领取优惠券失败:", error);
+    uni.showToast({
+      title: "领取失败",
+      icon: "none",
+    });
+  }
 }
 </script>
 
@@ -426,6 +459,10 @@ function makePhoneCall() {
       );
       color: #612500;
     }
+  }
+  .detail-image {
+    width: 100%;
+    display: block;
   }
 }
 </style>

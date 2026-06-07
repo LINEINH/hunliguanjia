@@ -15,6 +15,13 @@
 			}
 		},
 		{
+			"path": "pages/index/case",
+			"style": {
+				"navigationBarTitleText": "案例详情",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/merchant/merchant-list",
 			"style": {
 				"navigationBarTitleText": "婚礼服务",
@@ -42,8 +49,7 @@
 				"navigationStyle": "custom"
 			}
 		},
-		
-				{
+		{
 			"path": "pages/merchant/planDetail",
 			"style": {
 				"navigationBarTitleText": "婚礼策划详情",
@@ -57,8 +63,7 @@
 				"navigationStyle": "custom"
 			}
 		},
-
-				{
+{
 			"path": "pages/merchant/search",
 			"style": {
 				"navigationBarTitleText": "搜索页",

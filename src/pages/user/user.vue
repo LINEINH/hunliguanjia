@@ -211,7 +211,7 @@ function handleLogout() {
   }
   .user-intro {
     margin-top: $spacing-md;
-    background-image: url("/static/images/bg2.png");
+    background-image: url("/static/images/bg4.png");
     background-size: cover;
     background-position: center;
     border-radius: 20rpx;

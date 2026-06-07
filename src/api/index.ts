@@ -20,3 +20,12 @@ export function getHomeInfo() {
 }
 
 
+/**
+ * 获取详情 /api/v1/wechat/cases/{id}
+ */
+export function getCasesDetail(id: number) {
+  return request<any>({
+    url: `/wechat/cases/${id}`,
+    method: 'GET'
+  })
+}

@@ -11,7 +11,7 @@
     <view class="ad" v-if="ongoingExpos && ongoingExpos.length">
       <image
         :src="ongoingExpos[0].cover_image"
-        mode="aspectFill"
+        mode="widthFix"
         class="ad-image"
         @click="navigateToDetail(ongoingExpos[0].id)"
       />
@@ -144,10 +144,8 @@ onMounted(() => {
   }
   .ad {
     margin: $spacing-md;
-    height: 800rpx;
     .ad-image {
       width: 100%;
-      height: 800rpx;
       border-radius: $radius-md;
     }
   }

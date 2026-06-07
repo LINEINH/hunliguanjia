@@ -1,117 +1,178 @@
 <template>
   <view class="expodetail-container">
-    <view class="banner">
-      <image
-        src="/static/images/post.png"
-        mode="aspectFill"
-        class="banner-image"
-      />
-    </view>
-    <view class="step">
-      <view class="steptitle">
+    <!-- 加载状态 -->
+    <view v-if="loading" class="loading-state">加载中...</view>
+
+    <!-- 详情内容 -->
+    <view v-else-if="expoDetail" class="detail-content">
+      <view class="banner">
         <image
-          src="/static/images/left.png"
-          mode="aspectFill"
-          class="titleimage" />
-        01.活动流程
-        <image
-          src="/static/images/right.png"
-          mode="aspectFill"
-          class="titleimage"
-      /></view>
-      <view class="stepcon">
-        <text class="wrap">
-          西安婚博会汇聚婚宴、婚纱摄影、婚礼策划、礼服、四大金刚、珠宝喜糖、婚车蜜月等全品类婚嫁品牌，专属特惠正品保障、比价省心，现场有婚纱走秀、潮流发布、抽奖咨询，一站搞定备婚，省时省心省钱。
-        </text>
-        <text class="wrap">
-          <text class="left">1.入场签到：</text
-          >主舞台婚纱礼服走秀、婚礼场景潮流发布、婚嫁行业分享
-        </text>
-        <text class="wrap">
-          <text class="left">2.自由逛展：</text
-          >逛展咨询比价，现场下单享专属展会折扣
-        </text>
-        <text class="wrap">
-          <text class="left">3.开幕仪式：</text
-          >主办方致辞、品牌代表亮相，开启婚博会正式活动
-        </text>
-        <text class="wrap">
-          <text class="left">4.主题秀场：</text
-          >主舞台婚纱礼服走秀、婚礼场景潮流发布、婚嫁行业分享
-        </text>
-        <text class="wrap">
-          <text class="left">5.互动福利：</text
-          >备婚问答趣味互动，整点抽家电蜜月婚嫁好礼
-        </text>
-        <text class="wrap">
-          <text class="left">6.咨询服务：</text
-          >专业备婚顾问一对一答疑，定制婚礼筹备方案
-        </text>
-        <text class="wrap">
-          <text class="left">7.离场兑礼：</text
-          >逛展集章完成任务，兑换终极大奖及离场伴手礼
-        </text>
+          :src="expoDetail.cover_image || '/static/images/post.png'"
+          mode="widthFix"
+          class="banner-image"
+        />
       </view>
-      <view class="button"> 立即报名 </view>
-    </view>
-    <view class="step">
-      <view class="steptitle">
-        <image
-          src="/static/images/left.png"
-          mode="aspectFill"
-          class="titleimage" />
-        02.展会地址
-        <image
-          src="/static/images/right.png"
-          mode="aspectFill"
-          class="titleimage"
-      /></view>
-      <view class="map">
+
+      <view class="step">
+        <view class="steptitle">
+          <image
+            src="/static/images/left.png"
+            mode="aspectFill"
+            class="titleimage" />
+          01.活动流程
+          <image
+            src="/static/images/right.png"
+            mode="aspectFill"
+            class="titleimage"
+        /></view>
         <view class="stepcon">
-          <view class="wrap">
-            <up-icon name="map" size="14" color="#383838"> </up-icon>
-            <text class="left">西安香格里拉大酒店：</text>西安市雁塔区科技路 38
-            号乙
+          <rich-text :nodes="expoDetail.introduction"></rich-text>
+        </view>
+        <view class="button" @click="handleRegister"> 立即报名 </view>
+      </view>
+
+      <view class="step">
+        <view class="steptitle">
+          <image
+            src="/static/images/left.png"
+            mode="aspectFill"
+            class="titleimage" />
+          02.展会地址
+          <image
+            src="/static/images/right.png"
+            mode="aspectFill"
+            class="titleimage"
+        /></view>
+        <view class="map">
+          <view class="stepcon">
+            <view class="wrap">
+              <up-icon name="map" size="14" color="#383838"> </up-icon>
+              <text class="left">{{ expoDetail.venue }}：</text
+              >{{ expoDetail.address_text }}
+            </view>
+            <view class="map">
+              <image
+                :src="expoDetail.address_image"
+                mode="widthFix"
+                class="map"
+              />
+            </view>
           </view>
-          <view class="map">
-            <image src="/static/images/map.png" mode="aspectFill" class="map" />
+        </view>
+      </view>
+
+      <view class="step">
+        <view class="code">参会二维码</view>
+        <image
+          :src="expoDetail.qrcode || '/static/images/post.png'"
+          mode="aspectFill"
+          class="codeimage"
+        />
+        <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
+      </view>
+
+      <view class="ad">
+        <image
+          src="/static/images/post1.png"
+          mode="widthFix"
+          class="ad-image"
+          @click="navigateToDetail"
+        />
+      </view>
+
+      <view class="step">
+        <view class="steptitle">
+          <image
+            src="/static/images/left.png"
+            mode="aspectFill"
+            class="titleimage" />
+          03.参会商家
+          <image
+            src="/static/images/right.png"
+            mode="aspectFill"
+            class="titleimage"
+        /></view>
+        <view class="logolist">
+          <view
+            class="logoItem"
+            v-for="(item, index) in expoDetail.merchant_logos"
+            :key="index"
+          >
+            <image :src="item" mode="aspectFill" class="logoItemImg" />
           </view>
         </view>
       </view>
     </view>
-    <view class="step">
-      <view class="code">参会二维码</view>
-      <image
-        src="/static/images/post.png"
-        mode="aspectFill"
-        class="codeimage"
-      />
-      <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
-    </view>
-    <view class="ad">
-      <image
-        src="/static/images/post1.png"
-        mode="aspectFill"
-        class="ad-image"
-        @click="navigateToDetail"
-      />
-    </view>
-    <view class="ad">
-      <image
-        src="/static/images/post2.png"
-        mode="aspectFill"
-        class="ad-image"
-        @click="navigateToDetail"
-      />
+
+    <!-- 错误状态 -->
+    <view v-else class="error-state">
+      <text>加载失败，请重试</text>
     </view>
   </view>
 </template>
 <script setup lang="ts">
-import { getExpoDetail } from "@/api/expo";
+import { ref } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
+import { getExpoDetail, registerExpo } from "@/api/expo";
+
+// 婚博会详情数据
+const expoDetail = ref<any>(null);
+const loading = ref(true);
+const expoId = ref<number>(0);
+
+// 页面加载时获取参数
+onLoad((options: any) => {
+  if (options.id) {
+    expoId.value = Number(options.id);
+    fetchExpoDetail();
+  } else {
+    uni.showToast({
+      title: "参数错误",
+      icon: "none",
+    });
+    loading.value = false;
+  }
+});
+
+// 获取婚博会详情
+async function fetchExpoDetail() {
+  try {
+    loading.value = true;
+    const response = await getExpoDetail(expoId.value);
+    expoDetail.value = response;
+  } catch (error) {
+    console.error("获取婚博会详情失败:", error);
+    uni.showToast({
+      title: "获取详情失败",
+      icon: "none",
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+// 处理报名
+async function handleRegister() {
+  if (!expoDetail.value) return;
+
+  try {
+    await registerExpo(expoDetail.value.id);
+    uni.showToast({
+      title: "报名成功",
+      icon: "success",
+    });
+  } catch (error) {
+    console.error("报名失败:", error);
+    uni.showToast({
+      title: "报名失败",
+      icon: "none",
+    });
+  }
+}
 
 // 导航到商家列表
 function navigateToDetail() {
-  uni.navigateTo({ url: "/pages/expo/expodetail" });
+  uni.navigateTo({ url: "/pages/expo/exchange" });
 }
 </script>
 <style lang="scss" scoped>
@@ -119,12 +180,20 @@ function navigateToDetail() {
   background: #f0f0f0;
   padding: $spacing-md;
   padding-top: 0;
+
+  .loading-state,
+  .error-state {
+    text-align: center;
+    padding: 100rpx 0;
+    font-size: 28rpx;
+    color: #999;
+  }
+
   .banner {
-    height: 400rpx;
-    margin-bottom: $spacing-md;
+    margin: $spacing-md 0;
+
     .banner-image {
       width: 100%;
-      height: 400rpx;
       border-radius: 0 0 $radius-md $radius-md;
     }
   }
@@ -147,6 +216,7 @@ function navigateToDetail() {
       color: #805608;
       line-height: 80rpx;
       font-weight: bold;
+      cursor: pointer;
     }
     .steptitle {
       color: #bf974a;
@@ -195,20 +265,32 @@ function navigateToDetail() {
         }
       }
       .map {
-        width: 90%;
-        margin: 32rpx;
-        height: 200rpx;
+        width: 100%;
       }
     }
   }
 
   .ad {
-    height: 300rpx;
     margin-bottom: $spacing-md;
     .ad-image {
       width: 100%;
-      height: 300rpx;
       border-radius: $radius-md;
+    }
+  }
+  .logolist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+
+    .logoItem {
+      width: 100rpx;
+      margin: 0 20rpx;
+      margin-top: 20rpx;
+      .logoItemImg {
+        width: 100rpx;
+        height: 100rpx;
+        border-radius: 50%;
+      }
     }
   }
 }
