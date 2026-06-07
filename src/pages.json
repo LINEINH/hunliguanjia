@@ -56,21 +56,21 @@
 				"navigationStyle": "custom"
 			}
 		},
-				{
+		{
 			"path": "pages/merchant/planItem",
 			"style": {
 				"navigationBarTitleText": "婚礼案例",
 				"navigationStyle": "custom"
 			}
 		},
-{
+		{
 			"path": "pages/merchant/search",
 			"style": {
 				"navigationBarTitleText": "搜索页",
 				"navigationStyle": "custom"
 			}
 		},
-						{
+		{
 			"path": "pages/merchant/host",
 			"style": {
 				"navigationBarTitleText": "婚礼主持人",
@@ -84,7 +84,7 @@
 				"navigationStyle": "custom"
 			}
 		},
-				{
+		{
 			"path": "pages/expo/expodetail",
 			"style": {
 				"navigationBarTitleText": "婚博会详情"
@@ -103,7 +103,7 @@
 				"navigationStyle": "custom"
 			}
 		},
-				{
+		{
 			"path": "pages/user/butler",
 			"style": {
 				"navigationBarTitleText": "婚礼管家",
@@ -117,20 +117,20 @@
 				"navigationStyle": "custom"
 			}
 		},
-				{
+		{
 			"path": "pages/user/order",
 			"style": {
 				"navigationBarTitleText": "婚礼管家订单",
 				"navigationStyle": "custom"
 			}
 		},
-			{
+		{
 			"path": "pages/user/coupon",
 			"style": {
 				"navigationBarTitleText": "我的优惠券"
 			}
 		},
-			{
+		{
 			"path": "pages/user/gift",
 			"style": {
 				"navigationBarTitleText": "我的礼品"

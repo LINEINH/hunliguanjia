@@ -125,14 +125,15 @@ function navigateTo(url: string) {
 
 // 登录
 async function handleLogin() {
-  if (userStore.isLoggedIn) return;
+  uni.navigateTo({ url: "/pages/login/login" });
+  // if (userStore.isLoggedIn) return;
 
-  try {
-    await wxLogin();
-    uni.showToast({ title: "登录成功", icon: "success" });
-  } catch (error) {
-    console.error("登录失败:", error);
-  }
+  // try {
+  //   await wxLogin();
+  //   uni.showToast({ title: "登录成功", icon: "success" });
+  // } catch (error) {
+  //   console.error("登录失败:", error);
+  // }
 }
 
 // 登出

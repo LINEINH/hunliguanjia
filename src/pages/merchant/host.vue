@@ -348,7 +348,7 @@ const loadMerchants = async (page = 1) => {
 
     if (response) {
       // 正确提取商家数据
-      merchantsData = response.list || [];
+      merchantsData = response || [];
       // 提取分页信息
       paginationInfo = response.pagination || {}; // 如果response.data不是数组而是包含分页信息的对象
     } else {
@@ -422,7 +422,7 @@ function openDetail(hotel) {
   console.log("打开详情：", hotel);
   if (hotel && hotel.id) {
     uni.navigateTo({
-      url: `/pages/merchant/planDetail?id=${hotel.id}`,
+      url: `/pages/merchant/planItem?id=${hotel.id}`,
     });
   }
 }
