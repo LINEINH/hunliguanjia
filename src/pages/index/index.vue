@@ -254,7 +254,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getHomeInfo, weddingPlan } from "@/api/index";
+import { getHomeInfo, weddingPlan, getWeddingPlan } from "@/api/index";
+import { checkLogin } from "@/utils/auth";
 
 // 婚期日期
 const weddingDate = ref<string>("");
@@ -363,6 +364,49 @@ async function loadHomeInfo() {
       title: "获取首页数据失败",
       icon: "none",
     });
+  }
+}
+
+// 获取婚期规划数据
+async function loadWeddingPlan() {
+  // 检查是否登录
+  if (!checkLogin()) {
+    return;
+  }
+
+  try {
+    const response = await getWeddingPlan();
+
+    // 处理返回的规划数据
+    if (response && response.planning_phases) {
+      planningPhases.value = response.planning_phases;
+
+      // 如果已有婚期日期，更新日历和任务
+      if (response.wedding_date) {
+        weddingDate.value = response.wedding_date;
+
+        // 解析桌数和预算
+        if (response.table_count) {
+          tableCount.value = String(response.table_count);
+        }
+        if (response.total_budget) {
+          // 将预算转换为万元显示
+          const budgetInWan = (Number(response.total_budget) / 10000).toFixed(
+            0
+          );
+          totalBudget.value = budgetInWan;
+          selectedBudget.value = `${tableCount.value}桌，${budgetInWan}`;
+        }
+
+        // 初始化日历
+        initCalendar();
+      }
+
+      console.log("婚期规划数据:", response);
+    }
+  } catch (error) {
+    console.error("获取婚期规划失败:", error);
+    // 不显示错误提示，避免影响用户体验
   }
 }
 
@@ -741,6 +785,7 @@ function updateCurrentMonthTasks() {
 // 加载数据
 onMounted(() => {
   loadHomeInfo();
+  loadWeddingPlan();
 });
 </script>
 

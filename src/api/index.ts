@@ -39,3 +39,10 @@ export function weddingPlan(wedding_date: string,total_budget: string,table_coun
     data: { wedding_date, total_budget, table_count }
   })
 }
+
+export function getWeddingPlan() {
+  return request<any>({
+    url: `/wechat/user/wedding-date-plan`,
+    method: 'GET'
+  })
+}
