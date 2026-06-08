@@ -540,6 +540,9 @@ function prevMonth() {
     calendarMonth.value--;
   }
   generateCalendar(calendarYear.value, calendarMonth.value);
+  // 基于当前显示的月份第一天生成周视图
+  const baseDate = new Date(calendarYear.value, calendarMonth.value - 1, 1);
+  getCurrentWeekDays(baseDate);
   updateCurrentMonthTasks();
 }
 
@@ -552,6 +555,9 @@ function nextMonth() {
     calendarMonth.value++;
   }
   generateCalendar(calendarYear.value, calendarMonth.value);
+  // 基于当前显示的月份第一天生成周视图
+  const baseDate = new Date(calendarYear.value, calendarMonth.value - 1, 1);
+  getCurrentWeekDays(baseDate);
   updateCurrentMonthTasks();
 }
 
@@ -1219,7 +1225,7 @@ onMounted(() => {
       }
 
       &.day-today {
-        background-color: #fff3e0;
+        // background-color: #fff3e0;
 
         .day-number {
           color: #d4a574;
@@ -1285,7 +1291,7 @@ onMounted(() => {
         }
 
         &.day-today {
-          background-color: #fff3e0;
+          // background-color: #fff3e0;
 
           .week-day-number {
             color: #d4a574;
