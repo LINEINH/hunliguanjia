@@ -100,33 +100,30 @@
             </view>
             <view class="collapse-hint" @click.stop="toggleCalendarExpand">
               <up-icon name="arrow-up" size="16" color="#9CB2CD"></up-icon>
-              <view class="hint-content">
-                <view class="hint-item">
+              <view class="hint-content" v-if="currentMonthTasks.length > 0">
+                <view
+                  v-for="(task, index) in currentMonthTasks"
+                  :key="index"
+                  class="hint-item"
+                >
                   <view class="hint-left">
                     <image
                       src="/static/images/9.png"
                       mode="aspectFill"
                       class="hint-image"
                     />
-                    <text class="price">婚礼策划</text>
+                    <text class="price">{{ task }}</text>
                   </view>
-                  <text class="price">10w</text>
                   <up-icon
                     name="arrow-right"
                     size="16"
                     color="#9CB2CD"
                   ></up-icon>
                 </view>
-                <view class="hint-item">
-                  <view class="hint-left">婚礼策划</view>
-                  <view class="hint-right">
-                    <text class="price">10w</text>
-                    <up-icon
-                      name="arrow-right"
-                      size="16"
-                      color="#9CB2CD"
-                    ></up-icon>
-                  </view>
+              </view>
+              <view class="hint-content" v-else>
+                <view class="hint-empty">
+                  <text class="empty-text">本月暂无任务安排</text>
                 </view>
               </view>
             </view>
@@ -255,7 +252,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getHomeInfo } from "@/api/index";
+import { getHomeInfo, weddingPlan } from "@/api/index";
 
 // 婚期日期
 const weddingDate = ref<string>("");
@@ -328,6 +325,18 @@ interface Moment {
 }
 
 const momentsList = ref<Moment[]>([]);
+
+// 婚礼规划数据
+interface PlanningPhase {
+  phase: string;
+  date_range: string;
+  days_remaining: string;
+  tasks: string[];
+  priority: string;
+}
+
+const planningPhases = ref<PlanningPhase[]>([]);
+const currentMonthTasks = ref<string[]>([]);
 
 // 获取首页数据
 async function loadHomeInfo() {
@@ -485,6 +494,7 @@ function prevMonth() {
     calendarMonth.value--;
   }
   generateCalendar(calendarYear.value, calendarMonth.value);
+  updateCurrentMonthTasks();
 }
 
 // 下一月
@@ -496,6 +506,7 @@ function nextMonth() {
     calendarMonth.value++;
   }
   generateCalendar(calendarYear.value, calendarMonth.value);
+  updateCurrentMonthTasks();
 }
 
 // 获取今天的日期
@@ -618,7 +629,7 @@ function confirmBudget() {
 }
 
 // 新增预算输入确认函数
-const confirmBudgetInput = () => {
+const confirmBudgetInput = async () => {
   // 验证输入是否为空
   if (!tableCount.value.trim()) {
     uni.showToast({
@@ -639,6 +650,49 @@ const confirmBudgetInput = () => {
   // 将桌数和预算设置为已选预算
   selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
   showBudgetPicker.value = false;
+
+  // 调用婚礼计划接口生成日历
+  try {
+    uni.showLoading({
+      title: "生成计划中...",
+      mask: true,
+    });
+
+    const response = await weddingPlan(
+      weddingDate.value,
+      totalBudget.value,
+      tableCount.value
+    );
+
+    uni.hideLoading();
+
+    // 处理返回的规划数据
+    if (response && response && response.planning_phases) {
+      planningPhases.value = response.planning_phases;
+
+      // 根据当前日历月份更新任务列表
+      updateCurrentMonthTasks();
+
+      uni.showToast({
+        title: "计划生成成功",
+        icon: "success",
+      });
+    } else {
+      throw new Error("数据格式错误");
+    }
+
+    // 如果婚期也已选择，初始化日历
+    if (weddingDate.value) {
+      initCalendar();
+    }
+  } catch (error) {
+    uni.hideLoading();
+    console.error("生成婚礼计划失败:", error);
+    uni.showToast({
+      title: "生成计划失败，请重试",
+      icon: "none",
+    });
+  }
 };
 
 // 初始化日历
@@ -652,6 +706,33 @@ function initCalendar() {
     // 基于婚期日期生成本周视图
     const weddingDateObj = new Date(year, month - 1, day);
     getCurrentWeekDays(weddingDateObj);
+
+    // 更新当前月份的任务
+    updateCurrentMonthTasks();
+  }
+}
+
+// 根据当前月份更新任务列表
+function updateCurrentMonthTasks() {
+  if (!planningPhases.value.length) return;
+
+  // 获取当前显示的年月
+  const currentYear = calendarYear.value;
+  const currentMonth = calendarMonth.value;
+
+  // 构建当前月份的日期范围字符串用于匹配
+  const monthStr = `${currentYear}年${String(currentMonth).padStart(2, "0")}月`;
+
+  // 查找包含当前月份的规划阶段
+  const matchedPhase = planningPhases.value.find((phase) => {
+    // date_range 格式如："2026年12月03日 - 2027年01月02日"
+    return phase.date_range.includes(monthStr);
+  });
+
+  if (matchedPhase) {
+    currentMonthTasks.value = matchedPhase.tasks;
+  } else {
+    currentMonthTasks.value = [];
   }
 }
 
@@ -1236,12 +1317,13 @@ onMounted(() => {
           color: #bf974a;
           font-size: $font-md;
         }
-        .hint-right {
+      }
+      .hint-empty {
+        padding: $spacing-lg 0;
+        text-align: center;
+        .empty-text {
           font-size: $font-sm;
-          color: $text-primary;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          color: $text-secondary;
         }
       }
     }

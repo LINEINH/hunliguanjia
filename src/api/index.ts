@@ -29,3 +29,13 @@ export function getCasesDetail(id: number) {
     method: 'GET'
   })
 }
+
+
+// 设置婚期规划 
+export function weddingPlan(wedding_date: string,total_budget: string,table_count: string) {
+  return request<any>({
+    url: '/wechat/user/wedding-date-plan',
+    method: 'POST',
+    data: { wedding_date, total_budget, table_count }
+  })
+}

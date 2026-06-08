@@ -13,6 +13,17 @@ export function login(code: string) {
 }
 
 /**
+ * 手机号授权登录
+ */
+export function loginWithPhone(phoneCode: string) {
+  return request<{ success: boolean }>({
+    url: '/wechat/bind-phone',
+    method: 'POST',
+    data: { code: phoneCode }
+  })
+}
+
+/**
  * 获取用户信息
  */
 export function getUserInfo() {

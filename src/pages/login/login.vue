@@ -2,8 +2,8 @@
   <view class="page-container">
     <!-- Logo 和品牌展示 -->
     <view class="login-header">
-      <image 
-        src="/static/images/logo.png" 
+      <image
+        src="/static/images/logo.png"
         class="logo-image"
         mode="aspectFit"
       />
@@ -13,14 +13,14 @@
 
     <!-- 登录表单 -->
     <view class="login-form card">
-      <!-- 微信登录按钮 -->
-      <button 
-        class="btn-wx-login" 
-        @click="handleWxLogin"
-        :loading="isLoading"
-        :disabled="isLoading"
+      <!-- 微信手机号授权登录按钮 -->
+      <button
+        class="btn-wx-login"
+        open-type="getPhoneNumber"
+        @getphonenumber="handleGetPhoneNumber"
+        :disabled="isLoading || !agreedToTerms"
       >
-        <text v-if="!isLoading">微信一键登录</text>
+        <text v-if="!isLoading">一键获取手机号登录</text>
         <text v-else>登录中...</text>
       </button>
 
@@ -35,16 +35,20 @@
       <view class="agreement">
         <checkbox-group @change="handleAgreementChange">
           <label class="agreement-label">
-            <checkbox 
-              :checked="agreedToTerms" 
+            <checkbox
+              :checked="agreedToTerms"
               color="#E8380D"
               style="transform: scale(0.8)"
             />
             <text class="agreement-text">
               我已阅读并同意
-              <text class="link" @click.stop="showAgreement('user')">《用户协议》</text>
+              <text class="link" @click.stop="showAgreement('user')"
+                >《用户协议》</text
+              >
               和
-              <text class="link" @click.stop="showAgreement('privacy')">《隐私政策》</text>
+              <text class="link" @click.stop="showAgreement('privacy')"
+                >《隐私政策》</text
+              >
             </text>
           </label>
         </checkbox-group>
@@ -57,7 +61,7 @@
     </view>
 
     <!-- 用户协议弹窗 -->
-    <u-modal 
+    <u-modal
       v-model="showAgreementModal"
       :title="agreementTitle"
       :content="agreementContent"
@@ -69,80 +73,151 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { wxLogin, navigateToLogin } from '@/utils/auth'
-import { useUserStore } from '@/store/modules/user'
+import { ref } from "vue";
+import { useUserStore } from "@/store/modules/user";
+import { loginWithPhone } from "@/api/user";
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 // 加载状态
-const isLoading = ref(false)
+const isLoading = ref(false);
 
 // 是否同意协议
-const agreedToTerms = ref(false)
+const agreedToTerms = ref(false);
 
 // 协议弹窗
-const showAgreementModal = ref(false)
-const agreementTitle = ref('')
-const agreementContent = ref('')
+const showAgreementModal = ref(false);
+const agreementTitle = ref("");
+const agreementContent = ref("");
 
 /**
- * 处理微信登录
+ * 处理获取手机号
  */
-async function handleWxLogin() {
+async function handleGetPhoneNumber(e: any) {
+  console.log("获取手机号回调:", e);
+
   // 验证是否同意协议
   if (!agreedToTerms.value) {
     uni.showToast({
-      title: '请先同意用户协议',
-      icon: 'none'
-    })
-    return
+      title: "请先同意用户协议",
+      icon: "none",
+    });
+    return;
+  }
+
+  // 用户拒绝授权
+  if (e.detail.errMsg === "getPhoneNumber:fail user deny") {
+    uni.showToast({
+      title: "您取消了授权",
+      icon: "none",
+    });
+    return;
+  }
+
+  // 获取失败
+  if (e.detail.errMsg !== "getPhoneNumber:ok") {
+    uni.showToast({
+      title: "获取手机号失败",
+      icon: "none",
+    });
+    return;
   }
 
   try {
-    isLoading.value = true
-    
-    // 调用微信登录
-    await wxLogin()
-    
-    uni.showToast({ 
-      title: '登录成功', 
-      icon: 'success',
-      duration: 1500
-    })
-    
+    isLoading.value = true;
+
+    // 获取 code（用于换取手机号）
+    const { code } = e.detail;
+
+    if (!code) {
+      throw new Error("获取授权码失败");
+    }
+
+    // 先进行微信登录获取 token
+    await performWxLogin();
+
+    // 使用手机号授权码绑定手机号
+    await bindPhoneNumber(code);
+
+    uni.showToast({
+      title: "登录成功",
+      icon: "success",
+      duration: 1500,
+    });
+
     // 延迟跳转,让用户看到成功提示
     setTimeout(() => {
       // 登录成功后返回上一页或首页
-      const pages = getCurrentPages()
+      const pages = getCurrentPages();
       if (pages.length > 1) {
-        uni.navigateBack()
+        uni.navigateBack();
       } else {
-        uni.switchTab({ url: '/pages/index/index' })
+        uni.switchTab({ url: "/pages/index/index" });
       }
-    }, 1500)
-    
+    }, 1500);
   } catch (error: any) {
-    console.error('登录失败:', error)
-    
+    console.error("登录失败:", error);
+
     // 错误处理
-    let errorMessage = '登录失败,请稍后重试'
-    
-    if (error.errMsg) {
-      if (error.errMsg.includes('deny') || error.errMsg.includes('auth deny')) {
-        errorMessage = '您取消了授权'
-      } else if (error.errMsg.includes('fail')) {
-        errorMessage = '网络请求失败,请检查网络'
+    let errorMessage = "登录失败,请稍后重试";
+
+    if (error.message) {
+      errorMessage = error.message;
+    } else if (error.errMsg) {
+      if (error.errMsg.includes("deny")) {
+        errorMessage = "您取消了授权";
+      } else if (error.errMsg.includes("fail")) {
+        errorMessage = "网络请求失败,请检查网络";
       }
     }
-    
+
     uni.showToast({
       title: errorMessage,
-      icon: 'none',
-      duration: 2000
-    })
+      icon: "none",
+      duration: 2000,
+    });
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
+  }
+}
+
+/**
+ * 执行微信登录获取 token
+ */
+async function performWxLogin() {
+  return new Promise<void>((resolve, reject) => {
+    uni.login({
+      provider: "weixin",
+      success: async (loginRes) => {
+        if (loginRes.code) {
+          try {
+            await userStore.login(loginRes.code);
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        } else {
+          reject(new Error("微信登录失败"));
+        }
+      },
+      fail: (err) => {
+        reject(err);
+      },
+    });
+  });
+}
+
+/**
+ * 绑定手机号
+ */
+async function bindPhoneNumber(phoneCode: string) {
+  try {
+    await loginWithPhone(phoneCode);
+    // 绑定成功后同步用户信息
+    await userStore.syncUserInfo();
+  } catch (error) {
+    console.error("绑定手机号失败:", error);
+    throw new Error("绑定手机号失败");
   }
 }
 
@@ -150,30 +225,32 @@ async function handleWxLogin() {
  * 处理协议勾选
  */
 function handleAgreementChange(e: any) {
-  agreedToTerms.value = e.detail.value.length > 0
+  agreedToTerms.value = e.detail.value.length > 0;
 }
 
 /**
  * 显示用户协议或隐私政策
  */
-function showAgreement(type: 'user' | 'privacy') {
-  if (type === 'user') {
-    agreementTitle.value = '用户协议'
-    agreementContent.value = '这里是用户协议的详细内容。在实际项目中,这里应该展示完整的用户协议内容,包括服务条款、使用规则等。'
+function showAgreement(type: "user" | "privacy") {
+  if (type === "user") {
+    agreementTitle.value = "用户协议";
+    agreementContent.value =
+      "这里是用户协议的详细内容。在实际项目中,这里应该展示完整的用户协议内容,包括服务条款、使用规则等。";
   } else {
-    agreementTitle.value = '隐私政策'
-    agreementContent.value = '这里是隐私政策的详细内容。在实际项目中,这里应该展示完整的隐私政策,包括数据收集、使用、保护等说明。'
+    agreementTitle.value = "隐私政策";
+    agreementContent.value =
+      "这里是隐私政策的详细内容。在实际项目中,这里应该展示完整的隐私政策,包括数据收集、使用、保护等说明。";
   }
-  showAgreementModal.value = true
+  showAgreementModal.value = true;
 }
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/variables.scss';
+@import "@/styles/variables.scss";
 
 .page-container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FFF5F2 0%, #F8F8F8 100%);
+  background: linear-gradient(180deg, #fff5f2 0%, #f8f8f8 100%);
   padding: 0;
 }
 
@@ -183,13 +260,13 @@ function showAgreement(type: 'user' | 'privacy') {
   flex-direction: column;
   align-items: center;
   padding: 120rpx $spacing-lg 80rpx;
-  
+
   .logo-image {
     width: 160rpx;
     height: 160rpx;
     margin-bottom: $spacing-lg;
   }
-  
+
   .title {
     font-size: 52rpx;
     font-weight: bold;
@@ -197,7 +274,7 @@ function showAgreement(type: 'user' | 'privacy') {
     margin-bottom: $spacing-sm;
     letter-spacing: 2rpx;
   }
-  
+
   .subtitle {
     font-size: $font-md;
     color: $text-secondary;
@@ -209,11 +286,15 @@ function showAgreement(type: 'user' | 'privacy') {
 .login-form {
   margin: 0 $spacing-lg $spacing-lg;
   padding: $spacing-xl;
-  
+
   .btn-wx-login {
     width: 100%;
     height: 88rpx;
-    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+    background: linear-gradient(
+      135deg,
+      $primary-color 0%,
+      $secondary-color 100%
+    );
     color: #fff;
     border-radius: $radius-lg;
     font-size: $font-lg;
@@ -223,53 +304,53 @@ function showAgreement(type: 'user' | 'privacy') {
     align-items: center;
     justify-content: center;
     box-shadow: 0 8rpx 24rpx rgba(232, 56, 13, 0.3);
-    
+
     &::after {
       border: none;
     }
-    
+
     &:active {
       opacity: 0.9;
       transform: scale(0.98);
     }
-    
+
     &[disabled] {
       opacity: 0.6;
     }
   }
-  
+
   // 分隔线
   .divider {
     display: flex;
     align-items: center;
     margin: $spacing-xl 0;
-    
+
     .divider-line {
       flex: 1;
       height: 1rpx;
       background-color: $border-color;
     }
-    
+
     .divider-text {
       padding: 0 $spacing-md;
       font-size: $font-sm;
       color: $text-secondary;
     }
   }
-  
+
   // 用户协议
   .agreement {
     .agreement-label {
       display: flex;
       align-items: flex-start;
-      
+
       .agreement-text {
         flex: 1;
         font-size: $font-xs;
         color: $text-secondary;
         line-height: 1.6;
         margin-left: $spacing-xs;
-        
+
         .link {
           color: $primary-color;
           text-decoration: underline;
@@ -283,7 +364,7 @@ function showAgreement(type: 'user' | 'privacy') {
 .login-footer {
   padding: $spacing-lg;
   text-align: center;
-  
+
   .footer-text {
     font-size: $font-xs;
     color: $text-secondary;
