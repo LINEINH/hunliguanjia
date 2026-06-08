@@ -99,7 +99,9 @@
               </view>
             </view>
             <view class="collapse-hint" @click.stop="toggleCalendarExpand">
-              <up-icon name="arrow-up" size="16" color="#9CB2CD"></up-icon>
+              <view class="expand-hint"
+                ><up-icon name="arrow-up" size="16" color="#9CB2CD"></up-icon
+              ></view>
               <view class="hint-content" v-if="currentMonthTasks.length > 0">
                 <view
                   v-for="(task, index) in currentMonthTasks"
@@ -1258,26 +1260,21 @@ onMounted(() => {
         }
       }
     }
+  }
+  .expand-hint {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .hint-text {
+      font-size: $font-sm;
+      color: $text-secondary;
+    }
 
-    .expand-hint {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: $spacing-md 0;
-      gap: $spacing-xs;
-
-      .hint-text {
-        font-size: $font-sm;
-        color: $text-secondary;
-      }
-
-      .hint-icon {
-        font-size: $font-sm;
-        color: $text-secondary;
-      }
+    .hint-icon {
+      font-size: $font-sm;
+      color: $text-secondary;
     }
   }
-
   // 月视图样式
   .month-view {
     .collapse-hint {
