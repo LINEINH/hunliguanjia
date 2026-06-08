@@ -1234,7 +1234,11 @@ onMounted(() => {
       }
 
       &.day-wedding {
-        background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
+        background: linear-gradient(
+          180deg,
+          rgba(234, 196, 123, 1) 0%,
+          rgba(241, 218, 166, 1) 100%
+        );
 
         .day-number {
           color: #fff;
@@ -1299,7 +1303,11 @@ onMounted(() => {
         }
 
         &.day-wedding {
-          background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
+          background: linear-gradient(
+            180deg,
+            rgba(234, 196, 123, 1) 0%,
+            rgba(241, 218, 166, 1) 100%
+          );
 
           .week-day-number {
             color: #fff;

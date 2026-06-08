@@ -22,28 +22,32 @@
       <view v-if="goodsList.length === 0" class="empty-state">
         <text class="empty-text">暂无数据</text>
       </view>
-      <view
-        class="goods-item"
-        v-for="(item, index) in goodsList"
-        :key="index"
-        @click="openDetail(item)"
-      >
+      <view class="goods-item" v-for="(item, index) in goodsList" :key="index">
         <view class="tag">{{ getCategoryName(item.category_id) }}</view>
-        <image :src="item.cover_image" class="goods-image" mode="aspectFill" />
+        <image
+          :src="item.cover_image"
+          class="goods-image"
+          mode="aspectFill"
+          @click="openDetail(item)"
+        />
         <view class="goods-info">
-          <view class="goods-name">{{ item.description }}</view>
+          <view class="goods-name" @click="openDetail(item)">{{
+            item.description
+          }}</view>
           <view class="goods-intro">
             <image
               src="/static/images/user.png"
               mode="aspectFill"
               class="user-icon"
+              @click="openDetail(item)"
             ></image>
             <text class="user-name">{{ item.name }}</text>
-            <image
-              src="/static/images/like.png"
-              mode="aspectFill"
-              class="like"
-            ></image>
+            <up-icon
+              name="star"
+              size="24"
+              :color="item.isFavorited ? '#FFD700' : '#E5E5E5'"
+              @click.stop="toggleFavorite(item)"
+            ></up-icon>
           </view>
         </view>
       </view>
@@ -56,7 +60,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getBanners, getProductRecommend } from "@/api/product";
+import {
+  getBanners,
+  getProductRecommend,
+  favoriteProduct,
+} from "@/api/product";
+import { useUserStore } from "@/store/modules/user";
+
+// 获取用户store
+const userStore = useUserStore();
 
 // TODO: 实现商家列表功能
 // 轮播图数据
@@ -179,6 +191,61 @@ function openDetail(item: any) {
   if (item && item.id) {
     uni.navigateTo({
       url: `/pages/merchant/planItem?id=${item.id}`,
+    });
+  }
+}
+
+// 切换收藏状态
+async function toggleFavorite(item: any) {
+  console.log("userStore:", userStore.userInfo);
+  // 检查是否登录
+  if (!userStore.isLoggedIn || !userStore.userInfo) {
+    uni.showModal({
+      title: "提示",
+      content: "请先登录后再收藏",
+      success: (res) => {
+        if (res.confirm) {
+          uni.navigateTo({
+            url: "/pages/login/login",
+          });
+        }
+      },
+    });
+    return;
+  }
+
+  // 检查是否有产品ID
+  if (!item.id) {
+    uni.showToast({
+      title: "产品信息错误",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: item.isFavorited ? "取消收藏中..." : "收藏中...",
+      mask: true,
+    });
+
+    // 调用收藏接口，target_id为当前用户ID，type为product
+    await favoriteProduct(userStore.userInfo.id, "product");
+
+    // 切换收藏状态
+    item.isFavorited = !item.isFavorited;
+
+    uni.hideLoading();
+    uni.showToast({
+      title: item.isFavorited ? "收藏成功" : "已取消收藏",
+      icon: "success",
+    });
+  } catch (error) {
+    uni.hideLoading();
+    console.error("收藏操作失败:", error);
+    uni.showToast({
+      title: "操作失败，请重试",
+      icon: "none",
     });
   }
 }

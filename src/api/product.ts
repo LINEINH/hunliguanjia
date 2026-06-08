@@ -146,11 +146,15 @@ export function getProductDetail(id: number) {
 }
 
 /**
- * 收藏产品
+ * 收藏产品 /api/v1/wechat/user/favorites
  */
-export function favoriteProduct(id: number) {
+export function favoriteProduct(target_id: number,type:string) {
   return request({
-    url: `/api/product/${id}/favorite`,
-    method: 'POST'
+    url: `/wechat/user/favorites`,
+    method: 'POST',
+    data: {
+      target_id: target_id,
+      type:type
+    }
   })
 }

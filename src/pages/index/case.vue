@@ -61,9 +61,13 @@
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
         <text>返回</text>
       </view>
-      <view class="hotel-footer-item">
-        <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-        <text>收藏</text>
+      <view class="hotel-footer-item" @click="toggleFavorite">
+        <up-icon 
+          name="star" 
+          size="24" 
+          :color="isFavorited ? '#FFD700' : '#E5E5E5'"
+        ></up-icon>
+        <text>{{ isFavorited ? '已收藏' : '收藏' }}</text>
       </view>
 
       <view class="hotel-footer-tel button" @click="makePhoneCall">
@@ -77,12 +81,20 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { getCasesDetail } from "@/api/index";
+import { favoriteProduct } from "@/api/product";
+import { useUserStore } from "@/store/modules/user";
+
+// 获取用户store
+const userStore = useUserStore();
 
 // 产品数据
 const productData = ref<any>({});
 
 // 产品ID
 const hotelId = ref<number | null>(null);
+
+// 收藏状态
+const isFavorited = ref<boolean>(false);
 
 // onLoad 参数接收器
 const props = defineProps<{
@@ -183,6 +195,23 @@ function handleOnlineService() {
     icon: "none",
   });
 }
+
+function toggleFavorite() {
+  isFavorited.value = !isFavorited.value;
+  // 这里可以添加收藏/取消收藏的逻辑
+  if (isFavorited.value) {
+    uni.showToast({
+      title: "已收藏",
+      icon: "success",
+    });
+  } else {
+    uni.showToast({
+      title: "已取消收藏",
+      icon: "none",
+    });
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
