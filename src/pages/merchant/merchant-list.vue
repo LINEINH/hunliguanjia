@@ -64,6 +64,7 @@ import {
   getBanners,
   getProductRecommend,
   favoriteProduct,
+  unfavoriteProduct,
 } from "@/api/product";
 import { useUserStore } from "@/store/modules/user";
 
@@ -229,8 +230,14 @@ async function toggleFavorite(item: any) {
       mask: true,
     });
 
-    // 调用收藏接口，target_id为当前用户ID，type为product
-    await favoriteProduct(userStore.userInfo.id, "product");
+    // 根据当前收藏状态调用不同的接口
+    if (item.isFavorited) {
+      // 取消收藏：target_id为商品ID，type为product
+      await unfavoriteProduct(item.id, "product");
+    } else {
+      // 收藏：target_id为商品ID，type为product
+      await favoriteProduct(item.id, "product");
+    }
 
     // 切换收藏状态
     item.isFavorited = !item.isFavorited;

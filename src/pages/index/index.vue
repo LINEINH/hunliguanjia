@@ -114,13 +114,16 @@
                       mode="aspectFill"
                       class="hint-image"
                     />
-                    <text class="price">{{ task }}</text>
+                    <text class="price">{{ task.task }}</text>
                   </view>
-                  <up-icon
-                    name="arrow-right"
-                    size="16"
-                    color="#9CB2CD"
-                  ></up-icon>
+                  <view>
+                    <text class="price">{{ task.budget }}元</text>
+                    <up-icon
+                      name="arrow-right"
+                      size="16"
+                      color="#9CB2CD"
+                    ></up-icon> </view
+                  >>
                 </view>
               </view>
               <view class="hint-content" v-else>
@@ -339,7 +342,7 @@ interface PlanningPhase {
 }
 
 const planningPhases = ref<PlanningPhase[]>([]);
-const currentMonthTasks = ref<string[]>([]);
+const currentMonthTasks = ref<any[]>([]);
 
 // 获取首页数据
 async function loadHomeInfo() {

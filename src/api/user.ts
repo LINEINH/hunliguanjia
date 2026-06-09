@@ -13,11 +13,11 @@ export function login(code: string) {
 }
 
 /**
- * 手机号授权登录
+ * 手机号授权登录/api/v1/wechat/get-phone-number
  */
 export function loginWithPhone(phoneCode: string) {
   return request<{ success: boolean }>({
-    url: '/wechat/bind-phone',
+    url: '/wechat/get-phone-number',
     method: 'POST',
     data: { code: phoneCode }
   })

@@ -158,3 +158,19 @@ export function favoriteProduct(target_id: number,type:string) {
     }
   })
 }
+
+
+
+/**
+ * 取消收藏产品 /api/v1/wechat/user/favorites/remove
+ */
+export function unfavoriteProduct(target_id: number,type:string) {
+  return request({
+    url: `/wechat/user/favorites/remove`,
+    method: 'POST',
+    data: {
+      target_id: target_id,
+      type:type
+    }
+  })
+}
