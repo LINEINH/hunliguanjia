@@ -10,7 +10,7 @@ interface UserState {
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
-    userInfo: null,
+    userInfo: uni.getStorageSync('userInfo') || null,
     token: uni.getStorageSync('token') || null,
     isLoggedIn: !!uni.getStorageSync('token')
   }),

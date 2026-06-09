@@ -87,7 +87,7 @@
         <text class="menu-text">我的礼品</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
-      <view class="menu-item" @click="handleLogout">
+      <view class="menu-item" @click="navigateTo('/pages/user/collection')">
         <image
           src="/static/images/14.png"
           mode="aspectFill"
@@ -114,7 +114,6 @@
 
 <script setup lang="ts">
 import { useUserStore } from "@/store/modules/user";
-import { wxLogin } from "@/utils/auth";
 
 const userStore = useUserStore();
 

@@ -52,9 +52,15 @@
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
         <text>返回</text>
       </view>
-      <view class="hotel-footer-item">
-        <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-        <text>收藏</text>
+      <view class="hotel-footer-item" @click="toggleFavorite">
+        <up-icon
+          name="star"
+          size="24"
+          :color="isFavorited ? '#BF974A' : '#E5E5E5'"
+        ></up-icon>
+        <text :style="{ color: isFavorited ? '#BF974A' : '#999999' }">{{
+          isFavorited ? "已收藏" : "收藏"
+        }}</text>
       </view>
 
       <view class="hotel-footer-tel button" @click="makePhoneCall">
@@ -67,13 +73,20 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { getProductDetail } from "@/api/product";
+import {
+  getProductDetail,
+  favoriteProduct,
+  unfavoriteProduct,
+} from "@/api/product";
 
 // 产品数据
 const productData = ref<any>({});
 
 // 产品ID
 const hotelId = ref<number | null>(null);
+
+// 收藏状态
+const isFavorited = ref<boolean>(false);
 
 // onLoad 参数接收器
 const props = defineProps<{
@@ -128,6 +141,7 @@ async function loadProductDetail() {
     const response = await getProductDetail(hotelId.value);
 
     productData.value = response;
+    isFavorited.value = response.is_favorited || false; // 假设接口返回了is_favorited字
     console.log("产品详情:", response);
   } catch (error) {
     console.error("获取产品详情失败:", error);
@@ -178,6 +192,43 @@ function handleOnlineService() {
     title: "在线管家功能开发中",
     icon: "none",
   });
+}
+
+// 切换收藏状态
+async function toggleFavorite() {
+  try {
+    if (!hotelId.value) {
+      uni.showToast({
+        title: "缺少酒店ID",
+        icon: "none",
+      });
+      return;
+    }
+
+    if (isFavorited.value) {
+      // 取消收藏
+      await unfavoriteProduct(hotelId.value, "merchant");
+      isFavorited.value = false;
+      uni.showToast({
+        title: "已取消收藏",
+        icon: "success",
+      });
+    } else {
+      // 收藏
+      await favoriteProduct(hotelId.value, "merchant");
+      isFavorited.value = true;
+      uni.showToast({
+        title: "收藏成功",
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    console.error("收藏操作失败:", error);
+    uni.showToast({
+      title: "操作失败",
+      icon: "none",
+    });
+  }
 }
 </script>
 

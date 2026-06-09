@@ -54,3 +54,11 @@ export function uploadAvatar(filePath: string) {
     data: { filePath }
   })
 }
+
+// 我的收藏列表 /api/v1/wechat/user/favorites
+export function getUserFavorites(type:string) {
+  return request({
+    url: '/wechat/user/favorites?type=' + type,
+    method: 'GET',
+  })
+}

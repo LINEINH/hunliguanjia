@@ -141,6 +141,12 @@
 			"style": {
 				"navigationBarTitleText": "登录"
 			}
+		},
+				{
+			"path": "pages/user/collection",
+			"style": {
+				"navigationBarTitleText": "我的收藏"
+			}
 		}
 	],
 	"tabBar": {

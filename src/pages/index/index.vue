@@ -116,14 +116,14 @@
                     />
                     <text class="price">{{ task.task }}</text>
                   </view>
-                  <view>
-                    <text class="price">{{ task.budget }}元</text>
+                  <view class="hint-right">
+                    <text class="price">{{ task.budget }}</text>
                     <up-icon
                       name="arrow-right"
                       size="16"
-                      color="#9CB2CD"
-                    ></up-icon> </view
-                  >>
+                      color="#BF974A"
+                    ></up-icon>
+                  </view>
                 </view>
               </view>
               <view class="hint-content" v-else>
@@ -237,7 +237,7 @@
             <input
               type="text"
               class="budget-input"
-              placeholder="总预算（单位：万元）"
+              placeholder="总预算（单位：元）"
               v-model="totalBudget"
             />
           </view>
@@ -1358,12 +1358,12 @@ onMounted(() => {
         display: flex;
         justify-content: space-between;
         padding: $spacing-md 0;
-        margin: 0 $spacing-lg;
+        margin: 0 $spacing-md;
         border-bottom: 1px solid #e5e5e5;
         .hint-left {
           font-size: $font-sm;
           color: $text-primary;
-          width: 80%;
+          flex: 1;
           display: flex;
           align-items: center;
           .hint-image {
@@ -1371,6 +1371,12 @@ onMounted(() => {
             height: 30rpx;
             margin-right: $spacing-sm;
           }
+        }
+        .hint-right {
+          font-size: $font-sm;
+          color: $text-primary;
+          display: flex;
+          align-items: center;
         }
         .price {
           color: #bf974a;

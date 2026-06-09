@@ -112,9 +112,15 @@
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
         <text>返回</text>
       </view>
-      <view class="hotel-footer-item">
-        <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-        <text>收藏</text>
+      <view class="hotel-footer-item" @click="toggleFavorite">
+        <up-icon
+          name="star"
+          size="24"
+          :color="isFavorited ? '#BF974A' : '#E5E5E5'"
+        ></up-icon>
+        <text :style="{ color: isFavorited ? '#BF974A' : '#999999' }">{{
+          isFavorited ? "已收藏" : "收藏"
+        }}</text>
       </view>
 
       <view class="hotel-footer-tel button" @click="makePhoneCall()">
@@ -127,7 +133,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getHotelDetail, getCoupons, receiveCoupons } from "@/api/product";
+import {
+  getHotelDetail,
+  getCoupons,
+  receiveCoupons,
+  favoriteProduct,
+  unfavoriteProduct,
+} from "@/api/product";
 
 // 基础URL
 const baseUrl = ref<string>("");
@@ -135,6 +147,9 @@ const baseUrl = ref<string>("");
 // 酒店数据
 const hotelData = ref<any>({});
 const CouponsData = ref<any>({});
+
+// 收藏状态
+const isFavorited = ref<boolean>(false);
 
 // 酒店ID
 const hotelId = ref<number | null>(null);
@@ -162,6 +177,7 @@ async function loadHotelDetail() {
     const response = await getHotelDetail(hotelId.value);
 
     hotelData.value = response;
+    isFavorited.value = response.is_favorited || false; // 假设接口返回了is_favorited字段
     console.log("酒店详情:", response);
   } catch (error) {
     console.error("获取酒店详情失败:", error);
@@ -242,6 +258,43 @@ async function receiveCoupon(couponId: number) {
     console.error("领取优惠券失败:", error);
     uni.showToast({
       title: "领取失败",
+      icon: "none",
+    });
+  }
+}
+
+// 切换收藏状态
+async function toggleFavorite() {
+  try {
+    if (!hotelId.value) {
+      uni.showToast({
+        title: "缺少酒店ID",
+        icon: "none",
+      });
+      return;
+    }
+
+    if (isFavorited.value) {
+      // 取消收藏
+      await unfavoriteProduct(hotelId.value, "merchant");
+      isFavorited.value = false;
+      uni.showToast({
+        title: "已取消收藏",
+        icon: "success",
+      });
+    } else {
+      // 收藏
+      await favoriteProduct(hotelId.value, "merchant");
+      isFavorited.value = true;
+      uni.showToast({
+        title: "收藏成功",
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    console.error("收藏操作失败:", error);
+    uni.showToast({
+      title: "操作失败",
       icon: "none",
     });
   }
