@@ -56,11 +56,7 @@
           :key="index"
           class="hotel-fuli-item"
         >
-          <text
-            >{{ product.name }} ：满¥{{ product.min_amount }}立减¥{{
-              product.value
-            }}</text
-          >
+          <text>满¥{{ product.min_amount }}立减¥{{ product.value }}</text>
           <view class="recive" @click="receiveCoupon(product.id)">
             领取
             <up-icon name="arrow-right" size="16" color="#BF974A"></up-icon>
@@ -91,7 +87,10 @@
             </view>
             <view class="hotel-list-item-price">
               <view class="price-wrap">
-                <text class="price">参考价{{ caseItem.price }}起</text>
+                <text class="price">
+                  <text class="danwei">参考价</text>
+                  {{ caseItem.price }}<text class="danwei">起</text></text
+                >
               </view>
               <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
             </view>
@@ -429,7 +428,7 @@ async function toggleFavorite() {
         margin-bottom: 20rpx;
         .image {
           width: 100%;
-          height: 320rpx;
+          height: 420rpx;
         }
         .hotel-list-item-info {
           padding: $spacing-sm;
@@ -465,6 +464,12 @@ async function toggleFavorite() {
             color: #808080;
             margin-bottom: 10rpx;
             height: 30rpx;
+            // 超过一行显示省略号
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+            overflow: hidden;
+            display: -webkit-box;
           }
         }
       }

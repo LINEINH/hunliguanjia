@@ -24,11 +24,11 @@ export function loginWithPhone(phoneCode: string) {
 }
 
 /**
- * 获取用户信息
+ * 获取用户信息 /api/v1/wechat/user/profile
  */
 export function getUserInfo() {
   return request<UserInfo>({
-    url: '/wechat/me',
+    url: '/wechat/user/profile',
     method: 'GET'
   })
 }

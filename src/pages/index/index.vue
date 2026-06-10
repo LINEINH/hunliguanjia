@@ -44,13 +44,15 @@
         <view class="calendar-container">
           <view class="calendar-header">
             <view class="calendar-nav" @click.stop="prevMonth">
-              <text class="nav-icon">‹</text>
+              <!-- <text class="nav-icon">‹</text> -->
+              <up-icon name="arrow-left" size="18" color="#9CB2CD"></up-icon>
             </view>
             <text class="calendar-title"
               >{{ calendarYear }}年{{ calendarMonth }}月</text
             >
             <view class="calendar-nav" @click.stop="nextMonth">
-              <text class="nav-icon">›</text>
+              <!-- <text class="nav-icon">›</text> -->
+              <up-icon name="arrow-right" size="18" color="#9CB2CD"></up-icon>
             </view>
           </view>
 
@@ -637,15 +639,15 @@ function navigateToPlanItem(item: any) {
 function handleDateClick() {
   if (!checkLogin()) {
     uni.showModal({
-      title: '提示',
-      content: '请先登录后再选择婚期',
-      confirmText: '去登录',
-      cancelText: '取消',
+      title: "提示",
+      content: "请先登录后再选择婚期",
+      confirmText: "去登录",
+      cancelText: "取消",
       success: (res) => {
         if (res.confirm) {
           navigateToLogin();
         }
-      }
+      },
     });
     return;
   }
@@ -656,15 +658,15 @@ function handleDateClick() {
 function handleBudgetClick() {
   if (!checkLogin()) {
     uni.showModal({
-      title: '提示',
-      content: '请先登录后再选择预算范围',
-      confirmText: '去登录',
-      cancelText: '取消',
+      title: "提示",
+      content: "请先登录后再选择预算范围",
+      confirmText: "去登录",
+      cancelText: "取消",
       success: (res) => {
         if (res.confirm) {
           navigateToLogin();
         }
-      }
+      },
     });
     return;
   }
@@ -1205,16 +1207,11 @@ onMounted(() => {
       height: 56rpx;
       display: flex;
       justify-content: center;
-      border-radius: 9px;
-      background: rgba(255, 255, 255, 1);
-      border: 0.77px solid rgba(128, 128, 128, 1);
-      .nav-icon {
-        font-size: 48rpx;
-        color: rgb(128, 128, 128);
-      }
+      border-radius: 20rpx;
 
+      border: 0.77px solid #9cb2cd;
       &:active {
-        background-color: #e0e0e0;
+        background-color: #f0cd8c;
       }
     }
 

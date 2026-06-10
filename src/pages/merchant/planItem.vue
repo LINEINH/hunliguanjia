@@ -48,6 +48,18 @@
           >{{ tag }}</text
         >
       </view>
+      <view
+        class="viedoList"
+        v-if="productData.videos && productData.videos.length"
+      >
+        <view
+          class="video-item"
+          v-for="(item, index) in productData.videos"
+          :key="index"
+        >
+          <video :src="item" controls="true" width="100%"></video>
+        </view>
+      </view>
       <view class="content" v-if="cleanedContent">
         <rich-text :nodes="cleanedContent"></rich-text>
       </view>
@@ -282,6 +294,15 @@ async function toggleFavorite() {
       padding: 10rpx 20rpx;
       border-radius: 24rpx;
       margin-top: 20rpx;
+    }
+    .viedoList {
+      margin-top: $spacing-md;
+      .video-item {
+        margin-bottom: $spacing-md;
+        video {
+          width: 100%;
+        }
+      }
     }
     .content {
       margin-top: $spacing-md;

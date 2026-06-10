@@ -1,11 +1,7 @@
 
 <template>
   <view class="planItem">
-    <up-navbar
-      :title="productData.title || '产品详情'"
-      @rightClick="rightClick"
-      :autoBack="true"
-    >
+    <up-navbar title="案例详情" @rightClick="rightClick" :autoBack="true">
     </up-navbar>
 
     <view class="banner">
@@ -28,9 +24,11 @@
         </view>
       </view>
       <view class="hotel-name">{{ productData.title }} </view>
-      <view class="hotel-address">
-        {{ productData.description }}
+      <view class="content" v-if="cleanedContent">
+        <!-- {{ productData.description }} -->
+        <rich-text :nodes="cleanedContent"></rich-text>
       </view>
+
       <view
         class="hotel-highlights"
         v-if="productData.style_tags && productData.style_tags.length"
@@ -61,14 +59,14 @@
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
         <text>返回</text>
       </view>
-      <view class="hotel-footer-item" @click="toggleFavorite">
-        <up-icon 
-          name="star" 
-          size="24" 
+      <!-- <view class="hotel-footer-item" @click="toggleFavorite">
+        <up-icon
+          name="star"
+          size="24"
           :color="isFavorited ? '#FFD700' : '#E5E5E5'"
         ></up-icon>
-        <text>{{ isFavorited ? '已收藏' : '收藏' }}</text>
-      </view>
+        <text>{{ isFavorited ? "已收藏" : "收藏" }}</text>
+      </view> -->
 
       <view class="hotel-footer-tel button" @click="makePhoneCall">
         电话咨询
@@ -125,6 +123,11 @@ function cleanHtmlContent(html: string): string {
 
   return cleaned;
 }
+
+// 计算属性:清理后的内容
+const cleanedContent = computed(() => {
+  return cleanHtmlContent(productData.value.description || "");
+});
 
 // 加载产品详情
 async function loadProductDetail() {
@@ -211,7 +214,6 @@ function toggleFavorite() {
     });
   }
 }
-
 </script>
 
 <style lang="scss" scoped>
@@ -407,6 +409,44 @@ function toggleFavorite() {
   .detail-image {
     width: 100%;
     display: block;
+  }
+  .content {
+    margin-top: $spacing-md;
+    background: #fff;
+    border-radius: 20rpx;
+    padding-bottom: $spacing-md;
+    :deep(rich-text) {
+      line-height: 1.8;
+      font-size: 28rpx;
+      color: #383838;
+
+      // 强制所有图片元素宽度100%
+      img,
+      image,
+      [class*="img"],
+      [class*="image"] {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        border-radius: 10rpx;
+        object-fit: contain;
+      }
+
+      // 处理 div 容器中的图片
+      div img,
+      p img,
+      span img {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+      }
+
+      p {
+        margin-bottom: $spacing-sm;
+      }
+    }
   }
 }
 </style>
