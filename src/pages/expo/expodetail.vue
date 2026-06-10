@@ -28,7 +28,6 @@
         <view class="stepcon">
           <rich-text :nodes="expoDetail.introduction"></rich-text>
         </view>
-        <view class="button" @click="handleRegister"> 立即报名 </view>
       </view>
 
       <view class="step">
@@ -62,13 +61,37 @@
       </view>
 
       <view class="step" v-if="expoDetail.status === 1">
-        <view class="code">参会二维码</view>
-        <image
-          :src="expoDetail.qrcode || '/static/images/post.png'"
-          mode="aspectFill"
-          class="codeimage"
-        />
-        <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
+        <view class="register-form" v-if="!expoDetail.qr_code">
+          <view class="form-item">
+            <text class="form-label">姓名</text>
+            <input
+              class="form-input"
+              v-model="formData.user_name"
+              placeholder="请输入姓名"
+              type="text"
+            />
+          </view>
+          <view class="form-item">
+            <text class="form-label">手机号</text>
+            <input
+              class="form-input"
+              v-model="formData.user_phone"
+              placeholder="请输入手机号"
+              type="number"
+              maxlength="11"
+            />
+          </view>
+          <view class="button" @click="handleRegister"> 立即报名 </view>
+        </view>
+        <view v-else>
+          <view class="code">参会二维码</view>
+          <image
+            :src="expoDetail.qr_code || '/static/images/post.png'"
+            mode="aspectFill"
+            class="codeimage"
+          />
+          <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
+        </view>
       </view>
 
       <view class="ad">
@@ -119,6 +142,13 @@ import { getExpoDetail, registerExpo } from "@/api/expo";
 const expoDetail = ref<any>(null);
 const loading = ref(true);
 const expoId = ref<number>(0);
+const qrCode = ref<string>("");
+
+// 报名表单数据
+const formData = ref({
+  user_name: "",
+  user_phone: "",
+});
 
 // 页面加载时获取参数
 onLoad((options: any) => {
@@ -155,16 +185,63 @@ async function fetchExpoDetail() {
 async function handleRegister() {
   if (!expoDetail.value) return;
 
-  try {
-    await registerExpo(expoDetail.value.id);
+  // 表单验证
+  if (!formData.value.user_name || !formData.value.user_name.trim()) {
     uni.showToast({
-      title: "报名成功",
-      icon: "success",
+      title: "请输入姓名",
+      icon: "none",
     });
+    return;
+  }
+
+  if (!formData.value.user_phone || !formData.value.user_phone.trim()) {
+    uni.showToast({
+      title: "请输入手机号",
+      icon: "none",
+    });
+    return;
+  }
+
+  // 手机号格式验证
+  const phoneRegex = /^1[3-9]\d{9}$/;
+  if (!phoneRegex.test(formData.value.user_phone)) {
+    uni.showToast({
+      title: "请输入正确的手机号",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: "报名中...",
+    });
+
+    const res = await registerExpo(
+      expoId.value.toString(),
+      formData.value.user_name,
+      formData.value.user_phone
+    );
+    if (res.registration) {
+      // 报名成功后可以更新状态或跳转到其他页面
+      qrCode.value = res.registration.qrcode;
+      uni.hideLoading();
+      uni.showToast({
+        title: "报名成功",
+        icon: "success",
+      });
+    }
+
+    // 清空表单
+    formData.value = {
+      user_name: "",
+      user_phone: "",
+    };
   } catch (error) {
+    uni.hideLoading();
     console.error("报名失败:", error);
     uni.showToast({
-      title: "报名失败",
+      title: "报名失败，请重试",
       icon: "none",
     });
   }
@@ -202,6 +279,41 @@ function navigateToDetail() {
     background: #fff;
     padding: $spacing-md;
     border-radius: $radius-md;
+
+    .register-form {
+      .form-item {
+        margin-bottom: $spacing-md;
+
+        .form-label {
+          display: block;
+          font-size: 28rpx;
+          color: #333;
+          margin-bottom: $spacing-sm;
+          font-weight: 500;
+        }
+
+        .form-input {
+          width: 100%;
+          height: 80rpx;
+          padding: 0 $spacing-md;
+          border: 1rpx solid #e0e0e0;
+          border-radius: $radius-sm;
+          font-size: 28rpx;
+          color: #333;
+          background-color: #f8f8f8;
+
+          &:focus {
+            border-color: #bf974a;
+            background-color: #fff;
+          }
+        }
+      }
+
+      .button {
+        margin-top: $spacing-lg;
+      }
+    }
+
     .button {
       border-radius: 40rpx;
       background: linear-gradient(
