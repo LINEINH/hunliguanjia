@@ -525,7 +525,7 @@ onMounted(() => {
   margin-bottom: $spacing-md;
   margin-top: 380rpx;
   .banner-swiper {
-    height: 320rpx;
+    height: 460rpx;
     border-radius: $radius-md;
     overflow: hidden;
   }

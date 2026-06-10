@@ -164,7 +164,7 @@ function handleLogout() {
 
 .user-header {
   //引入背景图片
-  background-image: url("/static/images/bg1.png");
+  background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ebbe51768.png");
   background-size: cover;
   background-position: center;
   padding: $spacing-md;
@@ -211,7 +211,7 @@ function handleLogout() {
   }
   .user-intro {
     margin-top: $spacing-md;
-    background-image: url("/static/images/bg4.png");
+    background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ec100de21.png");
     background-size: cover;
     background-position: center;
     border-radius: 20rpx;

@@ -2,15 +2,25 @@ import { request } from './request'
 import type { WeddingExpo, UserExpoStatus } from '@/types/expo'
 
 /**
- * 获取婚博会列表
+ * 获取婚博会列表 /api/v1/wechat/expo/home
  */
 export function getExpoList() {
   return request<any>({
-    url: '/wechat/expo/activities',
+    url: '/wechat/expo/home',
     method: 'GET'
   })
 }
 
+
+/**
+ * 获取婚博会banner /api/v1/wechat/banners/expo
+ */
+export function getExpoBanner() {
+  return request<any>({
+    url: '/wechat/banners/expo',
+    method: 'GET'
+  })
+}
 /**
  * 获取婚博会详情
  */

@@ -1,7 +1,13 @@
 <template>
   <view class="merchant-list-page">
     <view class="banner">
-      <swiper class="banner-swiper" autoplay circular indicator-dots>
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        indicator-active-color="#fff"
+      >
         <swiper-item v-for="(item, index) in banners" :key="index">
           <image :src="item.image_url" mode="aspectFill" class="banner-image" />
         </swiper-item>
@@ -271,7 +277,7 @@ onMounted(() => {
     margin-bottom: $spacing-md;
 
     .banner-swiper {
-      height: 320rpx;
+      height: 540rpx;
       overflow: hidden;
     }
 

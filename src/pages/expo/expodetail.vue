@@ -61,7 +61,7 @@
         </view>
       </view>
 
-      <view class="step">
+      <view class="step" v-if="expoDetail.status === 1">
         <view class="code">参会二维码</view>
         <image
           :src="expoDetail.qrcode || '/static/images/post.png'"

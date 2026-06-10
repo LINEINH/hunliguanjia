@@ -2,7 +2,13 @@
   <view class="index-container">
     <!-- 轮播图 -->
     <view class="banner">
-      <swiper class="banner-swiper" autoplay circular indicator-dots>
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        indicator-active-color="#fff"
+      >
         <swiper-item v-for="(banner, index) in banners" :key="index">
           <image
             :src="banner.image_url"
@@ -805,7 +811,7 @@ onMounted(() => {
     margin-bottom: $spacing-md;
 
     .banner-swiper {
-      height: 500rpx;
+      height: 1200rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

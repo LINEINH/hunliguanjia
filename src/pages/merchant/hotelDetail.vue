@@ -10,7 +10,11 @@
 
     <view class="banner">
       <swiper class="banner-swiper" autoplay circular indicator-dots>
-        <swiper-item v-for="(item, index) in hotelData.images" :key="index">
+        <swiper-item
+          v-for="(item, index) in hotelData.images"
+          :key="index"
+          indicator-active-color="#fff"
+        >
           <image :src="item" mode="aspectFill" class="banner-image" />
         </swiper-item>
       </swiper>

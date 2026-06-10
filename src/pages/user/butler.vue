@@ -96,6 +96,7 @@
 import { ref, onMounted } from "vue";
 import { casesFeatured } from "@/api/index";
 import type { Merchant } from "@/types/merchant";
+import { getGoldServiceBanner } from "@/api/user";
 
 // 轮播图数据
 const banners = ref([
@@ -162,9 +163,24 @@ const handleCardChange = () => {
   console.log(11);
 };
 
+// 获取 banner
+async function fetchBanner() {
+  try {
+    const response = await getGoldServiceBanner();
+    console.log("banner:", response);
+    banners.value = response || [];
+  } catch (error) {
+    console.error("获取banner失败:", error);
+    uni.showToast({
+      title: "获取数据失败",
+      icon: "none",
+    });
+  }
+}
 // 加载数据
 onMounted(() => {
   // TODO: 调用 API 加载数据
+  fetchBanner();
   console.log("首页加载");
 });
 </script>
@@ -211,7 +227,7 @@ onMounted(() => {
 
   .cardBanner {
     margin: $spacing-md 0;
-    background-image: url("/static/images/bg1.png");
+    background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ee2074c45.png");
     background-size: cover;
     background-position: center;
     padding: $spacing-md;
@@ -223,6 +239,7 @@ onMounted(() => {
     box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.15);
     height: 620rpx;
     margin: 0 10rpx;
+    background-color: #fff;
   }
 
   .card-image {

@@ -4,7 +4,7 @@
     <view class="banner">
       <swiper class="banner-swiper" autoplay circular indicator-dots>
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image" mode="aspectFill" class="banner-image" />
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
         </swiper-item>
       </swiper>
     </view>
@@ -19,14 +19,41 @@
     <view class="cardtitle">精彩回顾</view>
     <view class="cardBanner">
       <up-swiper
-        :list="list3"
-        previousMargin="30"
-        nextMargin="30"
-        circular
+        :list="completedExpos"
         :autoplay="false"
-        radius="5"
-        bgColor="#ffffff"
-      ></up-swiper>
+        :circular="true"
+        :indicator="true"
+        :previousMargin="80"
+        :nextMargin="80"
+        :duration="500"
+        :radius="10"
+        height="430"
+        bgColor="transparent"
+      >
+        <template #default="{ item }">
+          <view class="card-item" @click="navToDetail(item)">
+            <image
+              :src="item.cover_image"
+              mode="aspectFill"
+              class="card-image"
+            />
+            <view class="card-info">
+              <view class="card-host">
+                <view class="card-host-info">
+                  <view class="card-host-name">{{ item.name }}</view>
+                </view>
+                <view class="card-footer">
+                  <text class="card-price"
+                    >{{ formatDate(item.start_time) }}~{{
+                      formatDate(item.end_time)
+                    }}</text
+                  >
+                </view>
+              </view>
+            </view>
+          </view>
+        </template>
+      </up-swiper>
     </view>
   </view>
 </template>
@@ -43,8 +70,8 @@ const ongoingExpos = ref<WeddingExpo[]>([]); // 进行中的活动
 const completedExpos = ref<WeddingExpo[]>([]); // 已完成的活动
 const loading = ref(true);
 const banners = ref([
-  { image: "/static/images/banner1.png" },
-  { image: "/static/images/banner.png" },
+  { image_url: "/static/images/banner1.png" },
+  { image_url: "/static/images/banner.png" },
 ]);
 
 // 导航到分类
@@ -57,25 +84,10 @@ function navigateToDetail(expoId: number) {
   uni.navigateTo({ url: `/pages/expo/expodetail?id=${expoId}` });
 }
 
-// 导航到婚博会详情页
-function goToExpoDetail(expo: WeddingExpo) {
-  // 这里可以传递expo的id到详情页
-  uni.navigateTo({
-    url: `/pages/expo-detail/expo-detail?id=${expo.id}`,
-  });
-}
-
-// 根据状态返回对应样式类
-function getStatusClass(status: string) {
-  switch (status) {
-    case "进行中":
-      return "status-going";
-    case "已结束":
-      return "status-ended";
-    case "未开始":
-      return "status-upcoming";
-    default:
-      return "";
+function navToDetail(event: any) {
+  console.log("点击了", event);
+  if (event.id) {
+    navigateToDetail(event.id);
   }
 }
 
@@ -101,15 +113,11 @@ async function fetchExpoList() {
     console.log("婚博会列表:", response);
 
     // 存储所有活动
-    expos.value = response || [];
-
-    ongoingExpos.value =
-      response.filter((item: any) => item.status === 1) || [];
-    // 根据状态筛选：status为1是进行中，2是已完成
-    completedExpos.value =
-      response.filter((item: any) => item.status === 2) || [];
-
-    console.log("进行中的活动:", ongoingExpos.value);
+    // expos.value = response || [];
+    banners.value = response.banners || [];
+    ongoingExpos.value = response.featured_activities || [];
+    completedExpos.value = response.history_activities || [];
+    console.log("所有活动:", expos.value);
   } catch (error) {
     console.error("获取婚博会列表失败:", error);
     uni.showToast({
@@ -129,7 +137,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .expo-container {
-  padding-bottom: 50rpx;
   .banner {
     margin-bottom: $spacing-md;
     .banner-swiper {
@@ -243,6 +250,78 @@ onMounted(() => {
           }
         }
       }
+    }
+  }
+  .cardBanner {
+    margin: $spacing-md 0;
+
+    padding: $spacing-md;
+
+    .card-item {
+      border-radius: $radius-lg;
+      overflow: hidden;
+      box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.15);
+      height: 730rpx;
+      margin: 0 10rpx;
+      background-color: #fff;
+    }
+
+    .card-image {
+      width: 100%;
+      height: 560rpx;
+      display: block;
+    }
+
+    .card-info {
+      padding: $spacing-md $spacing-sm;
+      .card-host {
+        padding-bottom: 20rpx;
+        .user-pic {
+          width: 68rpx;
+          height: 68rpx;
+        }
+        .card-host-info {
+          margin-left: 10rpx;
+          .card-host-name {
+            font-size: 28rpx;
+          }
+          .rate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .icon-star {
+              border-radius: 20rpx;
+              background: linear-gradient(
+                180deg,
+                #f1daa6 0%,
+                #f9eccc 33.03%,
+                #e9cc90 100%
+              );
+              padding: 6rpx 20rpx;
+              color: #d43030;
+            }
+            .year {
+              font-size: 24rpx;
+              color: #a6a6a6;
+            }
+          }
+        }
+      }
+    }
+
+    .card-name {
+      display: block;
+      font-size: 32rpx;
+      font-weight: bold;
+      color: $text-primary;
+      margin-bottom: $spacing-sm;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10rpx;
     }
   }
 }

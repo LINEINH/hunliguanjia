@@ -55,7 +55,13 @@
     </view>
 
     <view class="banner">
-      <swiper class="banner-swiper" autoplay circular indicator-dots>
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        indicator-active-color="#fff"
+      >
         <swiper-item v-for="(item, index) in banners" :key="index">
           <image :src="item.image_url" mode="aspectFill" class="banner-image" />
         </swiper-item>
@@ -434,7 +440,7 @@ function openDetail(hotel) {
 // 获取banner
 const loadGetBanner = async () => {
   try {
-    const response = await getBanners(1);
+    const response = await getBanners(category.value || 1);
     banners.value = response || [];
     console.log("banner:", response);
   } catch (error) {
@@ -581,7 +587,7 @@ onMounted(() => {
   margin-bottom: $spacing-md;
   margin-top: 380rpx;
   .banner-swiper {
-    height: 320rpx;
+    height: 460rpx;
     border-radius: $radius-md;
     overflow: hidden;
   }

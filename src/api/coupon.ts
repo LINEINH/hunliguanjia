@@ -26,7 +26,7 @@ export function receiveCoupon(id: number) {
  */
 export function getMyCoupons(status?: string) {
   return request<UserCoupon[]>({
-    url: '/api/coupon/my',
+    url: '/wechat/coupons/my',
     method: 'GET',
     data: { status }
   })

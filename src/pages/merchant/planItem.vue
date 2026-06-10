@@ -9,7 +9,13 @@
     </up-navbar>
 
     <view class="banner">
-      <swiper class="banner-swiper" autoplay circular indicator-dots>
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        indicator-active-color="#fff"
+      >
         <swiper-item v-for="(item, index) in productData.images" :key="index">
           <image :src="item.image_url" mode="aspectFill" class="banner-image" />
         </swiper-item>

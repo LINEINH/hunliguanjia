@@ -62,3 +62,11 @@ export function getUserFavorites(type:string) {
     method: 'GET',
   })
 }
+
+// 金牌服务人的banner /wechat/banners/gold-service
+export function getGoldServiceBanner() {
+  return request({
+    url: '/wechat/banners/gold-service',
+    method: 'GET',
+  })
+}
