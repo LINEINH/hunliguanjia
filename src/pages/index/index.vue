@@ -24,13 +24,13 @@
     <view class="date-budget">
       <!-- 未选择时显示选择器 -->
       <view class="data-selector" v-if="!weddingDate || !selectedBudget">
-        <view class="date-selector" @click="showDatePicker = true">
+        <view class="date-selector" @click="handleDateClick">
           <text class="budget-title">WEDDING DAY</text>
           <text class="budget-data">婚期</text>
           <text class="budget-text">{{ weddingDate || "选择婚礼时间" }}</text>
         </view>
         <view class="line"></view>
-        <view class="budget-selector" @click="showBudgetPicker = true">
+        <view class="budget-selector" @click="handleBudgetClick">
           <text class="budget-title">WEDDING BUDGET</text>
           <text class="budget-data">预算范围</text>
           <text class="budget-text">{{
@@ -264,7 +264,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { getHomeInfo, weddingPlan, getWeddingPlan } from "@/api/index";
-import { checkLogin } from "@/utils/auth";
+import { checkLogin, navigateToLogin } from "@/utils/auth";
 
 // 婚期日期
 const weddingDate = ref<string>("");
@@ -631,6 +631,44 @@ function navigateToCategory(category: any) {
 // 导航到商家列表
 function navigateToPlanItem(item: any) {
   uni.navigateTo({ url: `/pages/index/case?id=${item.id}` });
+}
+
+// 处理婚期点击
+function handleDateClick() {
+  if (!checkLogin()) {
+    uni.showModal({
+      title: '提示',
+      content: '请先登录后再选择婚期',
+      confirmText: '去登录',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          navigateToLogin();
+        }
+      }
+    });
+    return;
+  }
+  showDatePicker.value = true;
+}
+
+// 处理预算范围点击
+function handleBudgetClick() {
+  if (!checkLogin()) {
+    uni.showModal({
+      title: '提示',
+      content: '请先登录后再选择预算范围',
+      confirmText: '去登录',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          navigateToLogin();
+        }
+      }
+    });
+    return;
+  }
+  showBudgetPicker.value = true;
 }
 
 // picker-view 值改变事件

@@ -7,8 +7,8 @@
         class="logo-image"
         mode="aspectFit"
       />
-      <text class="title">婚庆服务平台</text>
-      <text class="subtitle">为您打造完美婚礼</text>
+      <text class="title">欢迎加入婚礼管家</text>
+      <text class="subtitle">加入后享专属活动&会员好礼</text>
     </view>
 
     <!-- 登录表单 -->
@@ -250,7 +250,7 @@ function showAgreement(type: "user" | "privacy") {
 
 .page-container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #fff5f2 0%, #f8f8f8 100%);
+  background: linear-gradient(180deg, #ffeec7 0%, #f8f8f8 100%);
   padding: 0;
 }
 
@@ -270,7 +270,7 @@ function showAgreement(type: "user" | "privacy") {
   .title {
     font-size: 52rpx;
     font-weight: bold;
-    color: $primary-color;
+    color: #612500;
     margin-bottom: $spacing-sm;
     letter-spacing: 2rpx;
   }
@@ -290,20 +290,21 @@ function showAgreement(type: "user" | "privacy") {
   .btn-wx-login {
     width: 100%;
     height: 88rpx;
+
     background: linear-gradient(
-      135deg,
-      $primary-color 0%,
-      $secondary-color 100%
+      136.45deg,
+      #f1daa6 0%,
+      #f9eccc 33.03%,
+      #e9cc90 100%
     );
-    color: #fff;
-    border-radius: $radius-lg;
+    color: #612500;
+    border-radius: 40rpx;
     font-size: $font-lg;
     font-weight: 500;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8rpx 24rpx rgba(232, 56, 13, 0.3);
 
     &::after {
       border: none;
@@ -352,7 +353,7 @@ function showAgreement(type: "user" | "privacy") {
         margin-left: $spacing-xs;
 
         .link {
-          color: $primary-color;
+          color: #ab7e2b;
           text-decoration: underline;
         }
       }
