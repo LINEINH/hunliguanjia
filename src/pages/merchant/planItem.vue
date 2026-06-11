@@ -198,7 +198,8 @@ function makePhoneCall() {
       if (res.confirm) {
         // 实际项目中这里应该替换成产品的真实电话
         uni.makePhoneCall({
-          phoneNumber: productData.value.merchant?.phone || "13800138000", // 尝试获取真实电话，否则使用示例
+          phoneNumber:
+            productData.value.merchant?.contact_phone || "13800138000", // 尝试获取真实电话，否则使用示例
         });
       }
     },

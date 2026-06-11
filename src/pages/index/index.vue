@@ -265,6 +265,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { onShow } from "@dcloudio/uni-app";
 import { getHomeInfo, weddingPlan, getWeddingPlan } from "@/api/index";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 
@@ -848,6 +849,14 @@ function updateCurrentMonthTasks() {
 onMounted(() => {
   loadHomeInfo();
   console.log("checkLogin:", checkLogin());
+  if (checkLogin()) {
+    loadWeddingPlan();
+  }
+});
+
+// 页面显示时重新加载数据（tabbar 切换时触发）
+onShow(() => {
+  loadHomeInfo();
   if (checkLogin()) {
     loadWeddingPlan();
   }

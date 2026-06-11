@@ -246,7 +246,7 @@ function makePhoneCall() {
       if (res.confirm) {
         // 实际项目中这里应该替换成酒店的真实电话
         uni.makePhoneCall({
-          phoneNumber: "13800138000", // 示例电话号码
+          phoneNumber: hotelData.value.contact_phone, // 示例电话号码
         });
       }
     },

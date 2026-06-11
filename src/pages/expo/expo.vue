@@ -65,6 +65,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { onShow } from "@dcloudio/uni-app";
 import { getExpoList } from "@/api/expo";
 import type { ServiceProduct } from "@/types/product";
 import type { WeddingExpo } from "@/types/expo";
@@ -139,6 +140,12 @@ async function fetchExpoList() {
 onMounted(() => {
   fetchExpoList();
 });
+
+// 页面显示时重新加载数据（tabbar 切换时触发）
+onShow(() => {
+  fetchExpoList();
+});
+
 </script>
 
 <style lang="scss" scoped>
@@ -331,4 +338,3 @@ onMounted(() => {
     }
   }
 }
-</style>

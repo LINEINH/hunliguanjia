@@ -66,6 +66,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { onShow } from "@dcloudio/uni-app";
 import {
   getBanners,
   getProductRecommend,
@@ -267,6 +268,13 @@ onMounted(() => {
   loadGetBanner();
   loadGetProductRecommend();
 });
+
+// 页面显示时重新加载数据（tabbar 切换时触发）
+onShow(() => {
+  loadGetBanner();
+  loadGetProductRecommend();
+});
+
 </script>
 
 <style lang="scss" scoped>
@@ -412,4 +420,3 @@ onMounted(() => {
     }
   }
 }
-</style>

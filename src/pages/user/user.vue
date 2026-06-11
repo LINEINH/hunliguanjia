@@ -314,6 +314,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { onShow } from "@dcloudio/uni-app";
 import { useUserStore } from "@/store/modules/user";
 import { getUserInfo } from "@/api/user";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
@@ -821,6 +822,12 @@ async function loadUserInfo() {
 onMounted(() => {
   loadUserInfo();
 });
+
+// 页面显示时重新加载数据（tabbar 切换时触发）
+onShow(() => {
+  loadUserInfo();
+});
+
 </script>
 
 <style lang="scss" scoped>
