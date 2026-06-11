@@ -105,7 +105,7 @@
 import { ref, reactive, computed } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 const show = ref(false);
-import { getGoldDetail } from "@/api/user";
+import { getGoldDetail, setOrders } from "@/api/user";
 
 // 轮播图数据
 const banners = ref([
@@ -145,9 +145,19 @@ async function loadButlerDetail(id) {
 }
 
 function buyNow(index, id) {
-  uni.navigateTo({
-    url: `/pages/user/order?index=${index}&id=${id}`,
+  // 调用setOrders接口
+  setOrders(id, index).then((res) => {
+    console.log("setOrders接口返回结果:", res);
+    if (res.order) {
+      uni.navigateTo({
+        url: `/pages/user/order?id=${res.order.id}`,
+      });
+    }
   });
+
+  // uni.navigateTo({
+  //   url: `/pages/user/order?index=${index}&id=${id}`,
+  // });
 }
 </script>
 

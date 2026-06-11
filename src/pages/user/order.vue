@@ -4,7 +4,7 @@
     <view class="order-status-header">
       <view class="status-icon">
         <!-- 如果项目中没有 uView UI，可以使用普通 text 或 image 替代，这里暂时用 text 模拟图标或保留原意 -->
-        <!-- <text class="icon-clock">⏰</text> -->
+        <text class="icon-clock">⏰</text>
       </view>
       <text class="status-text">待付款</text>
       <!-- <text class="status-desc">请在23:59前完成支付</text> -->
@@ -36,16 +36,12 @@
         </view>
         <view class="goods-info">
           <view class="goods-info-name">
-            <view class="name">{{
-              butlerDetail.price_packages[indexItem].name
-            }}</view>
-            <view class="price"
-              >￥{{ butlerDetail.price_packages[indexItem].price }}</view
-            >
+            <view class="name">{{ butlerDetail.package.name }}</view>
+            <view class="price">￥{{ butlerDetail.package.price }}</view>
           </view>
           <view class="goods-info-desc">
             <text class="goods-info-desc-text">{{
-              butlerDetail.price_packages[indexItem].description
+              butlerDetail.package.description
             }}</text>
           </view>
         </view>
@@ -60,9 +56,7 @@
       </view> -->
       <view class="detail-item">
         <text class="detail-label">应付金额合计</text>
-        <text class="detail-value"
-          >￥{{ butlerDetail.price_packages[indexItem].price }}</text
-        >
+        <text class="detail-value">￥{{ butlerDetail.package.price }}</text>
       </view>
     </view>
 
@@ -101,7 +95,7 @@
 import { ref, reactive, computed } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 const show = ref(false);
-import { getGoldDetail } from "@/api/user";
+import { getOrdersDetail, payOrder } from "@/api/user";
 import { useUserStore } from "@/store/modules/user";
 
 const userStore = useUserStore();
@@ -118,7 +112,7 @@ userInfo.value = userStore.userInfo;
 const indexItem = ref(null);
 const finalPrice = computed(() => {
   if (butlerDetail.value) {
-    return butlerDetail.value.price_packages[indexItem.value].price;
+    return butlerDetail.value.package.price;
   }
   return 0;
 });
@@ -126,13 +120,10 @@ const finalPrice = computed(() => {
 // 获取页面参数并加载详情
 onLoad((options) => {
   console.log("页面参数:", options);
-  const id = options.id;
+  const id = options.id || 24;
   const index = options.index;
   if (id) {
     loadButlerDetail(Number(id));
-  }
-  if (index) {
-    indexItem.value = index;
   }
 });
 
@@ -140,7 +131,7 @@ onLoad((options) => {
 async function loadButlerDetail(id) {
   loading.value = true;
   try {
-    const res = await getGoldDetail(id);
+    const res = await getOrdersDetail(id);
     if (res && res) {
       butlerDetail.value = res;
     }

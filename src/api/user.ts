@@ -96,3 +96,28 @@ export function getGoldDetail(id: number) {
     method: 'GET',
   })
 }
+
+// 生成订单 /api/v1/wechat/gold-service-orders
+export function setOrders(provider_id: string,package_index:string) {
+  return request<any>({
+    url: '/wechat/gold-service-orders',
+    method: 'POST',
+    data: { provider_id: provider_id,package_index:package_index }
+  })
+}
+
+// 获取订单详情/api/v1/wechat/gold-service-orders/{id}
+export function getOrdersDetail(id: number) {
+  return request<any>({
+    url: `/wechat/gold-service-orders/${id}`,
+    method: 'GET',
+  })
+}
+
+// 支付  /api/v1/wechat/gold-service-orders/{id}/pay
+export function payOrder(id:string) {
+  return request<any>({
+    url: `/wechat/gold-service-orders/${id}/pay`,
+    method: 'POST',
+  })
+}
