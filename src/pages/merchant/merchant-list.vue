@@ -38,7 +38,7 @@
         />
         <view class="goods-info">
           <view class="goods-name" @click="openDetail(item)">{{
-            item.description
+            item.name
           }}</view>
           <view class="goods-intro">
             <image
