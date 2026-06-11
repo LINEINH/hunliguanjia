@@ -517,7 +517,7 @@ onMounted(() => {
   position: fixed;
   left: 0;
   right: 0;
-  top: 150rpx;
+  top: 170rpx;
   z-index: 99999;
 }
 

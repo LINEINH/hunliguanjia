@@ -94,6 +94,17 @@
         </view>
       </view>
     </up-overlay>
+
+    <view class="category-grid" v-if="category === '10'">
+      <view
+        v-for="category in categories"
+        :key="category.id"
+        class="category-item"
+      >
+        <image :src="category.icon" class="category-icon" />
+        <text class="category-name">{{ category.name }}</text>
+      </view>
+    </view>
     <!-- 酒店列表 -->
     <scroll-view class="list" scroll-y="true" @scrolltolower="loadMore">
       <view v-if="merchantList.length === 0" class="empty">暂无匹配的商家</view>
@@ -185,6 +196,58 @@ const hasMore = ref(true);
 // value 可以是 id (如果是对象数组) 或 name/string (如果是字符串数组)
 const activeFilters = reactive({});
 
+const categories = ref([
+  {
+    id: 1,
+    name: "婚礼车队",
+    icon: "/static/images/30.png",
+  },
+  {
+    id: 2,
+    name: "婚礼伴手礼",
+    icon: "/static/images/31.png",
+  },
+  {
+    id: 3,
+    name: "photobooth",
+    icon: "/static/images/32.png",
+  },
+  {
+    id: 4,
+    name: "茶歇甜品",
+    icon: "/static/images/33.png",
+  },
+  {
+    id: 5,
+    name: "宴会酒水",
+    icon: "/static/images/34.png",
+  },
+  {
+    id: 6,
+    name: "互动演绎",
+    icon: "/static/images/35.png",
+  },
+  {
+    id: 7,
+    name: "婚礼床品",
+    icon: "/static/images/36.png",
+  },
+  {
+    id: 8,
+    name: "婚礼用品",
+    icon: "/static/images/37.png",
+  },
+  {
+    id: 9,
+    name: "妇产医院",
+    icon: "/static/images/38.png",
+  },
+  {
+    id: 10,
+    name: "月子中心",
+    icon: "/static/images/39.png",
+  },
+]);
 const showOptions = (filter) => {
   console.log("显示选项：", filter);
   currentFilterType.value = filter.type;
@@ -579,7 +642,7 @@ onMounted(() => {
   position: fixed;
   left: 0;
   right: 0;
-  top: 150rpx;
+  top: 170rpx;
   z-index: 99999;
 }
 
@@ -870,5 +933,29 @@ onMounted(() => {
   font-size: 26rpx;
   color: #999;
   margin-top: 40rpx;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: $spacing-md;
+  padding: $spacing-md;
+
+  .category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .category-icon {
+      width: 60rpx;
+      height: 60rpx;
+      margin-bottom: $spacing-sm;
+    }
+
+    .category-name {
+      font-size: $font-xs;
+      color: $text-primary;
+    }
+  }
 }
 </style>

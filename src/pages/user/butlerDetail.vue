@@ -16,8 +16,11 @@
         indicator-dots
         v-if="banners.length > 0"
       >
-        <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image" mode="aspectFill" class="banner-image" />
+        <swiper-item
+          v-for="(item, index) in butlerDetail.carousel_images"
+          :key="index"
+        >
+          <image :src="item" mode="aspectFill" class="banner-image" />
         </swiper-item>
       </swiper>
       <view v-else class="banner-placeholder">暂无图片</view>
@@ -83,16 +86,35 @@
       </view>
       <view v-else class="empty-services">暂无服务内容</view>
     </view>
+
+    <view
+      class="detailImage"
+      v-if="butlerDetail.detail_images && butlerDetail.detail_images.length > 0"
+    >
+      <image
+        :src="item"
+        mode="widthFix"
+        class="detail-image"
+        v-for="(item, index) in butlerDetail.detail_images"
+        :key="index"
+      />
+    </view>
+
     <view class="hotel-footer">
-      <view class="hotel-footer-item">
+      <view class="hotel-footer-item" @click="rightClick">
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
         <text>返回</text>
       </view>
-      <view class="hotel-footer-item">
-        <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-        <text>收藏</text>
+      <view class="hotel-footer-item" @click="toggleFavorite">
+        <up-icon
+          name="star"
+          size="24"
+          :color="isFavorited ? '#BF974A' : '#E5E5E5'"
+        ></up-icon>
+        <text :style="{ color: isFavorited ? '#BF974A' : '#999999' }">{{
+          isFavorited ? "已收藏" : "收藏"
+        }}</text>
       </view>
-
       <view class="hotel-footer-tel button" @click="openDetail()">
         电话咨询
       </view>
@@ -106,6 +128,7 @@ import { ref, reactive, computed } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 const show = ref(false);
 import { getGoldDetail, setOrders } from "@/api/user";
+import { favoriteProduct, unfavoriteProduct } from "@/api/product";
 
 // 轮播图数据
 const banners = ref([
@@ -116,6 +139,9 @@ const banners = ref([
 // 管家详情数据
 const butlerDetail = ref(null);
 const loading = ref(false);
+
+// 收藏状态
+const isFavorited = ref(false);
 
 // 获取页面参数并加载详情
 onLoad((options) => {
@@ -132,6 +158,7 @@ async function loadButlerDetail(id) {
     const res = await getGoldDetail(id);
     if (res && res) {
       butlerDetail.value = res;
+      isFavorited.value = res.is_favorited || false; //
     }
   } catch (error) {
     console.error("获取管家详情失败:", error);
@@ -141,6 +168,43 @@ async function loadButlerDetail(id) {
     });
   } finally {
     loading.value = false;
+  }
+}
+
+// 切换收藏状态
+async function toggleFavorite() {
+  try {
+    if (!hotelId.value) {
+      uni.showToast({
+        title: "缺少酒店ID",
+        icon: "none",
+      });
+      return;
+    }
+
+    if (isFavorited.value) {
+      // 取消收藏
+      await unfavoriteProduct(butlerDetail.value.id, "gold_service_provider");
+      isFavorited.value = false;
+      uni.showToast({
+        title: "已取消收藏",
+        icon: "success",
+      });
+    } else {
+      // 收藏
+      await favoriteProduct(butlerDetail.value.id, "gold_service_provider");
+      isFavorited.value = true;
+      uni.showToast({
+        title: "收藏成功",
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    console.error("收藏操作失败:", error);
+    uni.showToast({
+      title: "操作失败",
+      icon: "none",
+    });
   }
 }
 
@@ -154,10 +218,6 @@ function buyNow(index, id) {
       });
     }
   });
-
-  // uni.navigateTo({
-  //   url: `/pages/user/order?index=${index}&id=${id}`,
-  // });
 }
 </script>
 
@@ -209,6 +269,7 @@ function buyNow(index, id) {
         .user-pic {
           width: 100rpx;
           height: 100rpx;
+          border-radius: 50%;
         }
         .card-host-info {
           margin-left: 10rpx;

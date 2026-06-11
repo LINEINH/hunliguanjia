@@ -115,9 +115,28 @@ export function getOrdersDetail(id: number) {
 }
 
 // 支付  /api/v1/wechat/gold-service-orders/{id}/pay
-export function payOrder(id:string) {
+export function payOrder(id:string,openid:string) {
   return request<any>({
     url: `/wechat/gold-service-orders/${id}/pay`,
     method: 'POST',
+    data: { openid: openid }
+  })
+}
+
+//  小程序图片上传/api/v1/wechat/images/upload
+export function uploadImage(filePath: string) {
+  return request<any>({
+    url: '/wechat/images/upload',
+    method: 'POST',
+    data: { file: filePath }
+  })
+}
+
+// 提交投诉 /api/v1/wechat/user/complaints
+export function complaint(data: any) {
+  return request<any>({
+    url: '/wechat/user/complaints',
+    method: 'POST',
+    data
   })
 }

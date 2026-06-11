@@ -29,19 +29,19 @@
       <view class="goods-item">
         <view class="goods-image">
           <image
-            :src="butlerDetail.cover_image"
+            :src="butlerDetail.gold_service_provider.cover_image"
             mode="aspectFill"
             class="image"
           ></image>
         </view>
         <view class="goods-info">
           <view class="goods-info-name">
-            <view class="name">{{ butlerDetail.package.name }}</view>
-            <view class="price">￥{{ butlerDetail.package.price }}</view>
+            <view class="name">{{ butlerDetail.package_name }}</view>
+            <view class="price">￥{{ butlerDetail.amount }}</view>
           </view>
           <view class="goods-info-desc">
             <text class="goods-info-desc-text">{{
-              butlerDetail.package.description
+              butlerDetail.package_description
             }}</text>
           </view>
         </view>
@@ -56,7 +56,7 @@
       </view> -->
       <view class="detail-item">
         <text class="detail-label">应付金额合计</text>
-        <text class="detail-value">￥{{ butlerDetail.package.price }}</text>
+        <text class="detail-value">￥{{ butlerDetail.amount }}</text>
       </view>
     </view>
 
@@ -72,7 +72,9 @@
       </view> -->
       <view class="summary-item total">
         <text class="summary-label">微信支付</text>
-        <text class="summary-value total-price">¥{{ finalPrice }}</text>
+        <text class="summary-value total-price"
+          >¥{{ butlerDetail.amount }}</text
+        >
       </view>
     </view>
 
@@ -80,10 +82,10 @@
     <view class="footer-actions">
       <view class="footer-price">
         共1件，合计<text class="price"
-          ><text class="small">¥</text>{{ finalPrice }}</text
+          ><text class="small">¥</text>{{ butlerDetail.amount }}</text
         >
       </view>
-      <view class="btn-pay" @click="payOrder">提交订单</view>
+      <view class="btn-pay" @click="payOrderBtn">提交订单</view>
     </view>
 
     <!-- 底部安全区域 -->
@@ -143,6 +145,84 @@ async function loadButlerDetail(id) {
     });
   } finally {
     loading.value = false;
+  }
+}
+
+// 提交订单并调用微信支付
+async function payOrderBtn() {
+  if (!butlerDetail.value || !butlerDetail.value.id) {
+    uni.showToast({
+      title: "订单信息不存在",
+      icon: "none",
+    });
+    return;
+  }
+
+  uni.showLoading({
+    title: "正在处理...",
+  });
+
+  try {
+    // 1. 调用支付接口获取支付参数
+    const res = await payOrder(butlerDetail.value.id, userInfo.value.openid);
+
+    if (!res) {
+      throw new Error("获取支付参数失败");
+    }
+
+    const payParams = res;
+
+    // 2. 调用微信支付
+    uni.requestPayment({
+      provider: "wxpay",
+      timeStamp: payParams.timeStamp,
+      nonceStr: payParams.nonceStr,
+      package: payParams.package,
+      signType: payParams.signType || "MD5",
+      paySign: payParams.paySign,
+      success: (paymentRes) => {
+        uni.hideLoading();
+        console.log("支付成功:", paymentRes);
+
+        // 支付成功提示
+        uni.showToast({
+          title: "支付成功",
+          icon: "success",
+          duration: 2000,
+        });
+
+        // 延迟跳转到订单列表或详情页
+        setTimeout(() => {
+          uni.navigateTo({
+            url: "/pages/user/index",
+          });
+        }, 2000);
+      },
+      fail: (err) => {
+        uni.hideLoading();
+        console.error("支付失败:", err);
+
+        // 用户取消支付
+        if (err.errMsg.includes("cancel")) {
+          uni.showToast({
+            title: "已取消支付",
+            icon: "none",
+          });
+        } else {
+          uni.showToast({
+            title: "支付失败，请重试",
+            icon: "none",
+          });
+        }
+      },
+    });
+  } catch (error) {
+    uni.hideLoading();
+    console.error("支付异常:", error);
+    uni.showToast({
+      title: error.message || "支付失败，请重试",
+      icon: "none",
+    });
   }
 }
 
