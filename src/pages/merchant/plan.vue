@@ -406,7 +406,7 @@ const loadMerchants = async (page = 1) => {
         typeof selectedValue === "object"
       ) {
         // 区域筛选(对象类型，取id)
-        params.district_id = selectedValue.id;
+        params.district = selectedValue.name;
       } else if (typeof selectedValue === "string") {
         // 其他字符串类型直接传值
         params[filterDef.type] = selectedValue;

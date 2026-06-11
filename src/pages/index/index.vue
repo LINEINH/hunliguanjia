@@ -847,6 +847,7 @@ function updateCurrentMonthTasks() {
 // 加载数据
 onMounted(() => {
   loadHomeInfo();
+  console.log("checkLogin:", checkLogin());
   if (checkLogin()) {
     loadWeddingPlan();
   }
