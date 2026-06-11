@@ -27,35 +27,51 @@
           :nextMargin="80"
           :duration="500"
           :radius="10"
-          height="380"
+          height="400"
           @change="handleCardChange"
           bgColor="transparent"
         >
           <template #default="{ item }">
             <view class="card-item">
-              <image :src="item.image" mode="aspectFill" class="card-image" />
+              <image
+                :src="item.cover_image"
+                mode="aspectFill"
+                class="card-image"
+              />
               <view class="card-info">
                 <view class="card-host">
                   <image
-                    src="/static/images/user.png"
+                    :src="item.avatar"
                     mode="aspectFill"
                     class="user-pic"
                   ></image>
                   <view class="card-host-info">
                     <view class="card-host-name">{{ item.name }}</view>
                     <view class="rate">
-                      <text class="icon-star">4.4</text>
-                      <text class="year"> 16年经验 </text>
+                      <text class="icon-star">{{ item.rating }}</text>
+                      <text class="year">
+                        {{ item.experience_years }}年经验
+                      </text>
                     </view>
                   </view>
                 </view>
                 <view class="card-footer">
-                  <text class="card-price">¥{{ item.price }}</text>
-                  <image
-                    src="/static/images/like.png"
-                    mode="aspectFill"
-                    class="like"
-                  ></image>
+                  <text
+                    class="card-price"
+                    v-if="item.price_packages && item.price_packages.length"
+                    >¥
+
+                    {{ item.price_packages[0].price }}
+
+                    <text class="samll">起</text>
+                  </text>
+
+                  <up-icon
+                    name="star"
+                    size="24"
+                    :color="item.is_favorited ? '#FFD700' : '#E5E5E5'"
+                    @click.stop="toggleFavorite(item)"
+                  ></up-icon>
                 </view>
               </view>
             </view>
@@ -67,22 +83,43 @@
         <template v-for="(moment, index) in momentsList" :key="index">
           <view class="moment-item" @click="navigateToPlanItem()">
             <image
-              :src="moment.image"
+              :src="moment.cover_image"
               class="moment-image"
               mode="aspectFill"
             ></image>
-            <view class="moment-info">
-              <text class="moment-title">{{ moment.title }}</text>
-
-              <text class="moment-subtitle">含司仪、跟妆、摄影、摄像</text>
-              <view class="moment-intro">
+            <view class="card-info">
+              <view class="card-host">
                 <image
-                  src="/static/images/29.png"
+                  :src="moment.avatar"
                   mode="aspectFill"
-                  class="user-icon"
+                  class="user-pic"
                 ></image>
-                <text class="user-name">测试测试</text>
-                <view class="change">兑换</view>
+                <view class="card-host-info">
+                  <view class="card-host-name">{{ moment.name }}</view>
+                  <view class="rate">
+                    <text class="icon-star">{{ moment.rating }}</text>
+                    <text class="year">
+                      {{ moment.experience_years }}年经验
+                    </text>
+                  </view>
+                </view>
+              </view>
+              <view class="card-footer">
+                <text
+                  class="card-price"
+                  v-if="moment.price_packages && moment.price_packages.length"
+                  >¥
+
+                  {{ moment.price_packages[0].price }}
+
+                  <text class="samll">起</text>
+                </text>
+                <up-icon
+                  name="star"
+                  size="24"
+                  :color="moment.is_favorited ? '#FFD700' : '#E5E5E5'"
+                  @click.stop="toggleFavorite(moment)"
+                ></up-icon>
               </view>
             </view>
           </view>
@@ -94,12 +131,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { casesFeatured } from "@/api/index";
-import type { Merchant } from "@/types/merchant";
-import { getGoldServiceBanner } from "@/api/user";
+import { onReachBottom, onPullDownRefresh } from "@dcloudio/uni-app";
+
+import {
+  getGoldServiceBanner,
+  getRecommendedGold,
+  getGoldServiceProviders,
+} from "@/api/user";
+
+import { favoriteProduct, unfavoriteProduct } from "@/api/product";
+import { useUserStore } from "@/store/modules/user";
+// 获取用户store
+const userStore = useUserStore();
 
 // 轮播图数据
-const banners = ref([
+const banners = ref<any[]>([
   { image: "/static/images/banner1.png" },
   { image: "/static/images/banner.png" },
 ]);
@@ -109,7 +155,7 @@ function navigateToPlanItem() {
   uni.navigateTo({ url: "/pages/merchant/planItem" });
 }
 
-const cardList = ref<any>([
+const cardList = ref<any[]>([
   {
     image: "/static/images/banner1.png",
     name: "婚礼主持-晓腾",
@@ -136,32 +182,33 @@ const cardList = ref<any>([
   },
 ]);
 
-const momentsList = ref<any>([
-  {
-    image: "/static/images/banner1.png",
-    title: "浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场",
-    description: "精心布置的婚礼场地，见证幸福时刻",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "甜蜜婚纱照",
-    description: "专业摄影师捕捉每一个动人瞬间",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "温馨家庭聚会",
-    description: "亲朋好友共同见证的美好时光",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "梦幻婚礼策划",
-    description: "量身定制的专属婚礼方案",
-  },
-]);
+const momentsList = ref<any[]>([]);
+
+// 分页相关参数
+const currentPage = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
+const hasMore = ref(true);
+const isLoading = ref(false);
 
 const handleCardChange = () => {
   console.log(11);
 };
+
+// 获取推荐服务商列表（cardList）
+async function fetchRecommendedProviders() {
+  try {
+    const response = await getRecommendedGold();
+    console.log("推荐服务商:", response);
+    cardList.value = response || [];
+  } catch (error) {
+    console.error("获取推荐服务商失败:", error);
+    uni.showToast({
+      title: "获取数据失败",
+      icon: "none",
+    });
+  }
+}
 
 // 获取 banner
 async function fetchBanner() {
@@ -177,10 +224,145 @@ async function fetchBanner() {
     });
   }
 }
+
+// 获取列表数据
+async function fetchServiceProviders(isLoadMore = false) {
+  if (isLoading.value) return;
+
+  // 如果是加载更多，但没有更多数据了，则返回
+  if (isLoadMore && !hasMore.value) {
+    uni.showToast({
+      title: "没有更多数据了",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    isLoading.value = true;
+
+    const page = isLoadMore ? currentPage.value + 1 : 1;
+    // 假设 API 接受参数顺序为: status, keyword, page, pageSize
+    // 根据实际情况调整参数
+    const response = await getGoldServiceProviders(
+      "",
+      "",
+      page,
+      pageSize.value
+    );
+
+    console.log("金牌服务人列表:", response);
+
+    // 根据实际 API 返回结构调整
+    const newList = response?.data || response || [];
+    total.value = response?.total || 0;
+
+    if (isLoadMore) {
+      momentsList.value = [...momentsList.value, ...newList];
+    } else {
+      momentsList.value = newList;
+    }
+
+    currentPage.value = page;
+    hasMore.value = momentsList.value.length < total.value;
+  } catch (error) {
+    console.error("获取金牌服务人列表失败:", error);
+    uni.showToast({
+      title: "获取数据失败",
+      icon: "none",
+    });
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+// 上拉加载更多
+function loadMore() {
+  if (!isLoading.value && hasMore.value) {
+    fetchServiceProviders(true);
+  }
+}
+
+// 监听页面滚动到底部
+onReachBottom(() => {
+  loadMore();
+});
+
+// 下拉刷新
+onPullDownRefresh(async () => {
+  currentPage.value = 1;
+  hasMore.value = true;
+  await fetchServiceProviders(false);
+  uni.stopPullDownRefresh();
+});
+
+// 切换收藏状态
+async function toggleFavorite(item: any) {
+  console.log("userStore:", userStore.userInfo);
+  console.log("toggleFavorite:", item);
+  // 检查是否登录
+  if (!userStore.isLoggedIn || !userStore.userInfo) {
+    uni.showModal({
+      title: "提示",
+      content: "请先登录后再收藏",
+      success: (res) => {
+        if (res.confirm) {
+          uni.navigateTo({
+            url: "/pages/login/login",
+          });
+        }
+      },
+    });
+    return;
+  }
+
+  // 检查是否有产品ID
+  if (!item.id) {
+    uni.showToast({
+      title: "信息错误",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: item.is_favorited ? "取消收藏中..." : "收藏中...",
+      mask: true,
+    });
+
+    // 根据当前收藏状态调用不同的接口
+    if (item.is_favorited) {
+      // 取消收藏：target_id为商品ID，type为product
+      await unfavoriteProduct(item.id, "gold_service_provider");
+    } else {
+      // 收藏：target_id为商品ID，type为product
+      await favoriteProduct(item.id, "gold_service_provider");
+    }
+
+    // 切换收藏状态
+    item.is_favorited = !item.is_favorited;
+
+    uni.hideLoading();
+    uni.showToast({
+      title: item.is_favorited ? "收藏成功" : "已取消收藏",
+      icon: "success",
+    });
+  } catch (error) {
+    uni.hideLoading();
+    console.error("收藏操作失败:", error);
+    uni.showToast({
+      title: "操作失败，请重试",
+      icon: "none",
+    });
+  }
+}
+
 // 加载数据
 onMounted(() => {
-  // TODO: 调用 API 加载数据
   fetchBanner();
+  fetchRecommendedProviders(); // 获取推荐列表
+  fetchServiceProviders(false); // 获取金牌服务人列表（分页）
   console.log("首页加载");
 });
 </script>
@@ -188,6 +370,11 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import "@/styles/variables.scss";
 .butler-container {
+  .samll {
+    font-size: 24rpx;
+    color: #bf974a;
+    font-weight: normal;
+  }
   .banner {
     margin-bottom: $spacing-md;
     .banner-swiper {
@@ -237,14 +424,14 @@ onMounted(() => {
     border-radius: $radius-lg;
     overflow: hidden;
     box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.15);
-    height: 620rpx;
+    height: 640rpx;
     margin: 0 10rpx;
     background-color: #fff;
   }
 
   .card-image {
     width: 100%;
-    height: 420rpx;
+    height: 450rpx;
     display: block;
   }
 
@@ -317,17 +504,18 @@ onMounted(() => {
   .moments-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: $spacing-md;
     border-radius: 20rpx;
+    padding: 0 20rpx;
+    gap: 20rpx;
+    padding-bottom: 30rpx;
     .moment-item {
       background-color: #fff;
       border-radius: $radius-md;
       overflow: hidden;
       box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
-
       .moment-image {
         width: 100%;
-        height: 320rpx;
+        height: 450rpx;
         display: block;
       }
 
@@ -378,6 +566,46 @@ onMounted(() => {
             border: 1px solid #f0cd8c;
             padding: 10rpx 20rpx;
             border-radius: 30rpx;
+          }
+        }
+      }
+
+      .card-info {
+        padding: $spacing-md $spacing-sm;
+        .card-host {
+          display: flex;
+          align-content: center;
+          border-bottom: 1px solid #e5e5e5;
+          padding-bottom: 20rpx;
+          .user-pic {
+            width: 68rpx;
+            height: 68rpx;
+          }
+          .card-host-info {
+            margin-left: 10rpx;
+            .card-host-name {
+              font-size: 28rpx;
+            }
+            .rate {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              .icon-star {
+                border-radius: 20rpx;
+                background: linear-gradient(
+                  180deg,
+                  #f1daa6 0%,
+                  #f9eccc 33.03%,
+                  #e9cc90 100%
+                );
+                padding: 6rpx 20rpx;
+                color: #d43030;
+              }
+              .year {
+                font-size: 24rpx;
+                color: #a6a6a6;
+              }
+            }
           }
         }
       }

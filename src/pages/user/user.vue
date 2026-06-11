@@ -1,7 +1,12 @@
 <template>
   <view class="user-page">
     <!-- 用户信息 -->
-    <view class="user-header">
+    <view
+      class="user-header"
+      :class="{
+        'user-headerBg': userProfile && userProfile.gold_service_order,
+      }"
+    >
       <view class="user-info" @click="handleLogin">
         <image
           :src="userStore.avatar || '/static/images/user.png'"
@@ -11,12 +16,21 @@
           <view class="user-top">
             <text class="user-nickname">{{ userStore.nickname }}</text>
             <image
+              src="/static/images/16.png"
+              mode="aspectFill"
+              class="user-icon"
+              v-if="userProfile && userProfile.gold_service_order"
+            />
+            <image
               src="/static/images/17.png"
               mode="aspectFill"
               class="user-icon"
+              v-else
             />
           </view>
-          <text class="user-date">婚期：2027年10月2日</text>
+          <text class="user-date" v-if="userProfile && userProfile.wedding_plan"
+            >婚期：{{ userProfile.wedding_plan.wedding_date || "未设置" }}</text
+          >
           <text class="user-tip" v-if="!userStore.isLoggedIn">点击登录</text>
         </view>
       </view>
@@ -113,9 +127,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { useUserStore } from "@/store/modules/user";
+import { getUserInfo } from "@/api/user";
+import { checkLogin } from "@/utils/auth";
 
 const userStore = useUserStore();
+
+// 定义用户对象
+const userProfile = ref<any>(null);
 
 // 导航
 function navigateTo(url: string) {
@@ -124,15 +144,8 @@ function navigateTo(url: string) {
 
 // 登录
 async function handleLogin() {
+  if (userStore.isLoggedIn) return;
   uni.navigateTo({ url: "/pages/login/login" });
-  // if (userStore.isLoggedIn) return;
-
-  // try {
-  //   await wxLogin();
-  //   uni.showToast({ title: "登录成功", icon: "success" });
-  // } catch (error) {
-  //   console.error("登录失败:", error);
-  // }
 }
 
 // 登出
@@ -148,6 +161,30 @@ function handleLogout() {
     },
   });
 }
+
+// 获取用户信息
+async function loadUserInfo() {
+  // 检查是否有 token
+  if (!checkLogin()) {
+    return;
+  }
+
+  try {
+    const userInfo = await getUserInfo();
+    // 更新 store 中的用户信息
+    userStore.updateUserInfo(userInfo);
+    console.log("用户信息:", userInfo);
+    // 更新用户信息对象
+    userProfile.value = userInfo;
+  } catch (error) {
+    console.error("获取用户信息失败:", error);
+  }
+}
+
+// 页面加载时获取用户信息
+onMounted(() => {
+  loadUserInfo();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -245,6 +282,11 @@ function handleLogout() {
       /* 多行文本省略 */
     }
   }
+}
+.user-headerBg {
+  background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/11/6a2992f936363.png");
+  background-size: cover;
+  background-position: center;
 }
 
 .menu-item {

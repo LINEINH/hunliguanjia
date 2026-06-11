@@ -70,3 +70,20 @@ export function getGoldServiceBanner() {
     method: 'GET',
   })
 }
+
+// 推荐金牌服务人 /api/v1/wechat/gold-service-providers/recommend
+export function getRecommendedGold() {
+  return request<any>({
+    url: '/wechat/gold-service-providers/recommend',
+    method: 'GET',
+  })
+}
+
+
+// 获取金牌服务人列表 /api/v1/wechat/gold-service-providers?keyword=&service_level=&page=&per_page=
+export function getGoldServiceProviders(keyword: string, service_level: string, page: number, per_page: number) {
+  return request<any>({
+    url: `/wechat/gold-service-providers?keyword=${keyword}&service_level=${service_level}&page=${page}&per_page=${per_page}`,
+    method: 'GET',
+  })
+} 

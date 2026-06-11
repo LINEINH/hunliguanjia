@@ -798,19 +798,17 @@ const confirmBudgetInput = async () => {
 
 // 初始化日历
 function initCalendar() {
-  if (weddingDate.value) {
-    const [year, month, day] = weddingDate.value.split("-").map(Number);
-    calendarYear.value = year;
-    calendarMonth.value = month;
-    generateCalendar(year, month);
+  // 使用当前日期作为日历显示的基准
+  const now = new Date();
+  calendarYear.value = now.getFullYear();
+  calendarMonth.value = now.getMonth() + 1;
+  generateCalendar(calendarYear.value, calendarMonth.value);
 
-    // 基于婚期日期生成本周视图
-    const weddingDateObj = new Date(year, month - 1, day);
-    getCurrentWeekDays(weddingDateObj);
+  // 基于当前日期生成本周视图
+  getCurrentWeekDays(now);
 
-    // 更新当前月份的任务
-    updateCurrentMonthTasks();
-  }
+  // 更新当前月份的任务
+  updateCurrentMonthTasks();
 }
 
 // 根据当前月份更新任务列表
@@ -821,13 +819,22 @@ function updateCurrentMonthTasks() {
   const currentYear = calendarYear.value;
   const currentMonth = calendarMonth.value;
 
-  // 构建当前月份的日期范围字符串用于匹配
-  const monthStr = `${currentYear}年${String(currentMonth).padStart(2, "0")}月`;
-
   // 查找包含当前月份的规划阶段
   const matchedPhase = planningPhases.value.find((phase) => {
     // date_range 格式如："2026年12月03日 - 2027年01月02日"
-    return phase.date_range.includes(monthStr);
+    // 提取前面的日期部分进行匹配
+    const dateRange = phase.date_range;
+    const match = dateRange.match(/(\d{4})年(\d{2})月/);
+
+    if (match) {
+      const rangeYear = parseInt(match[1]);
+      const rangeMonth = parseInt(match[2]);
+
+      // 匹配年份和月份
+      return rangeYear === currentYear && rangeMonth === currentMonth;
+    }
+
+    return false;
   });
 
   if (matchedPhase) {
@@ -840,7 +847,9 @@ function updateCurrentMonthTasks() {
 // 加载数据
 onMounted(() => {
   loadHomeInfo();
-  loadWeddingPlan();
+  if (checkLogin()) {
+    loadWeddingPlan();
+  }
 });
 </script>
 
