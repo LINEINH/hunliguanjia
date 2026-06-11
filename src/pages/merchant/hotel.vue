@@ -88,10 +88,10 @@
             ><text class="rate">{{ hotel.rating }}分</text>
             {{ hotel.business_status }} {{ hotel.business_hours }}
           </view>
-          <view class="hotel-desc"> {{ hotel.short_description }} </view>
+          <view class="hotel-desc"> {{ hotel.description }} </view>
           <view class="hotel-highlights">
             <text
-              v-for="(h, idx) in hotel.highlights"
+              v-for="(h, idx) in hotel.personnel_tags"
               :key="idx"
               class="highlight"
               >#{{ h }}</text
@@ -408,7 +408,8 @@ function resetAreaSelection() {
     tempSelectedVenueType.value = -1; // 重置场地类型选择
     selectedVenueType.value = ""; // 清空已选场地类型
   }
-
+  // 清除高亮状态
+  tempSelectedfilters.value = null;
   // 重置后调用接口更新数据
   const params = getCurrentParams();
   show.value = false;

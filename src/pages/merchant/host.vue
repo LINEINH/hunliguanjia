@@ -263,6 +263,8 @@ function resetAreaSelection() {
   if (activeFilterId.value !== null) {
     delete activeFilters[activeFilterId.value];
   }
+  // 清除高亮状态
+  activeFilterId.value = null;
   // 关闭弹窗
   show.value = false;
   // 重置页码并重新加载数据

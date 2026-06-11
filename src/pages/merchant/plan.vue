@@ -336,6 +336,8 @@ function resetAreaSelection() {
   }
   // 关闭弹窗
   show.value = false;
+  // 清除高亮状态
+  activeFilterId.value = null;
   // 重置页码并重新加载数据
   currentPage.value = 1;
   loadMerchants(1);

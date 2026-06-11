@@ -193,7 +193,7 @@ async function payOrderBtn() {
 
         // 延迟跳转到订单列表或详情页
         setTimeout(() => {
-          uni.navigateTo({
+          uni.switchTab({
             url: "/pages/user/user",
           });
         }, 2000);
