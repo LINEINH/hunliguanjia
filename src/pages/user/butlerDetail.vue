@@ -2,72 +2,86 @@
 <template>
   <view class="butler-detail-page">
     <up-navbar
-      title="盛唐宴礼宴中心(太华南路店)"
+      :title="butlerDetail?.name || '管家详情'"
       @rightClick="rightClick"
       :autoBack="true"
     >
     </up-navbar>
     <!-- 轮播图 -->
     <view class="banner">
-      <swiper class="banner-swiper" autoplay circular indicator-dots>
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        v-if="banners.length > 0"
+      >
         <swiper-item v-for="(item, index) in banners" :key="index">
           <image :src="item.image" mode="aspectFill" class="banner-image" />
         </swiper-item>
       </swiper>
+      <view v-else class="banner-placeholder">暂无图片</view>
     </view>
     <view class="hotel-info">
       <view class="host">
         <view class="card-host">
           <image
-            src="/static/images/user.png"
+            :src="butlerDetail?.avatar || '/static/images/user.png'"
             mode="aspectFill"
             class="user-pic"
           ></image>
           <view class="card-host-info">
-            <view class="card-host-name">测试测试</view>
+            <view class="card-host-name">{{
+              butlerDetail?.name || "测试测试"
+            }}</view>
             <view class="rate">
-              <text class="icon-star">4.4</text>
-              <text class="year"> 16年经验 </text>
+              <text class="icon-star">{{ butlerDetail?.rating || "4.4" }}</text>
+              <text class="year">
+                {{ butlerDetail?.experienceYears || 16 }}年经验
+              </text>
             </view>
           </view>
         </view>
 
-        <view class="card-price">10000</view>
+        <view
+          class="card-price"
+          v-if="
+            butlerDetail?.price_packages &&
+            butlerDetail.price_packages.length > 0
+          "
+          >{{ butlerDetail?.price_packages[0].price || 10000 }}</view
+        >
       </view>
 
-      <view class="hotel-address"
-        >1.建群有任何婚礼的问题可以随时问我
-        2.在婚礼前一个月左右我们约线下见面，我来找您，做全程婚礼策划，或者根据您的时间我们来做线上语音3全程迎亲和婚礼策划(两个小时)4.彩排+迎亲+主持+Dj</view
-      >
+      <view class="hotel-address">{{
+        butlerDetail?.service_description ||
+        "1.建群有任何婚礼的问题可以随时问我 2.在婚礼前一个月左右我们约线下见面，我来找您，做全程婚礼策划，或者根据您的时间我们来做线上语音3全程迎亲和婚礼策划(两个小时)4彩排+迎亲+主持+Dj"
+      }}</view>
     </view>
     <view class="concent">
       <view class="concent-name">服务内容</view>
-      <view class="list">
-        <view class="listItem">
+      <view
+        class="list"
+        v-if="
+          butlerDetail?.price_packages && butlerDetail.price_packages.length > 0
+        "
+      >
+        <view
+          class="listItem"
+          v-for="(service, index) in butlerDetail.price_packages"
+          :key="index"
+        >
           <view class="listItem-name">
             <text class="point"></text>
-            测试测试</view
+            {{ service.name }}</view
           >
-          <view class="listItem-price">¥58888</view>
-          <view class="listItem-button">立即预订</view>
-        </view>
-        <view class="listItem">
-          <view class="listItem-name">
-            <text class="point"></text>
-            测试测试</view
+          <view class="listItem-price">¥{{ service.price }}</view>
+          <view class="listItem-button" @click="buyNow(index, butlerDetail.id)"
+            >立即预订</view
           >
-          <view class="listItem-price">¥58888</view>
-          <view class="listItem-button">立即预订</view>
-        </view>
-        <view class="listItem">
-          <view class="listItem-name">
-            <text class="point"></text>
-            测试测试</view
-          >
-          <view class="listItem-price">¥58888</view>
-          <view class="listItem-button">立即预订</view>
         </view>
       </view>
+      <view v-else class="empty-services">暂无服务内容</view>
     </view>
     <view class="hotel-footer">
       <view class="hotel-footer-item">
@@ -89,19 +103,51 @@
 
 <script setup>
 import { ref, reactive, computed } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
 const show = ref(false);
+import { getGoldDetail } from "@/api/user";
 
 // 轮播图数据
 const banners = ref([
   { image: "/static/images/banner1.png" },
   { image: "/static/images/banner.png" },
 ]);
-function openDetail(hotel) {
-  if (hotel && hotel.id) {
-    uni.navigateTo({
-      url: `/pages/merchant/hotel-detail?id=${hotel.id}`,
-    });
+
+// 管家详情数据
+const butlerDetail = ref(null);
+const loading = ref(false);
+
+// 获取页面参数并加载详情
+onLoad((options) => {
+  const id = options.id;
+  if (id) {
+    loadButlerDetail(Number(id));
   }
+});
+
+// 加载管家详情
+async function loadButlerDetail(id) {
+  loading.value = true;
+  try {
+    const res = await getGoldDetail(id);
+    if (res && res) {
+      butlerDetail.value = res;
+    }
+  } catch (error) {
+    console.error("获取管家详情失败:", error);
+    uni.showToast({
+      title: "获取详情失败",
+      icon: "none",
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+function buyNow(index, id) {
+  uni.navigateTo({
+    url: `/pages/user/order?index=${index}&id=${id}`,
+  });
 }
 </script>
 
@@ -124,6 +170,16 @@ function openDetail(hotel) {
     .banner-image {
       width: 100%;
       height: 100%;
+    }
+
+    .banner-placeholder {
+      height: 320rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      color: #999;
+      font-size: 28rpx;
     }
   }
   .hotel-info {
@@ -293,6 +349,12 @@ function openDetail(hotel) {
           padding: 10rpx 30rpx;
         }
       }
+    }
+    .empty-services {
+      text-align: center;
+      color: #999;
+      font-size: 28rpx;
+      padding: 40rpx 0;
     }
   }
   .hotel-footer {

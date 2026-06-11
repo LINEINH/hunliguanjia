@@ -87,3 +87,12 @@ export function getGoldServiceProviders(keyword: string, service_level: string, 
     method: 'GET',
   })
 } 
+
+
+// 获取金牌服务人详情 /api/v1/wechat/gold-service-providers/{id}
+export function getGoldDetail(id: number) {
+  return request<any>({
+    url: `/wechat/gold-service-providers/${id}`,
+    method: 'GET',
+  })
+}

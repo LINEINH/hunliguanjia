@@ -1,10 +1,18 @@
 <template>
   <view class="butler-container">
     <!-- 轮播图 -->
+    <view class="nav">
+      <up-navbar-mini
+        @leftClick="leftClick"
+        :autoBack="true"
+        homeUrl="/pages/index/index"
+      >
+      </up-navbar-mini>
+    </view>
     <view class="banner">
       <swiper class="banner-swiper" autoplay circular indicator-dots>
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image" mode="aspectFill" class="banner-image" />
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
         </swiper-item>
       </swiper>
     </view>
@@ -28,7 +36,6 @@
           :duration="500"
           :radius="10"
           height="400"
-          @change="handleCardChange"
           bgColor="transparent"
         >
           <template #default="{ item }">
@@ -37,9 +44,10 @@
                 :src="item.cover_image"
                 mode="aspectFill"
                 class="card-image"
+                @click="navToDetail(item)"
               />
               <view class="card-info">
-                <view class="card-host">
+                <view class="card-host" @click="navToDetail(item)">
                   <image
                     :src="item.avatar"
                     mode="aspectFill"
@@ -81,14 +89,15 @@
 
       <view class="moments-grid">
         <template v-for="(moment, index) in momentsList" :key="index">
-          <view class="moment-item" @click="navigateToPlanItem()">
+          <view class="moment-item">
             <image
               :src="moment.cover_image"
               class="moment-image"
               mode="aspectFill"
+              @click="navToDetail(moment)"
             ></image>
             <view class="card-info">
-              <view class="card-host">
+              <view class="card-host" @click="navToDetail(moment)">
                 <image
                   :src="moment.avatar"
                   mode="aspectFill"
@@ -319,7 +328,7 @@ async function toggleFavorite(item: any) {
   // 检查是否有产品ID
   if (!item.id) {
     uni.showToast({
-      title: "信息错误",
+      title: "错误",
       icon: "none",
     });
     return;
@@ -358,6 +367,18 @@ async function toggleFavorite(item: any) {
   }
 }
 
+function navToDetail(event: any) {
+  if (event.id) {
+    uni.navigateTo({ url: `/pages/user/butlerDetail?id=${event.id}` });
+  }
+}
+
+// 定义方法
+const leftClick = () => {
+  console.log("leftClick");
+  // 返回上一页
+  uni.navigateBack();
+};
 // 加载数据
 onMounted(() => {
   fetchBanner();
@@ -378,7 +399,7 @@ onMounted(() => {
   .banner {
     margin-bottom: $spacing-md;
     .banner-swiper {
-      height: 320rpx;
+      height: 540rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

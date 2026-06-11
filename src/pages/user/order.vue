@@ -4,22 +4,24 @@
     <view class="order-status-header">
       <view class="status-icon">
         <!-- 如果项目中没有 uView UI，可以使用普通 text 或 image 替代，这里暂时用 text 模拟图标或保留原意 -->
-        <text class="icon-clock">⏰</text>
+        <!-- <text class="icon-clock">⏰</text> -->
       </view>
       <text class="status-text">待付款</text>
-      <text class="status-desc">请在23:59前完成支付</text>
+      <!-- <text class="status-desc">请在23:59前完成支付</text> -->
     </view>
 
     <!-- 商家信息 -->
     <view class="merchant-section">
       <view class="merchant-info">
-        <view class="merchant-avatar">
+        <!-- <view class="merchant-avatar">
           <image
             src="/static/images/merchant-avatar.png"
             mode="aspectFill"
           ></image>
-        </view>
-        <text class="merchant-name">李四 177****0000</text>
+        </view> -->
+        <text class="merchant-name"
+          >{{ userInfo.nickname }} {{ userInfo.phone }}</text
+        >
       </view>
     </view>
 
@@ -27,15 +29,24 @@
       <view class="goods-item">
         <view class="goods-image">
           <image
-            src="/static/images/test.png"
+            :src="butlerDetail.cover_image"
             mode="aspectFill"
             class="image"
           ></image>
         </view>
         <view class="goods-info">
           <view class="goods-info-name">
-            <view class="name">全程陪同</view>
-            <view class="price">￥100</view>
+            <view class="name">{{
+              butlerDetail.price_packages[indexItem].name
+            }}</view>
+            <view class="price"
+              >￥{{ butlerDetail.price_packages[indexItem].price }}</view
+            >
+          </view>
+          <view class="goods-info-desc">
+            <text class="goods-info-desc-text">{{
+              butlerDetail.price_packages[indexItem].description
+            }}</text>
           </view>
         </view>
       </view>
@@ -43,26 +54,28 @@
 
     <!-- 订单详情 -->
     <view class="order-details">
-      <view class="detail-item">
+      <!-- <view class="detail-item">
         <text class="detail-label">优惠券</text>
         <text class="detail-value">300</text>
-      </view>
+      </view> -->
       <view class="detail-item">
         <text class="detail-label">应付金额合计</text>
-        <text class="detail-value">60000</text>
+        <text class="detail-value"
+          >￥{{ butlerDetail.price_packages[indexItem].price }}</text
+        >
       </view>
     </view>
 
     <!-- 价格汇总 -->
     <view class="price-summary">
-      <view class="summary-item">
+      <!-- <view class="summary-item">
         <text class="summary-label">下单时间</text>
         <text class="summary-value">2026.4.27 12:22:35</text>
       </view>
       <view class="summary-item">
         <text class="summary-label">订单编号</text>
         <text class="summary-value">358283894949838</text>
-      </view>
+      </view> -->
       <view class="summary-item total">
         <text class="summary-label">微信支付</text>
         <text class="summary-value total-price">¥{{ finalPrice }}</text>
@@ -72,7 +85,9 @@
     <!-- 底部按钮 -->
     <view class="footer-actions">
       <view class="footer-price">
-        共1件，合计<text class="price"><text class="small">¥</text>1666</text>
+        共1件，合计<text class="price"
+          ><text class="small">¥</text>{{ finalPrice }}</text
+        >
       </view>
       <view class="btn-pay" @click="payOrder">提交订单</view>
     </view>
@@ -82,70 +97,69 @@
   </view>
 </template>
 
-<script setup lang="ts">
-import { ref, computed } from "vue";
+<script setup>
+import { ref, reactive, computed } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
+const show = ref(false);
+import { getGoldDetail } from "@/api/user";
+import { useUserStore } from "@/store/modules/user";
 
-// 服务项目列表
-const services = ref([
-  { name: "婚礼策划师服务", price: "800" },
-  { name: "场地布置", price: "1200" },
-  { name: "新娘化妆", price: "600" },
-  { name: "婚礼摄影", price: "1000" },
-  { name: "婚礼摄像", price: "800" },
-]);
+const userStore = useUserStore();
 
-// 价格计算
-const totalPrice = computed(() => {
-  return services.value.reduce(
-    (sum, service) => sum + Number(service.price),
-    0
-  );
-});
+// 管家详情数据
+const butlerDetail = ref(null);
+const loading = ref(false);
 
-const discount = ref(200); // 优惠金额
+// 定义一个参数接收用户信息
+const userInfo = ref(null);
+userInfo.value = userStore.userInfo;
 
+// 定义一个参数接口传过来的index值
+const indexItem = ref(null);
 const finalPrice = computed(() => {
-  return totalPrice.value - discount.value;
+  if (butlerDetail.value) {
+    return butlerDetail.value.price_packages[indexItem.value].price;
+  }
+  return 0;
 });
 
-// 取消订单
-const cancelOrder = () => {
-  uni.showModal({
-    title: "确认取消",
-    content: "确定要取消此订单吗？",
-    success: (res) => {
-      if (res.confirm) {
-        console.log("用户确认取消订单");
-        // 这里可以添加取消订单的逻辑
-        uni.navigateBack();
-      }
-    },
-  });
-};
+// 获取页面参数并加载详情
+onLoad((options) => {
+  console.log("页面参数:", options);
+  const id = options.id;
+  const index = options.index;
+  if (id) {
+    loadButlerDetail(Number(id));
+  }
+  if (index) {
+    indexItem.value = index;
+  }
+});
 
-// 支付订单
-const payOrder = () => {
-  console.log("用户点击支付");
-  // 这里可以添加支付逻辑
-  uni.showLoading({
-    title: "支付中...",
-  });
-
-  // 模拟支付过程
-  setTimeout(() => {
-    uni.hideLoading();
-    uni.showModal({
-      title: "支付结果",
-      content: "模拟支付成功！",
-      showCancel: false,
-      success: () => {
-        // 支付成功后的逻辑
-        console.log("支付成功");
-        uni.navigateBack();
-      },
+// 加载管家详情
+async function loadButlerDetail(id) {
+  loading.value = true;
+  try {
+    const res = await getGoldDetail(id);
+    if (res && res) {
+      butlerDetail.value = res;
+    }
+  } catch (error) {
+    console.error("获取管家详情失败:", error);
+    uni.showToast({
+      title: "获取详情失败",
+      icon: "none",
     });
-  }, 1500);
-};
+  } finally {
+    loading.value = false;
+  }
+}
+
+function buyNow(index, id) {
+  uni.navigateTo({
+    url: `/pages/user/order?index=${index}&id=${id}`,
+  });
+}
 </script>
 
 <style lang="scss" scoped>
