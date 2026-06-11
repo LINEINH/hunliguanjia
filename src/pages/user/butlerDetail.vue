@@ -14,7 +14,7 @@
         autoplay
         circular
         indicator-dots
-        v-if="banners.length > 0"
+        v-if="butlerDetail.carousel_images.length > 0"
       >
         <swiper-item
           v-for="(item, index) in butlerDetail.carousel_images"
@@ -231,7 +231,7 @@ function buyNow(index, id) {
 
   .banner {
     margin-bottom: $spacing-md;
-    margin-top: 80rpx;
+    margin-top: 120rpx;
     .banner-swiper {
       height: 520rpx;
       border-radius: $radius-md;

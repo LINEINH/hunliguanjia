@@ -2,12 +2,19 @@
   <view class="order-container">
     <!-- 订单状态头部 -->
     <view class="order-status-header">
+      <up-navbar-mini
+        @leftClick="leftClick"
+        :autoBack="true"
+        homeUrl="/pages/index/index"
+      >
+      </up-navbar-mini>
       <view class="status-icon">
         <!-- 如果项目中没有 uView UI，可以使用普通 text 或 image 替代，这里暂时用 text 模拟图标或保留原意 -->
-        <text class="icon-clock">⏰</text>
+
+        <up-icon name="hourglass" size="38" color="#fff" class="icon"></up-icon>
       </view>
       <text class="status-text">待付款</text>
-      <!-- <text class="status-desc">请在23:59前完成支付</text> -->
+      <text class="status-desc">请尽快完成支付</text>
     </view>
 
     <!-- 商家信息 -->
@@ -128,6 +135,13 @@ onLoad((options) => {
     loadButlerDetail(Number(id));
   }
 });
+
+// 定义方法
+const leftClick = () => {
+  console.log("leftClick");
+  // 返回上一页
+  uni.navigateBack();
+};
 
 // 加载管家详情
 async function loadButlerDetail(id) {
@@ -254,6 +268,14 @@ function buyNow(index, id) {
   .status-icon {
     margin-bottom: 20rpx;
     font-size: 80rpx;
+    margin-top: 40rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    .icon {
+      margin: 20rpx auto;
+      display: block;
+    }
   }
 
   .status-text {
