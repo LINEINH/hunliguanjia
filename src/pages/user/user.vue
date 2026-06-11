@@ -34,7 +34,7 @@
           <text class="user-tip" v-if="!userStore.isLoggedIn">点击登录</text>
         </view>
       </view>
-      <view class="user-intro">
+      <view class="user-intro" @click="navigateTo('/pages/user/butler')">
         <view class="user-intro-title">
           <image
             src="/static/images/18.png"
@@ -824,334 +824,267 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 日期选择器和预算选择器样式 */
-.date-budget {
-  background-color: #fff;
-  border-radius: 16px;
-  margin: 24rpx;
+.user-page {
+  /* 日期选择器和预算选择器样式 */
+  .date-budget {
+    background-color: #fff;
+    border-radius: 16px;
+    margin: 24rpx;
 
-  .data-selector {
+    .data-selector {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 32rpx;
+      border-radius: 16px;
+      background: linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 1),
+          rgba(255, 255, 255, 1)
+        ),
+        linear-gradient(136.78deg, #f1daa6 0%, #f9eccc 33.03%, #e9cc90 100%);
+
+      .date-selector,
+      .budget-selector {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+
+        .budget-title {
+          font-size: 24rpx;
+          color: #808080;
+          margin-bottom: 8rpx;
+        }
+
+        .budget-data {
+          font-size: 32rpx;
+          font-weight: bold;
+          color: #bf974a;
+          margin-bottom: 8rpx;
+        }
+
+        .budget-text {
+          font-size: 28rpx;
+          color: #808080;
+        }
+      }
+
+      .line {
+        width: 1px;
+        height: 80rpx;
+        background: linear-gradient(
+          180deg,
+          rgba(234, 196, 123, 1) 0%,
+          rgba(241, 218, 166, 1) 100%
+        );
+        margin: 0 32rpx;
+      }
+    }
+  }
+
+  /* 日期选择器弹窗样式 */
+  .date-picker-mask,
+  .budget-picker-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: space-around;
+    align-items: flex-end;
+    z-index: 9999;
+  }
+
+  .date-picker-container,
+  .budget-picker-container {
+    width: 100%;
+    background-color: #fff;
+    border-radius: 32rpx 32rpx 0 0;
+    overflow: hidden;
+  }
+
+  .date-picker-header,
+  .budget-picker-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 32rpx;
-    border-radius: 16px;
-    background: linear-gradient(
-      136.78deg,
-      rgba(241, 218, 166, 1) 0%,
-      rgba(249, 236, 204, 1) 33.03%,
-      rgba(233, 204, 144, 1) 100%
-    );
-    border: 2px solid rgba(234, 196, 123, 1);
-
-    .date-selector,
-    .budget-selector {
-      display: flex;
-      flex-direction: column;
-      text-align: center;
-
-      .budget-title {
-        font-size: 24rpx;
-        color: rgba(191, 151, 74, 1);
-        margin-bottom: 8rpx;
-      }
-
-      .budget-data {
-        font-size: 32rpx;
-        font-weight: bold;
-        color: rgba(97, 37, 0, 1);
-        margin-bottom: 8rpx;
-      }
-
-      .budget-text {
-        font-size: 28rpx;
-        color: rgba(171, 126, 43, 1);
-      }
-    }
-
-    .line {
-      width: 1px;
-      height: 80rpx;
-      background: linear-gradient(
-        180deg,
-        rgba(234, 196, 123, 1) 0%,
-        rgba(241, 218, 166, 1) 100%
-      );
-      margin: 0 32rpx;
-    }
-  }
-}
-
-/* 日期选择器弹窗样式 */
-.date-picker-mask,
-.budget-picker-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: flex-end;
-  z-index: 9999;
-}
-
-.date-picker-container,
-.budget-picker-container {
-  width: 100%;
-  background-color: #fff;
-  border-radius: 32rpx 32rpx 0 0;
-  overflow: hidden;
-}
-
-.date-picker-header,
-.budget-picker-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 32rpx;
-  border-bottom: 1px solid #f0f0f0;
-  position: relative;
-
-  .date-picker-title,
-  .budget-picker-title {
-    font-size: 32rpx;
-    color: #000;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .date-picker-close,
-  .budget-picker-close {
-    font-size: 48rpx;
-    color: #999;
-    line-height: 1;
-    margin-left: auto;
-  }
-}
-
-.date-picker-view {
-  height: 400rpx;
-}
-
-.picker-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32rpx;
-  color: #333;
-}
-
-.budget-picker-content {
-  max-height: 600rpx;
-  overflow-y: auto;
-  padding: 32rpx 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: space-around;
-}
-
-.budget-input-section {
-  display: flex;
-  margin-bottom: 20rpx;
-  padding: 0 40rpx;
-  flex-direction: column;
-  width: 100%;
-}
-
-.input-label {
-  font-size: 32rpx;
-  color: #212121;
-  margin-bottom: 30rpx;
-}
-
-.budget-input {
-  flex: 1;
-  height: 80rpx;
-  border: 1rpx solid #bcbcbc;
-  border-radius: 10rpx;
-  padding: 0 20rpx;
-  font-size: 32rpx;
-}
-
-.date-picker-footer,
-.budget-picker-footer {
-  display: flex;
-  padding: 32rpx 48rpx;
-
-  .date-picker-btn,
-  .budget-picker-btn {
-    width: 100%;
-    height: 80rpx;
-    line-height: 80rpx;
-    text-align: center;
-    border-radius: 32rpx;
-    font-size: 32rpx;
-    border: none;
-
-    &::after {
-      border: none;
-    }
-  }
-
-  .confirm-btn {
-    border-radius: 20px;
-    background: linear-gradient(180deg, #eac47b 0%, #f1daa6 100%);
-    color: #612500;
-  }
-}
-
-/* 日历组件样式 */
-.calendar-container {
-  width: 100%;
-  padding: 32rpx 0;
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 32rpx 32rpx;
-
-  .calendar-nav {
-    width: 56rpx;
-    height: 56rpx;
-    display: flex;
-    justify-content: center;
-    border-radius: 20rpx;
-    border: 0.77px solid #9cb2cd;
-
-    &:active {
-      background-color: #f0cd8c;
-    }
-  }
-
-  .calendar-title {
-    font-size: 36rpx;
-    font-weight: bold;
-    color: rgba(128, 128, 128, 1);
-  }
-}
-
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  padding: 16rpx 32rpx;
-  border-bottom: 1px solid #f0f0f0;
-
-  .weekday {
-    text-align: center;
-    font-size: 28rpx;
-    color: #999;
-    padding: 16rpx 0;
-  }
-}
-
-.calendar-days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8rpx;
-  padding: 32rpx;
-
-  .calendar-day {
-    aspect-ratio: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8rpx;
+    border-bottom: 1px solid #f0f0f0;
     position: relative;
 
-    .day-number {
+    .date-picker-title,
+    .budget-picker-title {
       font-size: 32rpx;
-      color: #333;
+      color: #000;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
-    .day-label {
-      font-size: 20rpx;
-      color: #d4a574;
-      margin-top: 4rpx;
-    }
-
-    &.day-other-month {
-      .day-number {
-        color: #ccc;
-      }
-    }
-
-    &.day-today {
-      .day-number {
-        color: #d4a574;
-        font-weight: bold;
-      }
-    }
-
-    &.day-wedding {
-      background: linear-gradient(
-        180deg,
-        rgba(234, 196, 123, 1) 0%,
-        rgba(241, 218, 166, 1) 100%
-      );
-
-      .day-number {
-        color: #fff;
-        font-weight: bold;
-      }
-
-      .day-label {
-        color: #fff;
-      }
+    .date-picker-close,
+    .budget-picker-close {
+      font-size: 48rpx;
+      color: #999;
+      line-height: 1;
+      margin-left: auto;
     }
   }
-}
 
-/* 周视图样式 */
-.week-view {
-  padding: 32rpx;
+  .date-picker-view {
+    height: 400rpx;
+  }
 
-  .week-days {
+  .picker-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32rpx;
+    color: #333;
+  }
+
+  .budget-picker-content {
+    max-height: 600rpx;
+    overflow-y: auto;
+    padding: 32rpx 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-around;
+  }
+
+  .budget-input-section {
+    display: flex;
+    margin-bottom: 20rpx;
+    padding: 0 40rpx;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .input-label {
+    font-size: 32rpx;
+    color: #212121;
+    margin-bottom: 30rpx;
+  }
+
+  .budget-input {
+    flex: 1;
+    height: 80rpx;
+    border: 1rpx solid #bcbcbc;
+    border-radius: 10rpx;
+    padding: 0 20rpx;
+    font-size: 32rpx;
+  }
+
+  .date-picker-footer,
+  .budget-picker-footer {
+    display: flex;
+    padding: 32rpx 48rpx;
+
+    .date-picker-btn,
+    .budget-picker-btn {
+      width: 100%;
+      height: 80rpx;
+      line-height: 80rpx;
+      text-align: center;
+      border-radius: 32rpx;
+      font-size: 32rpx;
+      border: none;
+
+      &::after {
+        border: none;
+      }
+    }
+
+    .confirm-btn {
+      border-radius: 20px;
+      background: linear-gradient(180deg, #eac47b 0%, #f1daa6 100%);
+      color: #612500;
+    }
+  }
+
+  /* 日历组件样式 */
+  .calendar-container {
+    width: 100%;
+    padding: 32rpx 0;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32rpx 32rpx;
+
+    .calendar-nav {
+      width: 56rpx;
+      height: 56rpx;
+      display: flex;
+      justify-content: center;
+      border-radius: 20rpx;
+      border: 0.77px solid #9cb2cd;
+
+      &:active {
+        background-color: #f0cd8c;
+      }
+    }
+
+    .calendar-title {
+      font-size: 36rpx;
+      font-weight: bold;
+      color: rgba(128, 128, 128, 1);
+    }
+  }
+
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 16rpx 32rpx;
+    border-bottom: 1px solid #f0f0f0;
+
+    .weekday {
+      text-align: center;
+      font-size: 28rpx;
+      color: #999;
+      padding: 16rpx 0;
+    }
+  }
+
+  .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8rpx;
+    padding: 32rpx;
 
-    .week-day-item {
-      aspect-ratio: 0.8;
+    .calendar-day {
+      aspect-ratio: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       border-radius: 8rpx;
-      padding: 8rpx;
+      position: relative;
 
-      .week-day-weekday {
-        font-size: 24rpx;
-        color: #999;
-        margin-bottom: 4rpx;
-      }
-
-      .week-day-number {
-        font-size: 36rpx;
+      .day-number {
+        font-size: 32rpx;
         color: #333;
-        font-weight: bold;
       }
 
-      .week-day-label {
+      .day-label {
         font-size: 20rpx;
         color: #d4a574;
         margin-top: 4rpx;
       }
 
       &.day-other-month {
-        .week-day-number {
+        .day-number {
           color: #ccc;
         }
       }
 
       &.day-today {
-        .week-day-number {
+        .day-number {
           color: #d4a574;
+          font-weight: bold;
         }
       }
 
@@ -1162,41 +1095,89 @@ onMounted(() => {
           rgba(241, 218, 166, 1) 100%
         );
 
-        .week-day-number {
+        .day-number {
           color: #fff;
+          font-weight: bold;
         }
 
-        .week-day-label {
+        .day-label {
           color: #fff;
         }
       }
     }
   }
-}
 
-.expand-hint {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* 周视图样式 */
+  .week-view {
+    padding: 32rpx;
 
-  .hint-text {
-    font-size: 28rpx;
-    color: #999;
+    .week-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8rpx;
+
+      .week-day-item {
+        aspect-ratio: 0.8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8rpx;
+        padding: 8rpx;
+
+        .week-day-weekday {
+          font-size: 24rpx;
+          color: #999;
+          margin-bottom: 4rpx;
+        }
+
+        .week-day-number {
+          font-size: 36rpx;
+          color: #333;
+          font-weight: bold;
+        }
+
+        .week-day-label {
+          font-size: 20rpx;
+          color: #d4a574;
+          margin-top: 4rpx;
+        }
+
+        &.day-other-month {
+          .week-day-number {
+            color: #ccc;
+          }
+        }
+
+        &.day-today {
+          .week-day-number {
+            color: #d4a574;
+          }
+        }
+
+        &.day-wedding {
+          background: linear-gradient(
+            180deg,
+            rgba(234, 196, 123, 1) 0%,
+            rgba(241, 218, 166, 1) 100%
+          );
+
+          .week-day-number {
+            color: #fff;
+          }
+
+          .week-day-label {
+            color: #fff;
+          }
+        }
+      }
+    }
   }
 
-  .hint-icon {
-    font-size: 28rpx;
-    color: #999;
-  }
-}
-
-/* 月视图样式 */
-.month-view {
-  .collapse-hint {
+  .expand-hint {
     display: flex;
-    flex-direction: column;
-    padding: 32rpx 48rpx;
-    gap: 8rpx;
+    justify-content: center;
+    align-items: center;
 
     .hint-text {
       font-size: 28rpx;
@@ -1206,174 +1187,198 @@ onMounted(() => {
     .hint-icon {
       font-size: 28rpx;
       color: #999;
-      text-align: center;
     }
+  }
 
-    .hint-item {
+  /* 月视图样式 */
+  .month-view {
+    .collapse-hint {
       display: flex;
-      justify-content: space-between;
-      padding: 32rpx 0;
-      margin: 0 32rpx;
-      border-bottom: 1px solid #e5e5e5;
+      flex-direction: column;
+      padding: 32rpx 48rpx;
+      gap: 8rpx;
 
-      .hint-left {
-        font-size: 28rpx;
-        color: #333;
-        flex: 1;
-        display: flex;
-        align-items: center;
-
-        .hint-image {
-          width: 30rpx;
-          height: 30rpx;
-          margin-right: 16rpx;
-        }
-      }
-
-      .hint-right {
-        font-size: 28rpx;
-        color: #333;
-        display: flex;
-        align-items: center;
-      }
-
-      .price {
-        color: #bf974a;
-        font-size: 32rpx;
-      }
-    }
-
-    .hint-empty {
-      padding: 48rpx 0;
-      text-align: center;
-
-      .empty-text {
+      .hint-text {
         font-size: 28rpx;
         color: #999;
       }
+
+      .hint-icon {
+        font-size: 28rpx;
+        color: #999;
+        text-align: center;
+      }
+
+      .hint-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 32rpx 0;
+        margin: 0 32rpx;
+        border-bottom: 1px solid #e5e5e5;
+
+        .hint-left {
+          font-size: 28rpx;
+          color: #333;
+          flex: 1;
+          display: flex;
+          align-items: center;
+
+          .hint-image {
+            width: 30rpx;
+            height: 30rpx;
+            margin-right: 16rpx;
+          }
+        }
+
+        .hint-right {
+          font-size: 28rpx;
+          color: #333;
+          display: flex;
+          align-items: center;
+        }
+
+        .price {
+          color: #bf974a;
+          font-size: 32rpx;
+        }
+      }
+
+      .hint-empty {
+        padding: 48rpx 0;
+        text-align: center;
+
+        .empty-text {
+          font-size: 28rpx;
+          color: #999;
+        }
+      }
     }
   }
-}
 
-.user-header {
-  //引入背景图片
-  background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ebbe51768.png");
-  background-size: cover;
-  background-position: center;
-  padding: $spacing-md;
-  padding-bottom: 0;
-  .user-info {
+  .user-header {
+    //引入背景图片
+    background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ebbe51768.png");
+    background-size: cover;
+    background-position: center;
+    padding: $spacing-md;
+    padding-bottom: 0;
+    .user-info {
+      display: flex;
+      align-items: center;
+      padding-top: 140rpx;
+      .user-avatar {
+        width: 120rpx;
+        height: 120rpx;
+        border-radius: $radius-round;
+        margin-right: $spacing-md;
+      }
+
+      .user-detail {
+        flex: 1;
+        .user-nickname {
+          display: block;
+          font-size: $font-lg;
+          font-weight: bold;
+          color: #000;
+          margin-bottom: $spacing-xs;
+        }
+        .user-top {
+          display: flex;
+          align-items: center;
+        }
+        .user-icon {
+          width: 40rpx;
+          height: 40rpx;
+          margin-left: $spacing-sm;
+        }
+        .user-date {
+          font-size: $font-md;
+          color: #808080;
+        }
+
+        .user-tip {
+          font-size: $font-sm;
+          color: $text-secondary;
+        }
+      }
+    }
+    .user-intro {
+      margin-top: $spacing-md;
+      background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ec100de21.png");
+      background-size: cover;
+      background-position: center;
+      border-radius: 20rpx;
+      padding: 48rpx 32rpx;
+      .user-intro-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        .user-icon {
+          width: 40rpx;
+          height: 40rpx;
+          margin-right: $spacing-sm;
+        }
+        .user-intro-title-text {
+          font-size: $font-md;
+          color: #e9cc90;
+          margin-right: $spacing-sm;
+        }
+        .user-primary {
+          border-radius: 40rpx;
+          background: linear-gradient(180deg, #eac47b 0%, #f1daa6 100%);
+          color: #612500;
+          font-size: $font-sm;
+          padding: 6rpx 24rpx;
+        }
+      }
+      .user-intro-content {
+        font-size: $font-sm;
+        color: #fff;
+        line-height: 1.5;
+        /* 多行文本省略 */
+      }
+    }
+  }
+  .user-headerBg {
+    background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/11/6a2992f936363.png");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .menu-item {
     display: flex;
     align-items: center;
-    padding-top: 140rpx;
-    .user-avatar {
-      width: 120rpx;
-      height: 120rpx;
-      border-radius: $radius-round;
+    padding: $spacing-md;
+    border-bottom: 1rpx solid $border-light;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .menu-icon {
+      font-size: 40rpx;
+      margin-right: $spacing-md;
+    }
+    .menu-image {
+      width: 40rpx;
+      height: 40rpx;
       margin-right: $spacing-md;
     }
 
-    .user-detail {
+    .menu-text {
       flex: 1;
-      .user-nickname {
-        display: block;
-        font-size: $font-lg;
-        font-weight: bold;
-        color: #000;
-        margin-bottom: $spacing-xs;
-      }
-      .user-top {
-        display: flex;
-        align-items: center;
-      }
-      .user-icon {
-        width: 40rpx;
-        height: 40rpx;
-        margin-left: $spacing-sm;
-      }
-      .user-date {
-        font-size: $font-md;
-        color: #808080;
-      }
+      font-size: $font-md;
+      color: $text-primary;
+    }
 
-      .user-tip {
-        font-size: $font-sm;
-        color: $text-secondary;
-      }
-    }
-  }
-  .user-intro {
-    margin-top: $spacing-md;
-    background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ec100de21.png");
-    background-size: cover;
-    background-position: center;
-    border-radius: 20rpx;
-    padding: 48rpx 32rpx;
-    .user-intro-title {
-      display: flex;
-      align-items: center;
-      margin-bottom: $spacing-md;
-      .user-icon {
-        width: 40rpx;
-        height: 40rpx;
-        margin-right: $spacing-sm;
-      }
-      .user-intro-title-text {
-        font-size: $font-md;
-        color: #e9cc90;
-        margin-right: $spacing-sm;
-      }
-      .user-primary {
-        border-radius: 40rpx;
-        background: linear-gradient(180deg, #eac47b 0%, #f1daa6 100%);
-        color: #612500;
-        font-size: $font-sm;
-        padding: 6rpx 24rpx;
-      }
-    }
-    .user-intro-content {
-      font-size: $font-sm;
-      color: #fff;
-      line-height: 1.5;
-      /* 多行文本省略 */
+    .menu-arrow {
+      font-size: 40rpx;
+      color: $text-secondary;
     }
   }
 }
-.user-headerBg {
-  background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/11/6a2992f936363.png");
-  background-size: cover;
-  background-position: center;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: $spacing-md 0;
-  border-bottom: 1rpx solid $border-light;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  .menu-icon {
-    font-size: 40rpx;
-    margin-right: $spacing-md;
-  }
-  .menu-image {
-    width: 40rpx;
-    height: 40rpx;
-    margin-right: $spacing-md;
-  }
-
-  .menu-text {
-    flex: 1;
-    font-size: $font-md;
-    color: $text-primary;
-  }
-
-  .menu-arrow {
-    font-size: 40rpx;
-    color: $text-secondary;
-  }
+.card {
+  padding: 0;
+  margin: 0 24rpx;
 }
 </style>

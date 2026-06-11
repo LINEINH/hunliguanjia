@@ -62,6 +62,7 @@
 
       <view class="step" v-if="expoDetail.status === 1">
         <view class="register-form" v-if="!expoDetail.qr_code">
+          <view class="code">婚博会报名</view>
           <view class="form-item">
             <text class="form-label">姓名</text>
             <input
@@ -137,6 +138,7 @@
 import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getExpoDetail, registerExpo } from "@/api/expo";
+import { checkLogin, navigateToLogin } from "@/utils/auth";
 
 // 婚博会详情数据
 const expoDetail = ref<any>(null);
@@ -183,6 +185,20 @@ async function fetchExpoDetail() {
 
 // 处理报名
 async function handleRegister() {
+  if (!checkLogin()) {
+    uni.showModal({
+      title: "提示",
+      content: "请先登录后再报名",
+      confirmText: "去登录",
+      cancelText: "取消",
+      success: (res) => {
+        if (res.confirm) {
+          navigateToLogin();
+        }
+      },
+    });
+    return;
+  }
   if (!expoDetail.value) return;
 
   // 表单验证
@@ -293,7 +309,6 @@ function navigateToDetail() {
         }
 
         .form-input {
-          width: 100%;
           height: 80rpx;
           padding: 0 $spacing-md;
           border: 1rpx solid #e0e0e0;
