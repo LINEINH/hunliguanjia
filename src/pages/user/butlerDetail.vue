@@ -97,6 +97,7 @@
         class="detail-image"
         v-for="(item, index) in butlerDetail.detail_images"
         :key="index"
+        style="width: 100%"
       />
     </view>
 
@@ -230,9 +231,9 @@ function buyNow(index, id) {
 
   .banner {
     margin-bottom: $spacing-md;
-
+    margin-top: 80rpx;
     .banner-swiper {
-      height: 320rpx;
+      height: 520rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

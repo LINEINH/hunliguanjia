@@ -46,7 +46,9 @@
           {{ feature }}
         </text>
       </view>
-      <view class="hotel-address">{{ hotelData.address }}</view>
+      <view class="hotel-address" @click="openMap">{{
+        hotelData.address
+      }}</view>
       <view class="hotel-intro">{{ hotelData.description }}</view>
       <view
         class="hotel-fuli"
@@ -304,6 +306,40 @@ async function toggleFavorite() {
     });
   }
 }
+
+// 打开地图
+function openMap() {
+  if (!hotelData.value) return;
+
+  const { longitude, latitude, venue, address_text } = hotelData.value;
+
+  // 验证经纬度是否存在
+  if (!longitude || !latitude) {
+    uni.showToast({
+      title: "位置信息不完整",
+      icon: "none",
+    });
+    return;
+  }
+
+  // 调用微信小程序地图 API
+  uni.openLocation({
+    longitude: Number(longitude),
+    latitude: Number(latitude),
+    name: venue || "婚博会地点",
+    address: address_text || "",
+    success: () => {
+      console.log("打开地图成功");
+    },
+    fail: (err) => {
+      console.error("打开地图失败:", err);
+      uni.showToast({
+        title: "打开地图失败",
+        icon: "none",
+      });
+    },
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -383,7 +419,7 @@ async function toggleFavorite() {
     .hotel-address {
       font-size: 28rpx;
       color: #808080;
-      margin-bottom: 10rpx;
+      margin: 20rpx 0;
     }
     .hotel-intro {
       font-size: 26rpx;

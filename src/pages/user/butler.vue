@@ -472,6 +472,7 @@ onMounted(() => {
       .user-pic {
         width: 68rpx;
         height: 68rpx;
+        border-radius: 50%;
       }
       .card-host-info {
         margin-left: 10rpx;
@@ -607,6 +608,7 @@ onMounted(() => {
           .user-pic {
             width: 68rpx;
             height: 68rpx;
+            border-radius: 50%;
           }
           .card-host-info {
             margin-left: 10rpx;
