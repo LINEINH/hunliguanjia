@@ -145,7 +145,6 @@ onMounted(() => {
 onShow(() => {
   fetchExpoList();
 });
-
 </script>
 
 <style lang="scss" scoped>
@@ -338,3 +337,4 @@ onShow(() => {
     }
   }
 }
+</style>

@@ -46,13 +46,14 @@
           {{ feature }}
         </text>
       </view>
-      <view class="hotel-address" @click="openMap">{{
-        hotelData.address
-      }}</view>
+      <view class="hotel-address" @click="openMap">
+        <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
+        {{ hotelData.address }}</view
+      >
       <view class="hotel-intro">{{ hotelData.description }}</view>
       <view
         class="hotel-fuli"
-        v-if="hotelData.products && hotelData.products.length > 0"
+        v-if="hotelData.CouponsData && hotelData.CouponsData.length > 0"
       >
         <view class="hotel-fuli-title">特惠福利</view>
         <view
@@ -133,7 +134,9 @@
       <view class="hotel-footer-tel button" @click="makePhoneCall()">
         电话咨询
       </view>
-      <view class="hotel-footer-online button"> 在线管家 </view>
+      <button class="hotel-footer-online button" open-type="contact">
+        在线管家
+      </button>
     </view>
   </view>
 </template>
@@ -420,6 +423,9 @@ function openMap() {
       font-size: 28rpx;
       color: #808080;
       margin: 20rpx 0;
+      display: flex;
+      align-items: center;
+      gap: 10rpx;
     }
     .hotel-intro {
       font-size: 26rpx;

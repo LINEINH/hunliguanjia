@@ -19,45 +19,27 @@
       ></up-tabs>
     </view>
     <view class="couponList">
-      <view class="couponTtem">
-        <view class="iteminfo">
-          <view class="coupon-title">
-            <text class="coupon-name">新人优惠券</text>
-            <text class="coupon-shop">适用店铺名称</text>
-            <text class="coupon-shop">2019.03.27-2019.06.30</text>
-          </view>
-          <view class="coupon-price">
-            <text class="coupon-price"
-              ><text class="coupon-get">￥</text>5000</text
-            >
-            <text class="coupon-get">满1000使用</text>
-          </view>
-        </view>
-        <view class="recipt">
-          <view class="recipt-rule"> 使用规则 </view>
-          <view class="recipt-get">
-            <text class="recipt-get">领取</text>
-          </view>
-        </view>
+      <view v-if="coupons.length === 0" class="empty-state">
+        <text class="empty-text">暂无数据</text>
       </view>
-      <view class="couponTtem">
+      <view class="couponTtem" v-for="item in coupons" :key="item.id">
         <view class="iteminfo">
           <view class="coupon-title">
-            <text class="coupon-name">新人优惠券</text>
-            <text class="coupon-shop">适用店铺名称</text>
-            <text class="coupon-shop">2019.03.27-2019.06.30</text>
+            <text class="coupon-name">{{ item.template.name }}</text>
+            <text class="coupon-shop">{{ item.template.merchant.name }}</text>
+            <text class="coupon-shop">{{ item.template.expired_at }}</text>
           </view>
           <view class="coupon-price">
             <text class="coupon-price"
-              ><text class="coupon-get">￥</text>5000</text
+              ><text class="coupon-get">￥</text>{{ item.template.value }}</text
             >
-            <text class="coupon-get">满1000使用</text>
+            <text class="coupon-get">满{{ item.template.min_amount }}使用</text>
           </view>
         </view>
         <view class="recipt">
-          <view class="recipt-rule"> 使用规则 </view>
+          <view class="recipt-rule"> </view>
           <view class="recipt-get">
-            <text class="recipt-get">领取</text>
+            <text class="recipt-get">二维码</text>
           </view>
         </view>
       </view>
@@ -106,13 +88,13 @@ const emptyText = computed(() => {
 // 定义方法
 function click(index) {
   activeTab.value = index;
-  console.log("点击了tab", list[index]);
+  loadCoupons(index.index);
 }
 
 // 获取优惠券列表
-const loadCoupons = async () => {
+const loadCoupons = async (status) => {
   try {
-    const response = await getMyCoupons();
+    const response = await getMyCoupons(status);
     coupons.value = response.data || [];
   } catch (error) {
     console.error("获取优惠券列表失败:", error);
@@ -158,7 +140,7 @@ const getStatusClass = (status) => {
 };
 
 onMounted(() => {
-  // loadCoupons();
+  loadCoupons(0);
 });
 </script>
 

@@ -115,10 +115,10 @@
           </view>
           <view class="hotel-time">
             <text class="rate">{{ merchant.rating }}分</text>
-            <text class="description">{{
-              merchant.description || "暂无描述"
-            }}</text>
           </view>
+          <view class="description">{{
+            merchant.description || "暂无描述"
+          }}</view>
           <view class="hotel-desc">
             <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
             <text class="text">{{ merchant.address || "暂无地址" }}</text>
@@ -126,11 +126,11 @@
 
           <view class="hotel-intro">
             <image
-              :src="merchant.logo"
+              :src="merchant.merchant.logo"
               mode="aspectFill"
               class="user-icon"
             ></image>
-            <text class="user-name">{{ merchant.contact_name }}</text>
+            <text class="user-name">{{ merchant.merchant.name }}</text>
           </view>
         </view>
       </view>
@@ -670,15 +670,17 @@ onMounted(() => {
     padding: 6rpx 20rpx;
     color: #d43030;
   }
-  .description {
-    // 一行省略
-    width: 60%;
-    font-weight: 400;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    overflow: hidden;
-  }
+}
+.description {
+  // 一行省略
+  font-weight: 400;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #808080;
 }
 .hotel-desc {
   font-size: 24rpx;

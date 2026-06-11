@@ -194,7 +194,7 @@ async function payOrderBtn() {
         // 延迟跳转到订单列表或详情页
         setTimeout(() => {
           uni.navigateTo({
-            url: "/pages/user/index",
+            url: "/pages/user/user",
           });
         }, 2000);
       },

@@ -42,12 +42,12 @@
           }}</view>
           <view class="goods-intro">
             <image
-              src="/static/images/user.png"
+              :src="item.merchant.logo"
               mode="aspectFill"
               class="user-icon"
               @click="openDetail(item)"
             ></image>
-            <text class="user-name">{{ item.name }}</text>
+            <text class="user-name">{{ item.merchant.name }}</text>
             <up-icon
               name="star"
               size="24"
@@ -274,7 +274,6 @@ onShow(() => {
   loadGetBanner();
   loadGetProductRecommend();
 });
-
 </script>
 
 <style lang="scss" scoped>
@@ -420,3 +419,4 @@ onShow(() => {
     }
   }
 }
+</style>
