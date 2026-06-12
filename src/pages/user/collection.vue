@@ -40,9 +40,7 @@
         />
         <view class="goods-info">
           <view class="goods-name">{{
-            item.merchant?.description ||
-            item.product?.description ||
-            item.service?.description
+            item.merchant?.name || item.product?.name || item.service?.name
           }}</view>
           <view class="goods-intro">
             <image

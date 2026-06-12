@@ -125,11 +125,31 @@ export function payOrder(id:string,openid:string) {
 
 //  小程序图片上传/api/v1/wechat/images/upload
 export function uploadImage(filePath: string) {
-  return request<any>({
-    url: '/wechat/images/upload',
-    method: 'POST',
-    data: { file: filePath }
-  })
+  return new Promise((resolve, reject) => {
+    uni.uploadFile({
+      url: 'https://api.1love.com.cn/api/v1/wechat/images/upload',
+      filePath: filePath,
+      name: 'file',
+      header: {
+        'Authorization': `Bearer ${uni.getStorageSync('token') || ''}`
+      },
+      success: (res) => {
+        try {
+          const data = JSON.parse(res.data);
+          if (data.code === 200 || data.success) {
+            resolve(data);
+          } else {
+            reject(new Error(data.message || '上传失败'));
+          }
+        } catch (err) {
+          reject(new Error('解析响应数据失败'));
+        }
+      },
+      fail: (err) => {
+        reject(err);
+      }
+    });
+  });
 }
 
 // 提交投诉 /api/v1/wechat/user/complaints

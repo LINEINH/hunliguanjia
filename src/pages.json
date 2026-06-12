@@ -153,6 +153,43 @@
 			"style": {
 				"navigationBarTitleText": "商家投诉"
 			}
+		},
+		{
+			"path": "pages/expo/history",
+			"style": {
+				"navigationBarTitleText": "婚博会详情"
+			}
+		},
+		{
+			"path": "pages/side/index",
+			"style": {
+				"navigationBarTitleText": "商家首页",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/side/product",
+			"style": {
+				"navigationBarTitleText": "服务商品库"
+			}
+		},
+		{
+			"path": "pages/side/coupon",
+			"style": {
+				"navigationBarTitleText": "优惠券管理"
+			}
+		},
+		{
+			"path": "pages/side/scancode",
+			"style": {
+				"navigationBarTitleText": "扫一扫"
+			}
+		},
+		{
+			"path": "pages/side/scanproduct",
+			"style": {
+				"navigationBarTitleText": "核销卡券"
+			}
 		}
 	],
 	"tabBar": {
@@ -179,7 +216,7 @@
 				"selectedIconPath": "static/images/7.png"
 			},
 			{
-				"pagePath": "pages/user/user",
+				"pagePath": "pages/side/index",
 				"text": "我的",
 				"iconPath": "static/images/4.png",
 				"selectedIconPath": "static/images/8.png"

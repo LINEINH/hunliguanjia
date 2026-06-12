@@ -1,5 +1,5 @@
 <template>
-  <view class="expodetail-container">
+  <view class="expodetail-1container">
     <!-- 加载状态 -->
     <view v-if="loading" class="loading-state">加载中...</view>
 
@@ -7,129 +7,12 @@
     <view v-else-if="expoDetail" class="detail-content">
       <view class="banner">
         <image
-          :src="expoDetail.cover_image || '/static/images/post.png'"
+          :src="item || '/static/images/post.png'"
           mode="widthFix"
           class="banner-image"
+          v-for="(item, index) in expoDetail.history_media"
+          :key="index"
         />
-      </view>
-
-      <view class="step">
-        <view class="steptitle">
-          <image
-            src="/static/images/left.png"
-            mode="aspectFill"
-            class="titleimage" />
-          01.活动流程
-          <image
-            src="/static/images/right.png"
-            mode="aspectFill"
-            class="titleimage"
-        /></view>
-        <view class="stepcon">
-          <image
-            src="https://zjj.movieclub.top/act.png"
-            mode="aspectFill"
-            style="width: 100%"
-          />
-          <!-- <rich-text :nodes="expoDetail.introduction"></rich-text> -->
-        </view>
-      </view>
-
-      <view class="step">
-        <view class="steptitle">
-          <image
-            src="/static/images/left.png"
-            mode="aspectFill"
-            class="titleimage" />
-          02.展会地址
-          <image
-            src="/static/images/right.png"
-            mode="aspectFill"
-            class="titleimage"
-        /></view>
-        <view class="map">
-          <view class="stepcon" @click="openMap">
-            <view class="wrap">
-              <up-icon name="map" size="14" color="#383838"> </up-icon>
-              <text class="left">{{ expoDetail.venue }}：</text
-              >{{ expoDetail.address_text }}
-            </view>
-            <view class="map">
-              <image
-                :src="expoDetail.address_image"
-                mode="widthFix"
-                class="map"
-              />
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <view class="step" v-if="expoDetail.status === 1">
-        <view class="register-form" v-if="!expoDetail.qr_code || qrCode">
-          <view class="code">婚博会报名</view>
-          <view class="form-item">
-            <text class="form-label">姓名</text>
-            <input
-              class="form-input"
-              v-model="formData.user_name"
-              placeholder="请输入姓名"
-              type="text"
-            />
-          </view>
-          <view class="form-item">
-            <text class="form-label">手机号</text>
-            <input
-              class="form-input"
-              v-model="formData.user_phone"
-              placeholder="请输入手机号"
-              type="number"
-              maxlength="11"
-            />
-          </view>
-          <view class="button" @click="handleRegister"> 立即报名 </view>
-        </view>
-        <view v-else>
-          <view class="code">参会二维码</view>
-          <image
-            :src="expoDetail.qr_code || '/static/images/post.png'"
-            mode="aspectFill"
-            class="codeimage"
-          />
-          <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
-        </view>
-      </view>
-
-      <view class="ad">
-        <image
-          src="/static/images/post1.png"
-          mode="widthFix"
-          class="ad-image"
-          @click="navigateToDetail"
-        />
-      </view>
-
-      <view class="step">
-        <view class="steptitle">
-          <image
-            src="/static/images/left.png"
-            mode="aspectFill"
-            class="titleimage" />
-          03.参会商家
-          <image
-            src="/static/images/right.png"
-            mode="aspectFill"
-            class="titleimage"
-        /></view>
-        <view class="logolist">
-          <view
-            class="logoItem"
-            v-for="(item, index) in expoDetail.merchant_logos"
-            :key="index"
-          >
-            <image :src="item" mode="aspectFill" class="logoItemImg" />
-          </view>
-        </view>
       </view>
     </view>
 
@@ -308,10 +191,8 @@ function openMap() {
 }
 </script>
 <style lang="scss" scoped>
-.expodetail-container {
+.expodetail-1container {
   background: #f0f0f0;
-  padding: $spacing-md;
-  padding-top: 0;
 
   .loading-state,
   .error-state {

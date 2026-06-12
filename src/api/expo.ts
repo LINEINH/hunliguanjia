@@ -66,3 +66,22 @@ export function checkinExpo(expoId: number, code: string) {
     data: { code }
   })
 }
+
+
+/**
+ * 获取伴手礼列表 /api/v1/wechat/expo/gifts?activity_id=2
+ */
+export function getGift(id: number) {
+  return request<any>({
+    url: `/wechat/expo/gifts?activity_id=${id}`,
+    method: 'GET'
+  })
+}
+
+// 领取伴手礼 /api/v1/wechat/expo/gifts/{gift_id}/claim
+export function checkinClaim(gift_id: number) {
+  return request({
+    url: `/wechat/expo/gifts/${gift_id}/claim`,
+    method: 'POST'
+  })
+}

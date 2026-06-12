@@ -27,19 +27,19 @@
           </view>
         </view>
       </view>
-
+    </view>
+    <view class="card">
       <view class="field">
         <text class="label">联系方式</text>
         <input
           class="input"
-          placeholder="手机号、微信或邮箱（选填，便于我们联系您）"
+          placeholder="手机号(必填，以便我们的工作人员联系您)"
           v-model="contact"
         />
       </view>
-
-      <view class="actions">
-        <button class="btn-submit" @click="submit">提交反馈</button>
-      </view>
+    </view>
+    <view class="actions">
+      <button class="btn-submit" @click="submit">提交反馈</button>
     </view>
   </view>
 </template>
@@ -58,9 +58,18 @@ const chooseImage = () => {
     count: remain,
     sizeType: ["compressed", "original"],
     sourceType: ["album", "camera"],
-    success: (res) => {
-      const paths = res.tempFilePaths || [];
-      images.value = images.value.concat(paths);
+    success: async (res) => {
+      // 逐个上传图片
+      for (const file of res.tempFiles) {
+        try {
+          const uploadRes = await uploadImage(file.path);
+          // TODO: 根据实际返回数据结构调整，获取图片URL
+          images.value.push(uploadRes.data?.url || uploadRes.url);
+        } catch (err) {
+          console.error("图片上传失败:", err);
+          uni.showToast({ title: "图片上传失败", icon: "none" });
+        }
+      }
     },
     fail: () => {
       uni.showToast({ title: "选择图片失败", icon: "none" });
@@ -85,19 +94,11 @@ const submit = async () => {
   uni.showLoading({ title: "提交中" });
 
   try {
-    // 上传图片
-    const uploadedImages = [];
-    for (const imgPath of images.value) {
-      const res = await uploadImage(imgPath);
-      if (res.data?.url) {
-        uploadedImages.push(res.data.url);
-      }
-    }
-
     // 提交投诉信息
     const payload = {
+      merchant_id: 1,
       content: description.value,
-      images: uploadedImages,
+      images: images.value,
       phone: contact.value,
     };
 
@@ -154,7 +155,6 @@ const submit = async () => {
     }
 
     .input {
-      width: 100%;
       height: 72rpx;
       padding: 0 20rpx;
       font-size: 26rpx;
@@ -196,7 +196,14 @@ const submit = async () => {
   .actions {
     display: flex;
     justify-content: center;
-
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 32rpx;
+    width: 100%;
+    padding-bottom: env(safe-area-inset-bottom);
     .btn-submit {
       width: 600rpx;
       height: 84rpx;
@@ -207,7 +214,7 @@ const submit = async () => {
         #f9eccc 33.03%,
         #e9cc90 100%
       );
-      color: #fff;
+      color: #612500;
       border: none;
       border-radius: 42rpx;
       font-size: 30rpx;

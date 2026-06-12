@@ -10,24 +10,18 @@
       </view>
       <view class="moments-grid">
         <template v-for="(moment, index) in momentsList" :key="index">
-          <view class="moment-item" @click="navigateToPlanItem()">
+          <view class="moment-item">
             <image
-              :src="moment.image"
+              :src="moment.gift_image"
               class="moment-image"
               mode="aspectFill"
             ></image>
             <view class="moment-info">
-              <text class="moment-title">{{ moment.title }}</text>
+              <text class="moment-title">{{ moment.gift_name }}</text>
 
-              <text class="moment-subtitle">含司仪、跟妆、摄影、摄像</text>
+              <text class="moment-subtitle">{{ moment.gift_description }}</text>
               <view class="moment-intro">
-                <image
-                  src="/static/images/29.png"
-                  mode="aspectFill"
-                  class="user-icon"
-                ></image>
-                <text class="user-name">测试测试</text>
-                <view class="change">兑换</view>
+                <view class="change" @click="exchange(moment)">兑换</view>
               </view>
             </view>
           </view>
@@ -39,41 +33,84 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { casesFeatured } from "@/api/index";
-import type { Merchant } from "@/types/merchant";
+import { getGift, checkinClaim } from "@/api/expo";
 
-const momentsList = ref<any>([
-  {
-    image: "/static/images/banner1.png",
-    title: "浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场浪漫婚礼现场",
-    description: "精心布置的婚礼场地，见证幸福时刻",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "甜蜜婚纱照",
-    description: "专业摄影师捕捉每一个动人瞬间",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "温馨家庭聚会",
-    description: "亲朋好友共同见证的美好时光",
-  },
-  {
-    image: "/static/images/banner.png",
-    title: "梦幻婚礼策划",
-    description: "量身定制的专属婚礼方案",
-  },
-]);
+const momentsList = ref<any>([]);
 
 // 导航到商家列表
 function navigateToPlanItem() {
   uni.navigateTo({ url: "/pages/merchant/planItem" });
 }
 
-// 加载数据
+// 加载伴手礼列表数据
+async function loadGiftList() {
+  // 获取 URL 中的 id 参数
+  const pages = getCurrentPages();
+  const currentPage = pages[pages.length - 1] as any;
+  const id = currentPage.options?.id;
+
+  if (!id) {
+    console.warn("缺少活动ID参数");
+    uni.showToast({
+      title: "缺少活动ID",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    const res = await getGift(Number(id));
+    console.log("伴手礼列表:", res);
+    // TODO: 根据实际返回数据结构调整
+    momentsList.value = res || [];
+  } catch (err) {
+    console.error("获取伴手礼列表失败:", err);
+    uni.showToast({
+      title: "加载失败",
+      icon: "none",
+    });
+  }
+}
+
+// 兑换
+async function exchange(moment: any) {
+  if (!moment.id) {
+    uni.showToast({
+      title: "缺少产品ID",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: "加载中...",
+    });
+
+    const response = await checkinClaim(moment.id);
+    if (response) {
+      uni.showToast({
+        title: "兑换成功",
+        icon: "success",
+      });
+    } else {
+      uni.showToast({
+        title: "请先签到后再领取伴手礼",
+        icon: "none",
+      });
+    }
+    console.log("产品详情:", response);
+  } catch (err) {
+    uni.showToast({
+      title: "'请先签到后再领取伴手礼'",
+      icon: "none",
+    });
+  }
+}
+
+// 页面加载时获取数据
 onMounted(() => {
-  // TODO: 调用 API 加载数据
-  console.log("首页加载");
+  loadGiftList();
 });
 </script>
 
@@ -157,6 +194,8 @@ onMounted(() => {
             border: 1px solid #f0cd8c;
             padding: 10rpx 20rpx;
             border-radius: 30rpx;
+            width: 100%;
+            text-align: center;
           }
         }
       }

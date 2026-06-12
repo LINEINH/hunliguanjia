@@ -305,6 +305,15 @@
         <text class="menu-text">商家投诉</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
+      <view class="menu-item" @click="navigateTo('/pages/side/index')">
+        <image
+          src="/static/images/15.png"
+          mode="aspectFill"
+          class="menu-image"
+        />
+        <text class="menu-text">商家入口</text>
+        <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
+      </view>
     </view>
 
     <!-- 自定义 TabBar -->
@@ -808,6 +817,9 @@ async function loadUserInfo() {
         selectedBudget.value = `${tableCount.value}桌，${budgetInWan}`;
       }
 
+      // 获取婚礼计划数据（包括 planningPhases）
+      await loadWeddingPlanData();
+
       // 初始化日历
       if (weddingDate.value && selectedBudget.value) {
         initCalendar();
@@ -815,6 +827,21 @@ async function loadUserInfo() {
     }
   } catch (error) {
     console.error("获取用户信息失败:", error);
+  }
+}
+
+// 加载婚礼计划数据
+async function loadWeddingPlanData() {
+  try {
+    const response = await getWeddingPlan();
+
+    // 处理返回的规划数据
+    if (response && response.planning_phases) {
+      planningPhases.value = response.planning_phases;
+      console.log("婚礼计划数据:", planningPhases.value);
+    }
+  } catch (error) {
+    console.error("获取婚礼计划数据失败:", error);
   }
 }
 
@@ -827,7 +854,6 @@ onMounted(() => {
 onShow(() => {
   loadUserInfo();
 });
-
 </script>
 
 <style lang="scss" scoped>
@@ -1045,7 +1071,7 @@ onShow(() => {
   .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    padding: 16rpx 32rpx;
+    padding: 16rpx 0;
     border-bottom: 1px solid #f0f0f0;
 
     .weekday {
@@ -1060,7 +1086,7 @@ onShow(() => {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8rpx;
-    padding: 32rpx;
+    padding: 0 32rpx;
 
     .calendar-day {
       aspect-ratio: 1;
@@ -1220,7 +1246,6 @@ onShow(() => {
         display: flex;
         justify-content: space-between;
         padding: 32rpx 0;
-        margin: 0 32rpx;
         border-bottom: 1px solid #e5e5e5;
 
         .hint-left {
@@ -1356,8 +1381,6 @@ onShow(() => {
     display: flex;
     align-items: center;
     padding: $spacing-md;
-    border-bottom: 1rpx solid $border-light;
-
     &:last-child {
       border-bottom: none;
     }

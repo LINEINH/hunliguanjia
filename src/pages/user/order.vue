@@ -43,13 +43,16 @@
         </view>
         <view class="goods-info">
           <view class="goods-info-name">
-            <view class="name">{{ butlerDetail.package_name }}</view>
+            <view class="name"
+              >{{ butlerDetail.gold_service_provider.name }} |
+              {{ butlerDetail.gold_service_provider.title }}</view
+            >
             <view class="price">￥{{ butlerDetail.amount }}</view>
           </view>
           <view class="goods-info-desc">
-            <text class="goods-info-desc-text">{{
-              butlerDetail.package_description
-            }}</text>
+            <text class="goods-info-desc-text"
+              >服务内容：{{ butlerDetail.package_description }}</text
+            >
           </view>
         </view>
       </view>

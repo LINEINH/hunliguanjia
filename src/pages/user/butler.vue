@@ -491,7 +491,7 @@ onMounted(() => {
               #f9eccc 33.03%,
               #e9cc90 100%
             );
-            padding: 6rpx 20rpx;
+            padding: 3rpx 10rpx;
             color: #d43030;
           }
           .year {
@@ -627,7 +627,7 @@ onMounted(() => {
                   #f9eccc 33.03%,
                   #e9cc90 100%
                 );
-                padding: 6rpx 20rpx;
+                padding: 3rpx 10rpx;
                 color: #d43030;
               }
               .year {

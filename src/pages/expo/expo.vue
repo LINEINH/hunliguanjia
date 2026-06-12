@@ -33,11 +33,11 @@
         :nextMargin="80"
         :duration="500"
         :radius="10"
-        height="430"
+        height="410"
         bgColor="transparent"
       >
         <template #default="{ item }">
-          <view class="card-item" @click="navToDetail(item)">
+          <view class="card-item" @click="navToDetailhistory(item.id)">
             <image
               :src="item.cover_image"
               mode="aspectFill"
@@ -47,13 +47,6 @@
               <view class="card-host">
                 <view class="card-host-info">
                   <view class="card-host-name">{{ item.name }}</view>
-                </view>
-                <view class="card-footer">
-                  <text class="card-price"
-                    >{{ formatDate(item.start_time) }}~{{
-                      formatDate(item.end_time)
-                    }}</text
-                  >
                 </view>
               </view>
             </view>
@@ -67,7 +60,6 @@
 import { ref, onMounted } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 import { getExpoList } from "@/api/expo";
-import type { ServiceProduct } from "@/types/product";
 import type { WeddingExpo } from "@/types/expo";
 import { reactive } from "vue";
 
@@ -89,6 +81,11 @@ function navigateToCategory(category: any) {
 // 导航到商家列表
 function navigateToDetail(expoId: number) {
   uni.navigateTo({ url: `/pages/expo/expodetail?id=${expoId}` });
+}
+
+//
+function navToDetailhistory(expoId: number) {
+  uni.navigateTo({ url: `/pages/expo/history?id=${expoId}` });
 }
 
 function navToDetail(event: any) {
@@ -273,7 +270,7 @@ onShow(() => {
       border-radius: $radius-lg;
       overflow: hidden;
       box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.15);
-      height: 730rpx;
+      height: 700rpx;
       margin: 0 10rpx;
       background-color: #fff;
     }
