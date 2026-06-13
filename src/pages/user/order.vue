@@ -8,13 +8,29 @@
         homeUrl="/pages/index/index"
       >
       </up-navbar-mini>
-      <view class="status-icon">
-        <!-- 如果项目中没有 uView UI，可以使用普通 text 或 image 替代，这里暂时用 text 模拟图标或保留原意 -->
-
-        <up-icon name="hourglass" size="38" color="#fff" class="icon"></up-icon>
+      <view v-if="butlerDetail.status === 0">
+        <view class="status-icon">
+          <up-icon
+            name="hourglass"
+            size="38"
+            color="#fff"
+            class="icon"
+          ></up-icon>
+        </view>
+        <text class="status-text">待付款</text>
+        <text class="status-desc">请尽快完成支付</text>
       </view>
-      <text class="status-text">待付款</text>
-      <text class="status-desc">请尽快完成支付</text>
+      <view v-if="butlerDetail.status === 1">
+        <view class="status-icon">
+          <up-icon
+            name="checkmark-circle-fill"
+            size="38"
+            color="#fff"
+            class="icon"
+          ></up-icon>
+        </view>
+        <text class="status-text">已完成</text>
+      </view>
     </view>
 
     <!-- 商家信息 -->
@@ -72,14 +88,14 @@
 
     <!-- 价格汇总 -->
     <view class="price-summary">
-      <!-- <view class="summary-item">
+      <view class="summary-item" v-if="butlerDetail.status === 1">
         <text class="summary-label">下单时间</text>
-        <text class="summary-value">2026.4.27 12:22:35</text>
+        <text class="summary-value">{{ butlerDetail.paid_at }}</text>
       </view>
-      <view class="summary-item">
+      <view class="summary-item" v-if="butlerDetail.status === 1">
         <text class="summary-label">订单编号</text>
-        <text class="summary-value">358283894949838</text>
-      </view> -->
+        <text class="summary-value">{{ butlerDetail.order_no }}</text>
+      </view>
       <view class="summary-item total">
         <text class="summary-label">微信支付</text>
         <text class="summary-value total-price"
@@ -89,7 +105,7 @@
     </view>
 
     <!-- 底部按钮 -->
-    <view class="footer-actions">
+    <view class="footer-actions" v-if="butlerDetail.status === 0">
       <view class="footer-price">
         共1件，合计<text class="price"
           ><text class="small">¥</text>{{ butlerDetail.amount }}</text
@@ -271,7 +287,7 @@ function buyNow(index, id) {
   .status-icon {
     margin-bottom: 20rpx;
     font-size: 80rpx;
-    margin-top: 40rpx;
+    margin-top: 60rpx;
     display: flex;
     align-items: center;
     justify-content: space-around;

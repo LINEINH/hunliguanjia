@@ -18,7 +18,7 @@
       </view>
     </view>
     <view class="card menu-list">
-      <view class="menu-item" @click="navigateTo('/pages/side/product ')">
+      <view class="menu-item" @click="navigateTo('/pages/side/product')">
         <image
           src="/static/images/11.png"
           mode="aspectFill"

@@ -50,7 +50,7 @@
         <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
         {{ hotelData.address }}</view
       >
-      <view class="hotel-intro">{{ hotelData.description }}</view>
+      <view class="hotel-intro">{{ hotelData.landmark }}</view>
       <view
         class="hotel-fuli"
         v-if="hotelData.CouponsData && hotelData.CouponsData.length > 0"
@@ -88,7 +88,7 @@
               {{ caseItem.name }}
             </view>
             <view class="hotel-list-item-intro">
-              {{ caseItem.description }}
+              {{ caseItem.subtitle }}
             </view>
             <view class="hotel-list-item-price">
               <view class="price-wrap">

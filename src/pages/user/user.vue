@@ -21,6 +21,11 @@
               mode="aspectFill"
               class="user-icon"
               v-if="userProfile && userProfile.gold_service_order"
+              @click="
+                navigateTo(
+                  `/pages/user/order?id=${userProfile.gold_service_order.order_id}`
+                )
+              "
             />
             <image
               src="/static/images/17.png"
