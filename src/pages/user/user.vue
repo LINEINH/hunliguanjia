@@ -305,7 +305,11 @@
         <text class="menu-text">商家投诉</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
-      <view class="menu-item" @click="navigateTo('/pages/side/index')">
+      <view
+        class="menu-item"
+        @click="navigateTo('/pages/side/index')"
+        v-if="userProfile.type == 'merchant'"
+      >
         <image
           src="/static/images/15.png"
           mode="aspectFill"

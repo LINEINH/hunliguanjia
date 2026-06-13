@@ -30,7 +30,12 @@
           v-if="productData.merchant && productData.merchant.logo"
         ></image>
         <view class="right">
-          <text class="user-name">{{ productData.merchant.name }}</text>
+          <view class="user-name">{{ productData.merchant.name }}</view>
+          <text class="price"
+            ><text class="small">¥</text
+            >{{ productData.min_price || productData.price
+            }}<text class="small">起</text></text
+          >
           <!-- <text class="id">ID:{{ productData.merchant.contact_name }}</text> -->
         </view>
       </view>
@@ -369,6 +374,15 @@ async function toggleFavorite() {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+        .price {
+          font-size: 32rpx;
+          color: #bf974a;
+          font-weight: bold;
+        }
+        .small {
+          font-size: $font-xs;
+          font-weight: 400;
+        }
       }
       .id {
         font-size: $font-xs;

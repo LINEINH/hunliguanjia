@@ -34,7 +34,9 @@
             <view class="user-name">
               <view> {{ productData.name }}</view>
               <text class="price"
-                >¥{{ productData.min_price }}<text class="small">起</text></text
+                ><text class="small">¥</text
+                >{{ productData.min_price || productData.price
+                }}<text class="small">起</text></text
               >
             </view>
             <view class="hotel-rate">

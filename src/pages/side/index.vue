@@ -9,10 +9,10 @@
     <!-- 用户信息 -->
     <view class="user-header">
       <view class="user-info">
-        <image src="/static/images/user.png" class="user-avatar" />
+        <image :src="userProfile.logo" mode="aspectFill" class="user-avatar" />
         <view class="user-detail">
           <view class="user-top">
-            <text class="user-nickname">测试个</text>
+            <text class="user-nickname">{{ userProfile.name }}</text>
           </view>
         </view>
       </view>
