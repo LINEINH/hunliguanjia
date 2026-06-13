@@ -124,7 +124,7 @@
             <text class="text">{{ merchant.address || "暂无地址" }}</text>
           </view>
 
-          <view class="hotel-intro" v-if="item.merchant">
+          <view class="hotel-intro">
             <image
               :src="merchant.merchant.logo"
               mode="aspectFill"

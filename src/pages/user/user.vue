@@ -1,6 +1,7 @@
 <template>
   <view class="user-page">
     <!-- 用户信息 -->
+
     <view
       class="user-header"
       :class="{
@@ -31,7 +32,7 @@
           <text class="user-date" v-if="userProfile && userProfile.wedding_plan"
             >婚期：{{ userProfile.wedding_plan.wedding_date || "未设置" }}</text
           >
-          <text class="user-tip" v-if="!userStore.isLoggedIn">点击登录</text>
+          <!-- <text class="user-tip" v-if="!userStore.isLoggedIn">点击登录</text> -->
         </view>
       </view>
       <view class="user-intro" @click="navigateTo('/pages/user/butler')">
@@ -53,6 +54,7 @@
     <!-- 选择婚期和预算 / 日历组件 -->
     <view class="date-budget">
       <!-- 未选择时显示选择器 -->
+
       <view class="data-selector" v-if="!weddingDate || !selectedBudget">
         <view class="date-selector" @click="handleDateClick">
           <text class="budget-title">WEDDING DAY</text>
@@ -308,7 +310,7 @@
       <view
         class="menu-item"
         @click="navigateTo('/pages/side/index')"
-        v-if="userProfile.type == 'merchant'"
+        v-if="userProfile && userProfile.type && userProfile.type == 'merchant'"
       >
         <image
           src="/static/images/15.png"
@@ -335,6 +337,9 @@ import { weddingPlan, getWeddingPlan } from "@/api/index";
 
 const userStore = useUserStore();
 
+// 定义一个值判断是否登录
+const isLogin = ref<any>(checkLogin());
+console.log("isLogin:", isLogin.value);
 // 定义用户对象
 const userProfile = ref<any>(null);
 
@@ -851,12 +856,16 @@ async function loadWeddingPlanData() {
 
 // 页面加载时获取用户信息
 onMounted(() => {
-  loadUserInfo();
+  if (checkLogin()) {
+    loadUserInfo();
+  }
 });
 
 // 页面显示时重新加载数据（tabbar 切换时触发）
 onShow(() => {
-  loadUserInfo();
+  if (checkLogin()) {
+    loadUserInfo();
+  }
 });
 </script>
 
