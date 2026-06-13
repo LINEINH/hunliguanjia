@@ -95,14 +95,16 @@
       </view>
     </up-overlay>
 
-    <view class="category-grid" v-if="category === '10'">
+    <view class="category-grid" v-if="Number(category) >= 10">
       <view
-        v-for="category in categories"
-        :key="category.id"
+        v-for="item in categories"
+        :key="item.id"
         class="category-item"
+        :class="{ 'category-active': Number(category) === Number(item.id) }"
+        @click="handleCategoryClick(item)"
       >
-        <image :src="category.icon" class="category-icon" />
-        <text class="category-name">{{ category.name }}</text>
+        <image :src="item.icon" class="category-icon" />
+        <text class="category-name">{{ item.name }}</text>
       </view>
     </view>
     <!-- 酒店列表 -->
@@ -198,52 +200,52 @@ const activeFilters = reactive({});
 
 const categories = ref([
   {
-    id: 1,
+    id: 11,
     name: "婚礼车队",
     icon: "/static/images/30.png",
   },
   {
-    id: 2,
+    id: 12,
     name: "婚礼伴手礼",
     icon: "/static/images/31.png",
   },
   {
-    id: 3,
+    id: 13,
     name: "photobooth",
     icon: "/static/images/32.png",
   },
   {
-    id: 4,
+    id: 14,
     name: "茶歇甜品",
     icon: "/static/images/33.png",
   },
   {
-    id: 5,
+    id: 15,
     name: "宴会酒水",
     icon: "/static/images/34.png",
   },
   {
-    id: 6,
+    id: 16,
     name: "互动演绎",
     icon: "/static/images/35.png",
   },
   {
-    id: 7,
+    id: 17,
     name: "婚礼床品",
     icon: "/static/images/36.png",
   },
   {
-    id: 8,
+    id: 18,
     name: "婚礼用品",
     icon: "/static/images/37.png",
   },
   {
-    id: 9,
+    id: 19,
     name: "妇产医院",
     icon: "/static/images/38.png",
   },
   {
-    id: 10,
+    id: 20,
     name: "月子中心",
     icon: "/static/images/39.png",
   },
@@ -625,6 +627,18 @@ function onSearchClick() {
   });
 }
 
+// 处理分类点击
+function handleCategoryClick(item) {
+  console.log("点击分类:", item);
+  // 设置当前选中的分类ID
+  category.value = String(item.id);
+  // 重置页码并重新加载数据
+  currentPage.value = 1;
+  merchantList.value = [];
+  hasMore.value = true;
+  loadMerchants(1);
+}
+
 onMounted(() => {
   loadGetBanner();
   loadGetDictionary();
@@ -960,6 +974,11 @@ onMounted(() => {
       font-size: $font-xs;
       color: $text-primary;
     }
+  }
+}
+.category-active {
+  .category-name {
+    color: #ab7e2b !important;
   }
 }
 </style>

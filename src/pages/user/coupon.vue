@@ -27,7 +27,11 @@
           <view class="coupon-title">
             <text class="coupon-name">{{ item.template.name }}</text>
             <text class="coupon-shop">{{ item.template.merchant.name }}</text>
-            <text class="coupon-shop">{{ item.template.expired_at }}</text>
+            <text class="coupon-shop"
+              >{{ formatDate(item.template.start_time) }}～{{
+                formatDate(item.template.end_time)
+              }}</text
+            >
           </view>
           <view class="coupon-price">
             <text class="coupon-price"
@@ -221,6 +225,19 @@ onMounted(() => {
           );
         }
       }
+    }
+  }
+  .empty-state {
+    margin-top: 100rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .empty-text {
+      text-align: center;
+      font-size: 28rpx;
+      color: #999999;
+      margin-top: 50rpx;
     }
   }
 }

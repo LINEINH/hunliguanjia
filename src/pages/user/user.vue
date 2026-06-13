@@ -318,7 +318,7 @@
         v-if="userProfile && userProfile.type && userProfile.type == 'merchant'"
       >
         <image
-          src="/static/images/15.png"
+          src="/static/images/43.png"
           mode="aspectFill"
           class="menu-image"
         />

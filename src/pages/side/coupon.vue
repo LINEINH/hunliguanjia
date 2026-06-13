@@ -9,7 +9,11 @@
           <view class="coupon-title">
             <text class="coupon-name">{{ item.name }}</text>
             <text class="coupon-shop">{{ item.merchant.name }}</text>
-            <text class="coupon-shop">{{ item.end_time }}</text>
+            <text class="coupon-shop"
+              >{{ formatDate(item.start_time) }}～{{
+                formatDate(item.end_time)
+              }}</text
+            >
           </view>
           <view class="coupon-price">
             <text class="coupon-price"
@@ -31,6 +35,13 @@ import { getMycoupon } from "@/api/user";
 // 优惠券列表
 const coupons = ref([]);
 
+// 格式化日期
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+};
 // 获取优惠券列表
 const loadCoupons = async (status) => {
   try {
@@ -127,6 +138,19 @@ onMounted(() => {
           );
         }
       }
+    }
+  }
+  .empty-state {
+    margin-top: 100rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .empty-text {
+      text-align: center;
+      font-size: 28rpx;
+      color: #999999;
+      margin-top: 50rpx;
     }
   }
 }
