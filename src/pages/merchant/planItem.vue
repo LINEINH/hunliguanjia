@@ -27,6 +27,7 @@
           :src="productData.merchant.logo"
           mode="aspectFill"
           class="user-icon"
+          v-if="productData.merchant && productData.merchant.logo"
         ></image>
         <view class="right">
           <text class="user-name">{{ productData.merchant.name }}</text>

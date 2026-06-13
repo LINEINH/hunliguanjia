@@ -1,5 +1,11 @@
 <template>
   <view class="side-page">
+    <up-navbar-mini
+      @leftClick="leftClick"
+      :autoBack="true"
+      homeUrl="/pages/index/index"
+    >
+    </up-navbar-mini>
     <!-- 用户信息 -->
     <view class="user-header">
       <view class="user-info">
@@ -23,7 +29,7 @@
       </view>
       <view class="menu-item" @click="navigateTo('/pages/side/coupon')">
         <image
-          src="/static/images/12.png"
+          src="/static/images/40.png"
           mode="aspectFill"
           class="menu-image"
         />
@@ -32,7 +38,7 @@
       </view>
       <view class="menu-item" @click="navigateTo('/pages/side/scancode')">
         <image
-          src="/static/images/13.png"
+          src="/static/images/41.png"
           mode="aspectFill"
           class="menu-image"
         />
@@ -41,7 +47,7 @@
       </view>
       <view class="menu-item" @click="navigateTo('/pages/side/scanproduct')">
         <image
-          src="/static/images/14.png"
+          src="/static/images/42.png"
           mode="aspectFill"
           class="menu-image"
         />
@@ -60,7 +66,14 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { getUserInfo } from "@/api/user";
+import { getMerchantInfo } from "@/api/user";
+
+// 定义方法
+const leftClick = () => {
+  console.log("leftClick");
+  // 返回上一页
+  uni.navigateBack();
+};
 
 // 定义用户对象
 const userProfile = ref<any>(null);
@@ -69,14 +82,14 @@ async function loadUserInfo() {
   // 检查是否有 token
 
   try {
-    const userInfo: any = await getUserInfo();
+    const userInfo: any = await getMerchantInfo();
     // 更新 store 中的用户信息
 
     console.log("用户信息:", userInfo);
     // 更新用户信息对象
     userProfile.value = userInfo;
   } catch (error) {
-    console.error("获取用户信息失败:", error);
+    console.error("获取商家信息失败:", error);
   }
 }
 

@@ -217,7 +217,7 @@
 			},
 			{
 				"pagePath": "pages/user/user",
-				"text": "我的", 
+				"text": "婚礼管家", 
 				"iconPath": "static/images/4.png",
 				"selectedIconPath": "static/images/8.png"
 			}

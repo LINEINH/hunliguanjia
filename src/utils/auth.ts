@@ -35,7 +35,12 @@ export async function wxLogin(): Promise<void> {
  */
 export function checkLogin(): boolean {
   const token = uni.getStorageSync('token')
-  return !!token
+  // 开发环境下打印 token 信息,方便调试
+  // #ifdef H5 || MP-WEIXIN
+  console.log('[checkLogin] Token 值:', token, '类型:', typeof token)
+  // #endif
+  // 确保 token 存在且不为空字符串或无效值
+  return !!token && token !== '' && token !== 'null' && token !== 'undefined'
 }
 
 /**

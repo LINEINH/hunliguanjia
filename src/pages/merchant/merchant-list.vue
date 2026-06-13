@@ -40,7 +40,7 @@
           <view class="goods-name" @click="openDetail(item)">{{
             item.name
           }}</view>
-          <view class="goods-intro">
+          <view class="goods-intro" v-if="item.merchant">
             <image
               :src="item.merchant.logo"
               mode="aspectFill"
@@ -197,9 +197,15 @@ const loadGetProductRecommend = async () => {
 
 function openDetail(item: any) {
   if (item && item.id) {
-    uni.navigateTo({
-      url: `/pages/merchant/planItem?id=${item.id}`,
-    });
+    if (Number(item.category_id) === 6) {
+      uni.navigateTo({
+        url: `/pages/merchant/planDetail?id=${item.id}`,
+      });
+    } else {
+      uni.navigateTo({
+        url: `/pages/merchant/planItem?id=${item.id}`,
+      });
+    }
   }
 }
 

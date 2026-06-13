@@ -124,7 +124,7 @@
             <text class="text">{{ merchant.address || "暂无地址" }}</text>
           </view>
 
-          <view class="hotel-intro">
+          <view class="hotel-intro" v-if="item.merchant">
             <image
               :src="merchant.merchant.logo"
               mode="aspectFill"
@@ -424,7 +424,7 @@ function openDetail(hotel) {
   console.log("打开详情：", hotel);
   if (hotel && hotel.id) {
     uni.navigateTo({
-      url: `/pages/merchant/planItem?id=${hotel.id}`,
+      url: `/pages/merchant/planDetail?id=${hotel.id}`,
     });
   }
 }

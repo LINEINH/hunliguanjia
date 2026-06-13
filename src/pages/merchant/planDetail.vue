@@ -1,124 +1,111 @@
 
 <template>
-  <view class="hotel-detail-page">
+  <view class="planDetail">
     <up-navbar
-      title="盛唐宴礼宴中心(太华南路店)"
+      :title="productData.name || '产品详情'"
       @rightClick="rightClick"
       :autoBack="true"
     >
     </up-navbar>
+
     <view class="banner">
-      <image
-        src="/static/images/banner1.png"
-        mode="aspectFill"
-        class="banner"
-      ></image>
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        indicator-active-color="#fff"
+      >
+        <swiper-item v-for="(item, index) in productData.images" :key="index">
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
+        </swiper-item>
+      </swiper>
     </view>
     <view class="hotel-info">
-      <view class="hotel-name"
-        >盛唐宴礼宴中心(太华南路店)
-        <text class="price">¥1280/桌</text>
+      <view>
+        <view class="hotel-intro">
+          <image
+            :src="productData.cover_image"
+            mode="aspectFill"
+            class="user-icon"
+            v-if="productData.cover_image"
+          ></image>
+          <view class="right">
+            <view class="user-name">
+              <view> {{ productData.name }}</view>
+              <text class="price"
+                >¥{{ productData.min_price }}<text class="small">起</text></text
+              >
+            </view>
+            <view class="hotel-rate">
+              <text class="rate">{{ productData.rating }}分</text>
+              {{ productData.experience_years }}年经验
+            </view>
+            <text class="user-intro">{{ productData.subtitle }}</text>
+          </view>
+        </view>
+        <text class="user-description">{{ productData.description }}</text>
       </view>
-      <view class="hotel-time"> 营业中 09:00-21:00 </view>
-      <view class="hotel-rate"
-        ><text class="rate">4.5分</text> “环境雍容华贵，菜品食材上乘”
+    </view>
+
+    <!-- 详情 -->
+    <view class="richText">
+      <up-tabs
+        :list="list"
+        @click="click"
+        scrollable="false"
+        lineWidth="80"
+        lineColor="#F0CD8C"
+        :activeStyle="{
+          color: '#000000',
+          transform: 'scale(1.05)',
+        }"
+        :inactiveStyle="{
+          color: '#808080',
+          transform: 'scale(1)',
+        }"
+        itemStyle="width:50%;text-align: center; height: 80rpx;"
+      ></up-tabs>
+
+      <view class="content" v-if="cleanedContent && activeTab === 0">
+        <rich-text :nodes="cleanedContent"></rich-text>
       </view>
-      <view class="hotel-highlights">
-        <text class="highlight">大厅无柱</text>
-        <text class="highlight">西式婚礼</text>
-        <text class="highlight">西式婚礼</text>
-      </view>
-      <view class="hotel-address"
-        >地址：西安市雁塔区太华南路与科技二路交叉口西北角</view
+      <view
+        class="viedoList"
+        v-if="
+          productData.videos && productData.videos.length && activeTab === 1
+        "
       >
-      <view class="hotel-intro">距地铁4号线含元殿站D东北口步行230m</view>
-      <view class="hotel-fuli">
-        <view class="hotel-fuli-title">特惠福利</view>
-        <view class="hotel-fuli-item">
-          <text>新客专享·200元优惠券</text>
-          <view class="recive"
-            >领取
-            <up-icon name="arrow-right" size="16" color="#BF974A"></up-icon
-          ></view>
-        </view>
-      </view>
-      <view class="hotel-list">
-        <view class="hotel-list-item">
-          <image
-            src="/static/images/banner1.png"
-            mode="aspectFill"
-            class="image"
-          ></image>
-          <view class="hotel-list-item-info">
-            <view class="hotel-list-item-title">
-              盛唐宴礼宴中心(太华南路店)盛唐宴礼宴中心(太华南路店)
-            </view>
-            <view class="hotel-list-item-intro"> 可容纳20-25桌 无柱子 </view>
-            <view class="hotel-list-item-price">
-              <view class="price-wrap">
-                参考价
-                <text class="price">250000</text>
-                <text class="danwei">起</text>
-              </view>
-              <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-            </view>
-          </view>
-        </view>
-        <view class="hotel-list-item">
-          <image
-            src="/static/images/banner1.png"
-            mode="aspectFill"
-            class="image"
-          ></image>
-          <view class="hotel-list-item-info">
-            <view class="hotel-list-item-title">
-              盛唐宴礼宴中心(太华南路店)盛唐宴礼宴中心(太华南路店)
-            </view>
-            <view class="hotel-list-item-intro"> 可容纳20-25桌 无柱子 </view>
-            <view class="hotel-list-item-price">
-              <view class="price-wrap">
-                参考价
-                <text class="price">250000</text>
-                <text class="danwei">起</text>
-              </view>
-              <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-            </view>
-          </view>
-        </view>
-        <view class="hotel-list-item">
-          <image
-            src="/static/images/banner1.png"
-            mode="aspectFill"
-            class="image"
-          ></image>
-          <view class="hotel-list-item-info">
-            <view class="hotel-list-item-title">
-              盛唐宴礼宴中心(太华南路店)盛唐宴礼宴中心(太华南路店)
-            </view>
-            <view class="hotel-list-item-intro"> 可容纳20-25桌 无柱子 </view>
-            <view class="hotel-list-item-price">
-              <view class="price-wrap">
-                参考价
-                <text class="price">250000</text>
-                <text class="danwei">起</text>
-              </view>
-              <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-            </view>
-          </view>
+        <view
+          class="video-item"
+          v-for="(item, index) in productData.videos"
+          :key="index"
+        >
+          <video :src="item" controls="true" width="100%"></video>
         </view>
       </view>
     </view>
+
     <view class="hotel-footer">
-      <view class="hotel-footer-item">
+      <view
+        class="hotel-footer-item"
+        @click="gobackMerchant(productData.merchant_id)"
+      >
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
         <text>返回</text>
       </view>
-      <view class="hotel-footer-item">
-        <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
-        <text>收藏</text>
+      <view class="hotel-footer-item" @click="toggleFavorite">
+        <up-icon
+          name="star"
+          size="24"
+          :color="isFavorited ? '#BF974A' : '#E5E5E5'"
+        ></up-icon>
+        <text :style="{ color: isFavorited ? '#BF974A' : '#999999' }">{{
+          isFavorited ? "已收藏" : "收藏"
+        }}</text>
       </view>
 
-      <view class="hotel-footer-tel button" @click="openDetail()">
+      <view class="hotel-footer-tel button" @click="makePhoneCall">
         电话咨询
       </view>
       <view class="hotel-footer-online button"> 在线管家 </view>
@@ -126,14 +113,178 @@
   </view>
 </template>
 
-<script setup>
-import { ref, reactive, computed } from "vue";
-const show = ref(false);
+<script setup lang="ts">
+import { ref, onMounted, computed, reactive } from "vue";
+import {
+  getProductDetail,
+  favoriteProduct,
+  unfavoriteProduct,
+} from "@/api/product";
 
-function openDetail(hotel) {
-  if (hotel && hotel.id) {
-    uni.navigateTo({
-      url: `/pages/merchant/hotel-detail?id=${hotel.id}`,
+const activeTab = ref(0);
+// 创建响应式数据
+const list = reactive([{ name: "图文案例" }, { name: "视频案例" }]);
+
+// 定义方法
+function click(index: any) {
+  console.log("点击了标签:", index);
+  activeTab.value = index.index;
+}
+
+// 产品数据
+const productData = ref<any>({});
+
+// 产品ID
+const hotelId = ref<number | null>(null);
+
+// 收藏状态
+const isFavorited = ref<boolean>(false);
+
+// onLoad 参数接收器
+const props = defineProps<{
+  id?: string;
+}>();
+
+// 清理HTML中的图片内联样式并添加宽度控制
+function cleanHtmlContent(html: string): string {
+  if (!html) return html;
+
+  // 移除img标签中的style属性
+  let cleaned = html.replace(
+    /<img([^>]*)\s+style\s*=\s*["'][^"']*["']/gi,
+    "<img$1"
+  );
+
+  // 如果style是空的,也移除
+  cleaned = cleaned.replace(
+    /<img([^>]*)\s+style\s*=\s*["']\s*["']/gi,
+    "<img$1"
+  );
+
+  // 为所有img标签添加width:100%的style属性
+  cleaned = cleaned.replace(
+    /<img([^>]*?)>/gi,
+    '<img$1 style="width:100%;height:auto;display:block;">'
+  );
+
+  return cleaned;
+}
+
+// 计算属性:清理后的内容
+const cleanedContent = computed(() => {
+  return cleanHtmlContent(productData.value.content || "");
+});
+
+// 加载产品详情
+async function loadProductDetail() {
+  if (!hotelId.value) {
+    uni.showToast({
+      title: "缺少产品ID",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: "加载中...",
+    });
+
+    const response = await getProductDetail(hotelId.value);
+
+    productData.value = response;
+    isFavorited.value = response.is_favorited || false; // 假设接口返回了is_favorited字
+    console.log("产品详情:", response);
+  } catch (error) {
+    console.error("获取产品详情失败:", error);
+    uni.showToast({
+      title: "获取产品详情失败",
+      icon: "none",
+    });
+  } finally {
+    uni.hideLoading();
+  }
+}
+
+// 页面加载时获取产品详情
+onMounted(() => {
+  if (props.id) {
+    hotelId.value = Number(props.id);
+    loadProductDetail();
+  } else {
+    uni.showToast({
+      title: "缺少产品ID",
+      icon: "none",
+    });
+  }
+});
+
+function rightClick() {
+  console.log("right click");
+}
+
+function gobackMerchant(merchantId: number) {
+  uni.navigateTo({
+    url: `/pages/merchant/hotelDetail?id=${merchantId}`,
+  });
+}
+function makePhoneCall() {
+  // 这里可以添加电话咨询的功能
+  uni.showModal({
+    title: "电话咨询",
+    content: "是否拨打产品联系电话？",
+    success: function (res) {
+      if (res.confirm) {
+        // 实际项目中这里应该替换成产品的真实电话
+        uni.makePhoneCall({
+          phoneNumber:
+            productData.value.merchant?.contact_phone || "13800138000", // 尝试获取真实电话，否则使用示例
+        });
+      }
+    },
+  });
+}
+
+function handleOnlineService() {
+  uni.showToast({
+    title: "在线管家功能开发中",
+    icon: "none",
+  });
+}
+
+// 切换收藏状态
+async function toggleFavorite() {
+  try {
+    if (!hotelId.value) {
+      uni.showToast({
+        title: "缺少酒店ID",
+        icon: "none",
+      });
+      return;
+    }
+
+    if (isFavorited.value) {
+      // 取消收藏
+      await unfavoriteProduct(hotelId.value, "merchant");
+      isFavorited.value = false;
+      uni.showToast({
+        title: "已取消收藏",
+        icon: "success",
+      });
+    } else {
+      // 收藏
+      await favoriteProduct(hotelId.value, "merchant");
+      isFavorited.value = true;
+      uni.showToast({
+        title: "收藏成功",
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    console.error("收藏操作失败:", error);
+    uni.showToast({
+      title: "操作失败",
+      icon: "none",
     });
   }
 }
@@ -141,25 +292,28 @@ function openDetail(hotel) {
 
 <style lang="scss" scoped>
 @import "@/styles/variables.scss";
-.hotel-detail-page {
+.planDetail {
   background: #f0f0f0;
   min-height: 100vh;
   padding-bottom: 100rpx;
 
   .banner {
-    width: 100%;
-    height: 600rpx;
-    margin-bottom: 20px;
+    margin-top: 80rpx;
+    .banner-swiper {
+      height: 1200rpx;
+      overflow: hidden;
+    }
+    .banner-image {
+      width: 100%;
+      height: 100%;
+    }
   }
   .hotel-info {
-    margin: 0 $spacing-md;
     background: #fff;
     padding: $spacing-md;
-    border-radius: 30rpx;
-    margin-top: -100rpx;
-    position: absolute;
-    z-index: 10;
-    padding-bottom: 180rpx;
+
+    border-radius: 0 0 30rpx 30rpx;
+
     .hotel-name {
       font-size: 32rpx;
       font-weight: bold;
@@ -167,33 +321,6 @@ function openDetail(hotel) {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      .price {
-        font-size: 32rpx;
-        color: #bf974a;
-        margin-left: auto;
-      }
-    }
-    .hotel-time {
-      color: #808080;
-      font-size: 28rpx;
-      margin: 20rpx 0;
-      font-weight: bold;
-    }
-    .hotel-rate {
-      color: #808080;
-      font-size: 26rpx;
-      margin-top: 30rpx;
-      .rate {
-        border-radius: 20rpx;
-        background: linear-gradient(
-          180deg,
-          #f1daa6 0%,
-          #f9eccc 33.03%,
-          #e9cc90 100%
-        );
-        padding: 3rpx 10rpx;
-        color: #d43030;
-      }
     }
     .hotel-highlights {
       display: flex;
@@ -202,98 +329,135 @@ function openDetail(hotel) {
     }
     .highlight {
       font-size: 24rpx;
-      color: #383838;
-      background: #f0f0f0;
+      color: #bf974a;
+      border: 1px solid #bf974a;
       padding: 10rpx 20rpx;
       border-radius: 24rpx;
-      margin: 20rpx 0;
+      margin-top: 20rpx;
     }
+
     .hotel-address {
       font-size: 28rpx;
       color: #808080;
-      margin-bottom: 10rpx;
     }
+
     .hotel-intro {
-      font-size: 26rpx;
-      color: #a6a6a6;
-      margin-bottom: 10rpx;
-    }
-    .hotel-fuli {
-      border: 1px solid #f0cd8c;
-      margin: $spacing-lg 0;
-      border-radius: 30rpx;
-      overflow: hidden;
-      .hotel-fuli-title {
-        font-size: 28rpx;
-        color: #383838;
-        background: linear-gradient(180deg, #f1daa6 0%, #eac47b 100%);
-        padding: $spacing-sm $spacing-md;
-        text-shadow: 1px 1px 1px #805608;
-        color: #ffffff;
-        font-size: 34rpx;
-        font-weight: bold;
+      display: flex;
+      align-items: center;
+      padding-top: $spacing-sm;
+      margin-bottom: $spacing-md;
+      .user-icon {
+        width: 104rpx;
+        height: 104rpx;
+        border-radius: 50%;
+        margin-right: $spacing-md;
       }
-      .hotel-fuli-item {
+
+      .right {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: $spacing-sm $spacing-md;
-        color: #383838;
-        .recive {
-          color: #bf974a;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1;
+        .user-name {
+          font-size: 32rpx;
+          color: #383838;
+          margin-right: auto;
           display: flex;
           align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          .price {
+            font-size: 32rpx;
+            color: #bf974a;
+            font-weight: bold;
+          }
+          .small {
+            font-size: $font-xs;
+            font-weight: 400;
+          }
+        }
+        .hotel-rate {
+          color: #808080;
+          font-size: 26rpx;
+          margin-top: 10rpx;
+          .rate {
+            border-radius: 20rpx;
+            background: linear-gradient(
+              180deg,
+              #f1daa6 0%,
+              #f9eccc 33.03%,
+              #e9cc90 100%
+            );
+            padding: 3rpx 10rpx;
+            color: #d43030;
+          }
+        }
+        .user-intro {
+          font-size: 26rpx;
+          color: #a6a6a6;
+          margin-top: 10rpx;
+        }
+      }
+      .id {
+        font-size: $font-xs;
+        color: #383838;
+      }
+    }
+    .user-description {
+      color: #808080;
+      margin: 20rpx 0;
+      font-size: 28rpx;
+      line-height: 40rpx;
+    }
+  }
+  .richText {
+    background: #fff;
+    margin: 20rpx;
+    padding: $spacing-md;
+    .viedoList {
+      margin-top: $spacing-md;
+      .video-item {
+        margin-bottom: $spacing-md;
+        video {
+          width: 100%;
         }
       }
     }
-    .hotel-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10rpx;
-      .hotel-list-item {
-        border-radius: 30rpx;
-        width: 320rpx;
-        border: 1px solid #e5e5e5;
-        overflow: hidden;
-        margin-bottom: 20rpx;
-        .image {
-          width: 100%;
-          height: 320rpx;
-        }
-        .hotel-list-item-info {
-          padding: $spacing-sm;
-          .hotel-list-item-title {
-            font-size: 32rpx;
-            color: #383838;
-            margin-bottom: 10rpx;
+    .content {
+      margin-top: $spacing-md;
+      background: #fff;
+      border-radius: 20rpx;
+      padding-bottom: $spacing-md;
+      :deep(rich-text) {
+        line-height: 1.8;
+        font-size: 28rpx;
+        color: #383838;
 
-            // 超过两行显示省略号
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          .hotel-list-item-price {
-            font-size: 26rpx;
-            color: #808080;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            .price {
-              color: #bf974a;
-              font-size: 32rpx;
-            }
-            .danwei {
-              color: #bf974a;
-              font-size: 24rpx;
-            }
-          }
-          .hotel-list-item-intro {
-            font-size: 24rpx;
-            color: #808080;
-            margin-bottom: 10rpx;
-          }
+        // 强制所有图片元素宽度100%
+        img,
+        image,
+        [class*="img"],
+        [class*="image"] {
+          max-width: 100% !important;
+          width: 100% !important;
+          height: auto !important;
+          display: block !important;
+          border-radius: 10rpx;
+          object-fit: contain;
+        }
+
+        // 处理 div 容器中的图片
+        div img,
+        p img,
+        span img {
+          max-width: 100% !important;
+          width: 100% !important;
+          height: auto !important;
+          display: block !important;
+        }
+
+        p {
+          margin-bottom: $spacing-sm;
         }
       }
     }

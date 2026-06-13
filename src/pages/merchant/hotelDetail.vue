@@ -314,7 +314,7 @@ async function toggleFavorite() {
 function openMap() {
   if (!hotelData.value) return;
 
-  const { longitude, latitude, venue, address_text } = hotelData.value;
+  const { longitude, latitude, name, address_text } = hotelData.value;
 
   // 验证经纬度是否存在
   if (!longitude || !latitude) {
@@ -329,7 +329,7 @@ function openMap() {
   uni.openLocation({
     longitude: Number(longitude),
     latitude: Number(latitude),
-    name: venue || "婚博会地点",
+    name: name || "婚博会地点",
     address: address_text || "",
     success: () => {
       console.log("打开地图成功");

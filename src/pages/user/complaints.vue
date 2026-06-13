@@ -144,7 +144,6 @@ const submit = async () => {
     }
 
     .textarea {
-      width: 100%;
       min-height: 240rpx;
       padding: 20rpx;
       font-size: 26rpx;

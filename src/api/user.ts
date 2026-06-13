@@ -160,3 +160,55 @@ export function complaint(data: any) {
     data
   })
 }
+
+// 获取商家信息
+export function getMerchantInfo() {
+  return request<any>({
+    url: '/wechat/merchant/profile',
+    method: 'GET'
+  })
+}
+
+
+// 我的产品列表
+export function getMyproducts() {
+  return request<any>({
+    url: '/wechat/merchant/my-products',
+    method: 'GET'
+  })
+}
+
+
+
+// 我的优惠券
+export function getMycoupon() {
+  return request<any>({
+    url: '/wechat/merchant/my-coupon-templates',
+    method: 'GET'
+  })
+}
+
+// 查询优惠券 /api/v1/wechat/merchant/coupons/info?code=CP20260521693864&type=coupon
+ export function getcouponInfo(code:string,type:string) {
+  return request<any>({
+    url: `/wechat/merchant/coupons/info?code=${code}&type=${type}`,
+    method: 'GET'
+  })
+}
+
+// 核销
+export function couponsVerify(data: any) {
+  return request<any>({
+    url: '/wechat/merchant/coupons/verify',
+    method: 'POST',
+    data
+  })
+}
+
+// 兑换历史
+ export function getHistory(code:string,type:string) {
+  return request<any>({
+    url: `/wechat/merchant/verify-history?code=${code}&type=${type}`,
+    method: 'GET'
+  })
+}
