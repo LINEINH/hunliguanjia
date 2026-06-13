@@ -216,8 +216,8 @@
 				"selectedIconPath": "static/images/7.png"
 			},
 			{
-				"pagePath": "pages/side/index",
-				"text": "我的",
+				"pagePath": "pages/user/user",
+				"text": "我的", 
 				"iconPath": "static/images/4.png",
 				"selectedIconPath": "static/images/8.png"
 			}
