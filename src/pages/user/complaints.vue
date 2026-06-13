@@ -200,11 +200,11 @@ const submit = async () => {
     left: 0;
     right: 0;
     background: #fff;
-    padding: 32rpx;
+    padding: 32rpx 0;
     width: 100%;
     padding-bottom: env(safe-area-inset-bottom);
     .btn-submit {
-      width: 600rpx;
+      width: 680rpx;
       height: 84rpx;
       line-height: 84rpx;
       background: linear-gradient(

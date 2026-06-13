@@ -31,7 +31,7 @@ export async function wxLogin(): Promise<void> {
 }
 
 /**
- * 检查登录态
+ * 检查登录态(同步版本 - 仅检查本地存储)
  */
 export function checkLogin(): boolean {
   const token = uni.getStorageSync('token')
@@ -41,6 +41,33 @@ export function checkLogin(): boolean {
   // #endif
   // 确保 token 存在且不为空字符串或无效值
   return !!token && token !== '' && token !== 'null' && token !== 'undefined'
+}
+
+/**
+ * 检查登录态(异步版本 - 验证 token 有效性)
+ * @returns Promise<boolean> true 表示 token 有效,false 表示无效
+ */
+export async function checkLoginAsync(): Promise<boolean> {
+  // 首先检查本地 token 是否存在
+  if (!checkLogin()) {
+    return false
+  }
+  
+  try {
+    // 尝试获取用户信息来验证 token 是否有效
+    const userStore = useUserStore()
+    await userStore.syncUserInfo()
+    return true
+  } catch (error) {
+    // 如果获取用户信息失败,说明 token 无效或已过期
+    console.log('[checkLoginAsync] Token 验证失败:', error)
+    
+    // 清除无效的 token 和用户信息
+    const userStore = useUserStore()
+    userStore.logout()
+    
+    return false
+  }
 }
 
 /**
