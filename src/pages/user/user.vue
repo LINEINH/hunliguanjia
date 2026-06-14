@@ -325,6 +325,19 @@
         <text class="menu-text">商家入口</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
+      <view
+        class="menu-item"
+        v-if="userProfile && userProfile.type && userProfile.type == 'staff'"
+        @click="handleStaffScan"
+      >
+        <image
+          src="/static/images/43.png"
+          mode="aspectFill"
+          class="menu-image"
+        />
+        <text class="menu-text">员工扫一扫</text>
+        <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
+      </view>
     </view>
 
     <!-- 自定义 TabBar -->
@@ -439,6 +452,74 @@ pickerValue.value = [
 // 导航
 function navigateTo(url: string) {
   uni.navigateTo({ url });
+}
+
+// 员工扫一扫 - 扫描二维码
+function handleStaffScan() {
+  // 检查登录状态
+  if (!checkLogin()) {
+    uni.showModal({
+      title: "提示",
+      content: "请先登录后再使用扫一扫功能",
+      confirmText: "去登录",
+      cancelText: "取消",
+      success: (res) => {
+        if (res.confirm) {
+          navigateToLogin();
+        }
+      },
+    });
+    return;
+  }
+
+  // 调用微信扫码API
+  uni.scanCode({
+    onlyFromCamera: true, // 只允许从相机扫码
+    scanType: ["qrCode"], // 只识别二维码
+    success: (res) => {
+      alert(res);
+
+      // 获取扫码结果
+      const scanResult = res.result;
+      alert(scanResult);
+
+      // 判断是否是签到二维码（包含 u 和 a 参数）
+      if (
+        scanResult.includes("?userId=") &&
+        scanResult.includes("&activityId=")
+      ) {
+        // 解析 URL 参数
+        const urlParams = new URLSearchParams(scanResult.split("?")[1]);
+        const u = urlParams.get("userId") || "";
+        const a = urlParams.get("activityId") || "";
+        alert(u);
+        alert(a);
+        // 跳转到签到页面
+        uni.navigateTo({
+          url: `/pages/expo/sign?userId=${u}&activityId=${a}`,
+        });
+      } else {
+        // 其他二维码，显示结果
+        uni.showModal({
+          title: "扫码结果",
+          content: scanResult,
+          showCancel: false,
+          confirmText: "确定",
+        });
+      }
+    },
+    fail: (err) => {
+      console.error("扫码失败:", err);
+
+      // 用户取消扫码不提示错误
+      if (err.errMsg && !err.errMsg.includes("cancel")) {
+        uni.showToast({
+          title: "扫码失败，请重试",
+          icon: "none",
+        });
+      }
+    },
+  });
 }
 
 // 登录
@@ -876,6 +957,7 @@ onShow(() => {
 
 <style lang="scss" scoped>
 .user-page {
+  padding-bottom: 120rpx;
   /* 日期选择器和预算选择器样式 */
   .date-budget {
     background-color: #fff;

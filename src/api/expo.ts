@@ -85,3 +85,15 @@ export function checkinClaim(gift_id: number) {
     method: 'POST'
   })
 }
+
+// 签到 
+export function checkin(userId: string,activityId: string) {
+  return request({
+    url: `/wechat/expo/staff-checkin-qr`,
+    method: 'POST',
+    data: {
+      userId,
+      activityId
+    }
+  })
+}

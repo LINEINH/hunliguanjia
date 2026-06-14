@@ -53,7 +53,7 @@ async function responseInterceptor(response: any): Promise<any> {
     return Promise.reject(new Error('未授权'))
   } else {
     uni.showToast({
-      title: '网络错误，请稍后重试',
+      title: data.message ||  '网络错误，请稍后重试',
       icon: 'none'
     })
     return Promise.reject(new Error('网络错误'))

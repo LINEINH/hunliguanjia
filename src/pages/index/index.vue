@@ -145,6 +145,8 @@
       </template>
     </view>
 
+    <view @click="navigateToLink(`/pages/expo/sign?a=1&u=4`)">签到</view>
+
     <!-- 美好瞬间 - 两列商品展示 -->
     <view class="planItem">
       <view class="section-header">
