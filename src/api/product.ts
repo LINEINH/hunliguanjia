@@ -174,3 +174,28 @@ export function unfavoriteProduct(target_id: number,type:string) {
     }
   })
 }
+
+
+// 绑定手机号
+export function bind(merchant_id: string) {
+  return request<any>({
+    url: `/wechat/bind-privacy-number`,
+    method: 'POST',
+    data: {
+      merchant_id: merchant_id
+    }
+  })
+}
+
+
+
+// 解绑手机号
+export function unbind(merchant_id: string) {
+  return request<any>({
+    url: `/wechat/unbind-privacy-number`,
+    method: 'POST',
+    data: {
+      merchant_id: merchant_id
+    }
+  })
+}

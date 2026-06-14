@@ -101,14 +101,27 @@ function navigateTo(url: string) {
 // 核销优惠券 - 扫描二维码
 function handleCouponScan(index: number) {
   console.log("=== 开始扫码 ===");
+  console.log("扫码类型:", index === 1 ? "优惠券" : "商品");
 
-  // 调用微信扫码API
+  // 显示加载提示
+  uni.showLoading({
+    title: "正在启动相机...",
+    mask: true,
+  });
+
+  // 调用微信扫码API（支持多种二维码类型）
   uni.scanCode({
     onlyFromCamera: true, // 只允许从相机扫码
-    scanType: ["qrCode"], // 只识别二维码
+    scanType: ["qrCode", "barCode", "datamatrix", "pdf417", "wxCode"], // 支持多种码类型，包括小程序码
+    autoDecodeCharset: true, // 自动识别字符集
     success: (res) => {
+      // 隐藏加载提示
+      uni.hideLoading();
+
       console.log("=== 扫码成功 ===");
       console.log("完整返回:", JSON.stringify(res));
+      console.log("scanType:", res.scanType);
+      console.log("charSet:", res.charSet);
 
       // 获取扫码结果（微信小程序使用 path 字段）
       const scanResult = res.path || res.result || "";
@@ -288,17 +301,28 @@ function handleCouponScan(index: number) {
       }
     },
     fail: (err) => {
+      // 隐藏加载提示
+      uni.hideLoading();
+
       console.error("=== 扫码失败 ===");
       console.error("错误信息:", err);
       console.error("错误消息:", err.errMsg);
 
       // 用户取消扫码不提示错误
-      if (err.errMsg && !err.errMsg.includes("cancel")) {
-        uni.showToast({
-          title: "扫码失败，请重试",
-          icon: "none",
-        });
+      if (err.errMsg && err.errMsg.includes("cancel")) {
+        console.log("用户取消扫码");
+        return;
       }
+
+      // 其他错误，显示详细信息
+      uni.showModal({
+        title: "扫码失败",
+        content: `错误信息: ${
+          err.errMsg || "未知错误"
+        }\n\n可能原因:\n1. 相机权限未授权\n2. 光线太暗\n3. 二维码模糊或损坏`,
+        showCancel: false,
+        confirmText: "知道了",
+      });
     },
   });
 }

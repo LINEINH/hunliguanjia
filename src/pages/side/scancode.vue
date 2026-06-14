@@ -34,7 +34,7 @@
     <view class="summary">
       <view class="summary-item">
         <text class="summary-label">商户名称</text>
-        <text class="summary-value">111</text>
+        <text class="summary-value">{{ couponInfo.merchant_name }}</text>
       </view>
       <view class="summary-item">
         <text class="summary-label">领取渠道</text>

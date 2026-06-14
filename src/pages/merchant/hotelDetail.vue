@@ -149,6 +149,8 @@ import {
   receiveCoupons,
   favoriteProduct,
   unfavoriteProduct,
+  bind,
+  unbind,
 } from "@/api/product";
 
 // 基础URL
@@ -244,13 +246,78 @@ function makePhoneCall() {
   // 这里可以添加电话咨询的功能
   uni.showModal({
     title: "电话咨询",
-    content: "是否拨打酒店联系电话？",
+    content: "是否拨打商家电话？请使用授权手机号拨出，以免拨打失败！",
     success: function (res) {
       if (res.confirm) {
-        // 实际项目中这里应该替换成酒店的真实电话
-        uni.makePhoneCall({
-          phoneNumber: hotelData.value.contact_phone, // 示例电话号码
-        });
+        // 调用bind获取绑定的手机号
+        bind(hotelData.value.id)
+          .then((bindRes) => {
+            if (bindRes && bindRes.middle_number) {
+              // 获取成功
+              console.log("获取绑定手机号成功:", bindRes);
+
+              // 拨打电话
+              uni.makePhoneCall({
+                phoneNumber: bindRes.middle_number,
+                success: () => {
+                  console.log("电话拨打成功");
+                  // 拨打成功后解绑
+                  unbind(hotelData.value.id)
+                    .then((unbindRes) => {
+                      if (unbindRes) {
+                        console.log("解绑成功:", unbindRes);
+                      } else {
+                        console.log("解绑失败:", unbindRes?.message);
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("解绑异常:", error);
+                    });
+                },
+                fail: (err) => {
+                  console.log("电话拨打失败或取消:", err.errMsg);
+
+                  // 如果是因为用户取消拨打，也需要解绑
+                  if (err.errMsg && err.errMsg.includes("cancel")) {
+                    console.log("用户取消拨打，执行解绑");
+                    unbind(hotelData.value.id)
+                      .then((unbindRes) => {
+                        if (unbindRes) {
+                          console.log("解绑成功:", unbindRes);
+                        } else {
+                          console.log("解绑失败:", unbindRes?.message);
+                        }
+                      })
+                      .catch((error) => {
+                        console.error("解绑异常:", error);
+                      });
+                  } else {
+                    // 其他错误也解绑
+                    unbind(hotelData.value.id).catch((error) => {
+                      console.error("解绑异常:", error);
+                    });
+                  }
+                },
+              });
+            } else {
+              // 获取失败
+              console.log("获取绑定手机号失败:", bindRes?.message);
+              uni.showToast({
+                title: bindRes?.message || "获取手机号失败",
+                icon: "none",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("绑定异常:", error);
+            uni.showToast({
+              title: "绑定失败，请重试",
+              icon: "none",
+            });
+          });
+      } else {
+        // 用户取消拨打电话，不需要解绑（因为还没有绑定）
+        console.log("用户取消拨打电话");
       }
     },
   });
