@@ -477,28 +477,107 @@ function handleStaffScan() {
     onlyFromCamera: true, // 只允许从相机扫码
     scanType: ["qrCode"], // 只识别二维码
     success: (res) => {
-      alert(res);
+      console.log("=== 扫码成功 ===");
+      console.log("完整返回:", JSON.stringify(res));
 
       // 获取扫码结果
       const scanResult = res.result;
-      alert(scanResult);
+      console.log("扫码结果内容:", scanResult);
+      console.log("扫码结果类型:", typeof scanResult);
 
-      // 判断是否是签到二维码（包含 u 和 a 参数）
-      if (
-        scanResult.includes("?userId=") &&
-        scanResult.includes("&activityId=")
-      ) {
-        // 解析 URL 参数
-        const urlParams = new URLSearchParams(scanResult.split("?")[1]);
-        const u = urlParams.get("userId") || "";
-        const a = urlParams.get("activityId") || "";
-        alert(u);
-        alert(a);
-        // 跳转到签到页面
-        uni.navigateTo({
-          url: `/pages/expo/sign?userId=${u}&activityId=${a}`,
-        });
+      // 显示扫码结果
+      uni.showToast({
+        title: "扫码成功",
+        icon: "success",
+        duration: 1500,
+      });
+
+      // 判断是否是签到二维码（包含 userId 和 activityId 参数）
+      const hasUserId = scanResult.includes("?userId=");
+      const hasActivityId = scanResult.includes("&activityId=");
+      
+      console.log("包含 ?userId=:", hasUserId);
+      console.log("包含 &activityId=:", hasActivityId);
+
+      if (hasUserId && hasActivityId) {
+        console.log("开始解析参数...");
+        
+        // 解析 URL 参数（兼容小程序环境）
+        try {
+          const queryString = scanResult.split("?")[1];
+          console.log("查询字符串:", queryString);
+          
+          // 手动解析 URL 参数
+          const params: any = {};
+          const pairs = queryString.split("&");
+          
+          for (let i = 0; i < pairs.length; i++) {
+            const pair = pairs[i].split("=");
+            const key = decodeURIComponent(pair[0]);
+            const value = decodeURIComponent(pair[1] || "");
+            params[key] = value;
+          }
+          
+          console.log("解析后的参数对象:", params);
+          
+          const userId = params.userId || "";
+          const activityId = params.activityId || "";
+
+          console.log("=== 解析结果 ===");
+          console.log("userId:", userId);
+          console.log("activityId:", activityId);
+          console.log("userId 长度:", userId.length);
+          console.log("activityId 长度:", activityId.length);
+
+          if (!userId || !activityId) {
+            console.error("参数为空！");
+            uni.showModal({
+              title: "提示",
+              content: `解析失败\nuserId: ${userId}\nactivityId: ${activityId}`,
+              showCancel: false,
+            });
+            return;
+          }
+
+          // 构造跳转 URL
+          const targetUrl = `/pages/expo/sign?u=${userId}&a=${activityId}`;
+          console.log("准备跳转到:", targetUrl);
+
+          // 显示即将跳转的提示
+          uni.showToast({
+            title: "正在跳转...",
+            icon: "loading",
+            duration: 1000,
+          });
+
+          // 延迟跳转，让用户看到提示
+          setTimeout(() => {
+            console.log("执行跳转...");
+            uni.navigateTo({
+              url: targetUrl,
+              success: () => {
+                console.log("跳转成功！");
+              },
+              fail: (err) => {
+                console.error("跳转失败:", err);
+                uni.showModal({
+                  title: "跳转失败",
+                  content: JSON.stringify(err),
+                  showCancel: false,
+                });
+              },
+            });
+          }, 1000);
+        } catch (error) {
+          console.error("解析参数异常:", error);
+          uni.showModal({
+            title: "解析错误",
+            content: String(error),
+            showCancel: false,
+          });
+        }
       } else {
+        console.log("不是签到二维码，显示原始结果");
         // 其他二维码，显示结果
         uni.showModal({
           title: "扫码结果",
@@ -509,7 +588,9 @@ function handleStaffScan() {
       }
     },
     fail: (err) => {
-      console.error("扫码失败:", err);
+      console.error("=== 扫码失败 ===");
+      console.error("错误信息:", err);
+      console.error("错误消息:", err.errMsg);
 
       // 用户取消扫码不提示错误
       if (err.errMsg && !err.errMsg.includes("cancel")) {

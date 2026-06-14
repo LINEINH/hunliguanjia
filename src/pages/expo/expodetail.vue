@@ -97,6 +97,14 @@
             class="codeimage"
           />
           <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
+          <view class="renew"
+            ><up-icon
+              name="reload"
+              size="38"
+              color="#EAC47B"
+              class="icon"
+            ></up-icon
+          ></view>
         </view>
       </view>
 
@@ -415,6 +423,11 @@ function openMap() {
       font-size: 24rpx;
       color: #727272;
       text-align: center;
+      .renew {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
     .stepcon {
       display: flex;

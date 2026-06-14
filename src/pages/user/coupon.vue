@@ -40,14 +40,26 @@
             <text class="coupon-get">满{{ item.template.min_amount }}使用</text>
           </view>
         </view>
-        <view class="recipt">
+        <view class="recipt" v-if="item.status === 0">
           <view class="recipt-rule"> </view>
-          <view class="recipt-get">
+          <view class="recipt-get" @click="openCode(item.qr_code_image_url)">
             <text class="recipt-get">二维码</text>
           </view>
         </view>
       </view>
     </view>
+    <up-popup
+      :show="show"
+      mode="center"
+      :round="10"
+      @close="close"
+      @open="open"
+      closeable="true"
+    >
+      <view>
+        <image :src="codeUrl" mode="aspectFill" class="codeimage"></image>
+      </view>
+    </up-popup>
   </view>
 </template>
 
@@ -61,6 +73,11 @@ const list = reactive([
   { name: "已使用" },
   { name: "已过期" },
 ]);
+
+// 创建响应式数据
+const show = ref(false);
+
+const codeUrl = ref("");
 
 // 当前选中的tab
 const activeTab = ref(0);
@@ -93,6 +110,23 @@ const emptyText = computed(() => {
 function click(index) {
   activeTab.value = index;
   loadCoupons(index.index);
+}
+
+function open() {
+  // 打开逻辑，比如设置 show 为 true
+  show.value = true;
+  // console.log('open');
+}
+
+function openCode(url) {
+  codeUrl.value = url;
+  open();
+}
+
+function close() {
+  // 关闭逻辑，设置 show 为 false
+  show.value = false;
+  // console.log('close');
 }
 
 // 获取优惠券列表
@@ -239,6 +273,12 @@ onMounted(() => {
       color: #999999;
       margin-top: 50rpx;
     }
+  }
+  .codeimage {
+    width: 500rpx;
+    height: 500rpx;
+    margin: 20rpx;
+    display: block;
   }
 }
 </style>

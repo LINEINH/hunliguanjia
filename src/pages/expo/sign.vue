@@ -28,8 +28,8 @@ function getPageParams() {
   const currentPage: any = pages[pages.length - 1];
 
   return {
-    u: currentPage.options?.userId || "",
-    a: currentPage.options?.activityId || "",
+    u: currentPage.options?.u || "",
+    a: currentPage.options?.a || "",
   };
 }
 

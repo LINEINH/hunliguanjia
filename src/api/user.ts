@@ -212,3 +212,11 @@ export function couponsVerify(data: any) {
     method: 'GET'
   })
 }
+
+// 我的礼品列表
+export function getGifts() {
+  return request<any>({
+    url: '/wechat/expo/gifts/my-records',
+    method: 'GET'
+  })
+}

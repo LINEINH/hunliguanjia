@@ -93,18 +93,13 @@ async function exchange(moment: any) {
         title: "兑换成功",
         icon: "success",
       });
-    } else {
-      uni.showToast({
-        title: "请先签到后再领取伴手礼",
-        icon: "none",
-      });
     }
     console.log("产品详情:", response);
   } catch (err) {
-    uni.showToast({
-      title: "'请先签到后再领取伴手礼'",
-      icon: "none",
-    });
+    // uni.showToast({
+    //   title: "'请先签到后再领取伴手礼'",
+    //   icon: "none",
+    // });
   }
 }
 
