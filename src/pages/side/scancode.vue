@@ -1,21 +1,34 @@
 <template>
   <view class="user-scan-page">
+    <view class="status" v-if="couponInfo.status === 1">
+      <up-icon
+        name="checkmark-circle-fill"
+        size="80"
+        color="#EAC47B"
+        class="icon"
+      ></up-icon>
+      <text class="text">已核销</text>
+    </view>
     <view class="scanConcent">
       <view class="iteminfo">
         <view class="coupon-title">
-          <text class="coupon-name">测试测试</text>
-          <text class="coupon-shop">123～345677</text>
+          <text class="coupon-name">{{ couponInfo.template_name }}</text>
+          <text class="coupon-shop"
+            >{{ formatDate(couponInfo.start_time) }}～{{
+              formatDate(couponInfo.end_time)
+            }}</text
+          >
         </view>
         <view class="coupon-price">
           <text class="coupon-price"
-            ><text class="coupon-get">￥</text>200</text
+            ><text class="coupon-get">￥</text>{{ couponInfo.value }}</text
           >
-          <text class="coupon-get">满1000使用</text>
+          <text class="coupon-get">满{{ couponInfo.min_amount }}使用</text>
         </view>
       </view>
       <view class="qrcode">
-        <image src="/static/images/qrcode.png" mode=""></image>
-        <view class="text"> 123244544454 </view>
+        <!-- <image src="/static/images/qrcode.png" mode=""></image> -->
+        <view class="text">优惠券码：{{ couponInfo.coupon_code }}</view>
       </view>
     </view>
     <view class="summary">
@@ -32,8 +45,8 @@
         <text class="summary-value">2025.04.09 22:38:51</text>
       </view>
     </view>
-    <view class="cancel">作废此券</view>
-    <view class="actions">
+    <!-- <view class="cancel">作废此券</view> -->
+    <view class="actions" v-if="couponInfo.status === 0">
       <button class="btn-submit" @click="submit">核销</button>
     </view>
   </view>
@@ -42,10 +55,10 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from "vue";
 
-import { getCouponInfo } from "@/api/user";
+import { getCouponInfo, couponsVerify } from "@/api/user";
 
 // 获取优惠券信息
-const couponInfo = ref(null);
+const couponInfo = ref();
 // 获取页面参数
 function getPageParams() {
   const pages = getCurrentPages();
@@ -56,6 +69,14 @@ function getPageParams() {
     type: currentPage.options?.type || "",
   };
 }
+
+// 格式化日期
+const formatDate = (dateString: any) => {
+  const date = new Date(dateString);
+  return `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+};
 
 // 执行签到
 async function handleCheckin() {
@@ -68,7 +89,7 @@ async function handleCheckin() {
 
     // 调用签到接口
     const res = await getCouponInfo(code, type);
-
+    console.log("签到结果:", res);
     // 判断签到是否成功
     if (res) {
       couponInfo.value = res;
@@ -78,7 +99,24 @@ async function handleCheckin() {
   }
 }
 
-const submit = async () => {};
+onMounted(() => {
+  handleCheckin();
+});
+const submit = async () => {
+  // 核销券码
+  const { code, type } = getPageParams();
+  const res = await couponsVerify(code, type);
+  if (res) {
+    uni.showToast({
+      title: "核销成功",
+      icon: "success",
+      duration: 1500,
+    });
+    setTimeout(() => {
+      uni.navigateBack();
+    }, 1500);
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -87,6 +125,20 @@ const submit = async () => {};
 .user-scan-page {
   background: #f0f0f0;
   min-height: 100vh;
+  .status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 40rpx;
+    .icon {
+      margin-bottom: 20rpx;
+    }
+    .text {
+      font-size: 28rpx;
+      color: #000000;
+      margin-top: 20rpx;
+    }
+  }
   .scanConcent {
     background: #fff;
     padding: 30rpx;

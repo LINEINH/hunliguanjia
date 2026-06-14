@@ -197,11 +197,14 @@ export function getMycoupon() {
 }
 
 // 核销
-export function couponsVerify(data: any) {
+export function couponsVerify(code: string,type:string,) {
   return request<any>({
     url: '/wechat/merchant/coupons/verify',
     method: 'POST',
-    data
+    data: {
+      code: code,
+      type: type
+    }
   })
 }
 
@@ -225,7 +228,7 @@ export function getGifts() {
 // 商家端-查询券信息
  export function getCouponInfo(code:string,type:string) {
   return request<any>({
-    url: `/wechat/merchant/coupons/infocode=${code}&type=${type}`,
+    url: `/wechat/merchant/coupons/info?code=${code}&type=${type}`,
     method: 'GET'
   })
 }
