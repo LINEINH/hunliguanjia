@@ -178,16 +178,78 @@ const formData = ref({
 
 // 页面加载时获取参数
 onLoad((options: any) => {
+  console.log("=== expodetail 页面加载 ===");
+  console.log("原始参数:", options);
+
+  let expoIdValue = 0;
+  let merchantId = "";
+
+  // 方式1: 直接从 id 参数获取
   if (options.id) {
-    expoId.value = Number(options.id);
-    fetchExpoDetail();
-  } else {
+    expoIdValue = Number(options.id);
+    console.log("从 id 参数获取:", expoIdValue);
+  }
+  // 方式2: 从 scene 参数获取（小程序码扫码）
+  else if (options.scene) {
+    console.log("检测到 scene 参数:", options.scene);
+    
+    try {
+      // URL 解码 scene 参数
+      const decodedScene = decodeURIComponent(options.scene);
+      console.log("scene 解码后:", decodedScene);
+      
+      // 解析 scene 中的参数 (格式: id=1&m_id=8)
+      const sceneParams: any = {};
+      const pairs = decodedScene.split("&");
+      
+      for (let i = 0; i < pairs.length; i++) {
+        const pair = pairs[i].split("=");
+        const key = pair[0].trim();
+        const value = pair[1] ? pair[1].trim() : "";
+        sceneParams[key] = value;
+      }
+      
+      console.log("解析后的 scene 参数:", sceneParams);
+      
+      // 获取 id 和 m_id
+      expoIdValue = Number(sceneParams.id || 0);
+      merchantId = sceneParams.m_id || "";
+      
+      console.log("解析结果 - expoId:", expoIdValue, "merchantId:", merchantId);
+      
+      if (!expoIdValue) {
+        uni.showToast({
+          title: "参数错误",
+          icon: "none",
+        });
+        loading.value = false;
+        return;
+      }
+    } catch (error) {
+      console.error("解析 scene 参数失败:", error);
+      uni.showToast({
+        title: "参数解析失败",
+        icon: "none",
+      });
+      loading.value = false;
+      return;
+    }
+  }
+  // 方式3: 都没有
+  else {
+    console.error("缺少必要参数");
     uni.showToast({
       title: "参数错误",
       icon: "none",
     });
     loading.value = false;
+    return;
   }
+
+  // 设置 expoId 并获取详情
+  expoId.value = expoIdValue;
+  console.log("准备获取婚博会详情，ID:", expoId.value);
+  fetchExpoDetail();
 });
 
 // 获取婚博会详情

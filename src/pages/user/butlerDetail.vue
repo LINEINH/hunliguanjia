@@ -452,10 +452,11 @@ function buyNow(index, id) {
       border-radius: 20rpx;
       font-size: 28rpx;
       height: 80rpx;
-      width: 280rpx;
+      width: 250rpx;
       display: flex;
       justify-content: center;
       align-items: center;
+      margin: 0 10rpx;
     }
     .hotel-footer-tel {
       background: linear-gradient(

@@ -10,7 +10,7 @@
             <input
               class="uni-input"
               confirm-type="search"
-              placeholder="搜索商家/服务"
+              placeholder="搜索商家"
               v-model="searchKeyword"
               @confirm="onSearch"
             />
@@ -94,7 +94,7 @@
               v-for="(h, idx) in hotel.personnel_tags"
               :key="idx"
               class="highlight"
-              >#{{ h }}</text
+              >{{ h }}</text
             >
           </view>
           <view class="hotel-address">

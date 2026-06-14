@@ -11,7 +11,7 @@
             <input
               class="uni-input"
               confirm-type="search"
-              placeholder="搜索商家/服务"
+              placeholder="搜索商家"
               v-model="searchKeyword"
             />
           </view>

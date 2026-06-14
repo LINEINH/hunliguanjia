@@ -12,7 +12,7 @@
       </swiper>
     </view>
     <view class="hotel-info">
-      <view class="hotel-intro">
+      <view class="hotel-intro" @click="openDetail()">
         <image
           :src="productData.merchant.logo"
           mode="aspectFill"
@@ -157,6 +157,12 @@ async function loadProductDetail() {
   } finally {
     uni.hideLoading();
   }
+}
+
+function openDetail() {
+  uni.navigateTo({
+    url: `/pages/merchant/hotelDetail?id=${productData.value.merchant.id}`,
+  });
 }
 
 // 页面加载时获取产品详情
@@ -442,12 +448,13 @@ function toggleFavorite() {
       align-items: center;
       color: #999999;
       font-size: 26rpx;
+      margin-right: 20rpx;
     }
     .button {
       border-radius: 20rpx;
       font-size: 28rpx;
       height: 80rpx;
-      width: 280rpx;
+      width: 250rpx;
       display: flex;
       justify-content: center;
       align-items: center;
