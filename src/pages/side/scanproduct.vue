@@ -1,43 +1,57 @@
 <template>
   <view class="user-scan-page">
-    <view class="status" v-if="couponInfo.status === 1">
-      <up-icon
-        name="checkmark-circle-fill"
-        size="80"
-        color="#EAC47B"
-        class="icon"
-      ></up-icon>
-      <text class="text">已核销</text>
-    </view>
-    <view class="scanConcent">
-      <view class="iteminfo">
-        <view class="coupon-title">
-          <text class="coupon-name">{{ couponInfo.gift_name }}</text>
-          <text class="coupon-shop">{{ couponInfo.received_at }}</text>
+    <view v-if="couponInfo">
+      <view class="status" v-if="couponInfo.status === 1">
+        <up-icon
+          name="checkmark-circle-fill"
+          size="80"
+          color="#EAC47B"
+          class="icon"
+        ></up-icon>
+        <text class="text">已核销</text>
+      </view>
+      <view class="scanConcent">
+        <view class="iteminfo">
+          <view class="coupon-title">
+            <text class="coupon-name">{{ couponInfo.gift_name }}</text>
+            <text class="coupon-shop">{{ couponInfo.received_at }}</text>
+          </view>
+        </view>
+        <view class="qrcode">
+          <!-- <image src="/static/images/qrcode.png" mode=""></image> -->
+          <view class="text">优惠券码：{{ couponInfo.redemption_code }}</view>
         </view>
       </view>
-      <view class="qrcode">
-        <!-- <image src="/static/images/qrcode.png" mode=""></image> -->
-        <view class="text">优惠券码：{{ couponInfo.redemption_code }}</view>
+      <view class="summary">
+        <view class="summary-item">
+          <text class="summary-label">商户名称</text>
+          <text class="summary-value">{{ couponInfo.merchant_name }}</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">领取渠道</text>
+          <text class="summary-value">婚礼管家小程序领取</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">领取时间</text>
+          <text class="summary-value">{{ couponInfo.received_at }}</text>
+        </view>
+      </view>
+      <!-- <view class="cancel">作废此券</view> -->
+      <view class="actions" v-if="couponInfo.status === 0">
+        <button class="btn-submit" @click="submit">核销</button>
       </view>
     </view>
-    <view class="summary">
-      <view class="summary-item">
-        <text class="summary-label">商户名称</text>
-        <text class="summary-value">{{ couponInfo.merchant_name }}</text>
+
+    <view v-else>
+      <view class="status">
+        <up-icon
+          name="close-circle-fill"
+          size="80"
+          color="#EAC47B"
+          class="icon"
+        ></up-icon>
+        <text class="text">未找到此券</text>
       </view>
-      <view class="summary-item">
-        <text class="summary-label">领取渠道</text>
-        <text class="summary-value">婚礼管家小程序领取</text>
-      </view>
-      <view class="summary-item">
-        <text class="summary-label">领取时间</text>
-        <text class="summary-value">{{ couponInfo.received_at }}</text>
-      </view>
-    </view>
-    <!-- <view class="cancel">作废此券</view> -->
-    <view class="actions" v-if="couponInfo.status === 0">
-      <button class="btn-submit" @click="submit">核销</button>
     </view>
   </view>
 </template>
