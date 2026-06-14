@@ -263,7 +263,7 @@ async function handleRegister() {
     );
     if (res.registration) {
       // 报名成功后可以更新状态或跳转到其他页面
-      qrCode.value = res.registration.qrcode;
+      qrCode.value = res.registration.qr_code;
       uni.hideLoading();
       uni.showToast({
         title: "报名成功",

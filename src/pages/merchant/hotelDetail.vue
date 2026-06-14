@@ -51,10 +51,7 @@
         {{ hotelData.address }}</view
       >
       <view class="hotel-intro">{{ hotelData.landmark }}</view>
-      <view
-        class="hotel-fuli"
-        v-if="hotelData.CouponsData && hotelData.CouponsData.length > 0"
-      >
+      <view class="hotel-fuli" v-if="CouponsData && CouponsData.length > 0">
         <view class="hotel-fuli-title">特惠福利</view>
         <view
           v-for="(product, index) in CouponsData"
@@ -333,10 +330,6 @@ async function receiveCoupon(couponId: number) {
     });
   } catch (error) {
     console.error("领取优惠券失败:", error);
-    uni.showToast({
-      title: "领取失败",
-      icon: "none",
-    });
   }
 }
 
