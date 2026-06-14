@@ -102,7 +102,7 @@
     </view>
 
     <view class="hotel-footer">
-      <view class="hotel-footer-item" @click="rightClick">
+      <view class="hotel-footer-item" @click="goback">
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
         <text>返回</text>
       </view>
@@ -130,6 +130,7 @@ import { onLoad } from "@dcloudio/uni-app";
 const show = ref(false);
 import { getGoldDetail, setOrders } from "@/api/user";
 import { favoriteProduct, unfavoriteProduct } from "@/api/product";
+import { checkLogin, navigateToLogin } from "@/utils/auth";
 
 // 轮播图数据
 const banners = ref([
@@ -151,6 +152,10 @@ onLoad((options) => {
     loadButlerDetail(Number(id));
   }
 });
+const goback = () => {
+  // 返回上级页面
+  uni.navigateBack();
+};
 
 // 加载管家详情
 async function loadButlerDetail(id) {
@@ -175,6 +180,20 @@ async function loadButlerDetail(id) {
 // 切换收藏状态
 async function toggleFavorite() {
   try {
+    if (!checkLogin()) {
+      uni.showModal({
+        title: "提示",
+        content: "请先登录后再使用收藏功能",
+        confirmText: "去登录",
+        cancelText: "取消",
+        success: (res) => {
+          if (res.confirm) {
+            navigateToLogin();
+          }
+        },
+      });
+      return;
+    }
     if (!hotelId.value) {
       uni.showToast({
         title: "缺少酒店ID",

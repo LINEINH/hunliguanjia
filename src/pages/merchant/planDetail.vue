@@ -117,6 +117,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, reactive } from "vue";
+import { checkLogin, navigateToLogin } from "@/utils/auth";
+
 import {
   getProductDetail,
   favoriteProduct,
@@ -322,6 +324,20 @@ function handleOnlineService() {
 // 切换收藏状态
 async function toggleFavorite() {
   try {
+    if (!checkLogin()) {
+      uni.showModal({
+        title: "提示",
+        content: "请先登录后再使用收藏功能",
+        confirmText: "去登录",
+        cancelText: "取消",
+        success: (res) => {
+          if (res.confirm) {
+            navigateToLogin();
+          }
+        },
+      });
+      return;
+    }
     if (!hotelId.value) {
       uni.showToast({
         title: "缺少酒店ID",

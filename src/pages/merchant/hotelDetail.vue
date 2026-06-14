@@ -112,7 +112,7 @@
       </view>
     </view>
     <view class="hotel-footer">
-      <view class="hotel-footer-item">
+      <view class="hotel-footer-item" @click="goback">
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
         <text>返回</text>
       </view>
@@ -139,6 +139,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { checkLogin, navigateToLogin } from "@/utils/auth";
+
 import {
   getHotelDetail,
   getCoupons,
@@ -236,7 +238,14 @@ onMounted(() => {
 
 function rightClick() {
   console.log("right click");
+  // 返回上级页面
+  uni.navigateBack();
 }
+
+const goback = () => {
+  // 返回上级页面
+  uni.navigateBack();
+};
 
 function makePhoneCall() {
   // 这里可以添加电话咨询的功能
@@ -321,6 +330,20 @@ function makePhoneCall() {
 
 async function receiveCoupon(couponId: number) {
   try {
+    if (!checkLogin()) {
+      uni.showModal({
+        title: "提示",
+        content: "请先登录后再使用收藏功能",
+        confirmText: "去登录",
+        cancelText: "取消",
+        success: (res) => {
+          if (res.confirm) {
+            navigateToLogin();
+          }
+        },
+      });
+      return;
+    }
     const response = await receiveCoupons(couponId);
     console.log("领取优惠券:", response);
     uni.showToast({
@@ -335,6 +358,20 @@ async function receiveCoupon(couponId: number) {
 // 切换收藏状态
 async function toggleFavorite() {
   try {
+    if (!checkLogin()) {
+      uni.showModal({
+        title: "提示",
+        content: "请先登录后再使用收藏功能",
+        confirmText: "去登录",
+        cancelText: "取消",
+        success: (res) => {
+          if (res.confirm) {
+            navigateToLogin();
+          }
+        },
+      });
+      return;
+    }
     if (!hotelId.value) {
       uni.showToast({
         title: "缺少酒店ID",
