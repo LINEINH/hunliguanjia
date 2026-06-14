@@ -220,3 +220,12 @@ export function getGifts() {
     method: 'GET'
   })
 }
+
+
+// 商家端-查询券信息
+ export function getCouponInfo(code:string,type:string) {
+  return request<any>({
+    url: `/wechat/merchant/coupons/infocode=${code}&type=${type}`,
+    method: 'GET'
+  })
+}

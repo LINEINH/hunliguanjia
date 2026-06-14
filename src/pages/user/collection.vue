@@ -90,9 +90,20 @@ function click(index) {
 
 function openDetail(item) {
   if (item && item.id) {
-    uni.navigateTo({
-      url: `/pages/merchant/planItem?id=${item.id}`,
-    });
+    // 判断是商家还是产品
+    if (item.merchant) {
+      uni.navigateTo({
+        url: `/pages/merchant/hotelDetail?id=${item.id}`,
+      });
+    } else if (item.product) {
+      uni.navigateTo({
+        url: `/pages/merchant/planItem?id=${item.id}`,
+      });
+    } else {
+      uni.navigateTo({
+        url: `/pages/user/butlerDetail?id=${item.id}`,
+      });
+    }
   }
 }
 // 获取列表

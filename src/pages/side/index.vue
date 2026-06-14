@@ -36,7 +36,7 @@
         <text class="menu-text">优惠券管理</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
-      <view class="menu-item" @click="navigateTo('/pages/side/scancode')">
+      <view class="menu-item" @click="handleCouponScan">
         <image
           src="/static/images/41.png"
           mode="aspectFill"
@@ -96,6 +96,148 @@ async function loadUserInfo() {
 // 导航
 function navigateTo(url: string) {
   uni.navigateTo({ url });
+}
+
+// 核销优惠券 - 扫描二维码
+function handleCouponScan() {
+  console.log("=== 开始扫码 ===");
+  
+  // 调用微信扫码API
+  uni.scanCode({
+    onlyFromCamera: true, // 只允许从相机扫码
+    scanType: ["qrCode"], // 只识别二维码
+    success: (res) => {
+      console.log("=== 扫码成功 ===");
+      console.log("完整返回:", JSON.stringify(res));
+
+      // 获取扫码结果
+      const scanResult = res.result;
+      console.log("扫码结果内容:", scanResult);
+      console.log("扫码结果类型:", typeof scanResult);
+
+      // 显示扫码成功提示
+      uni.showToast({
+        title: "扫码成功",
+        icon: "success",
+        duration: 1500,
+      });
+
+      // 判断是否包含 code 和 type 参数
+      const hasCode = scanResult.includes("?code=") || scanResult.includes("&code=");
+      const hasType = scanResult.includes("?type=") || scanResult.includes("&type=");
+      
+      console.log("包含 code:", hasCode);
+      console.log("包含 type:", hasType);
+
+      if (hasCode && hasType) {
+        console.log("开始解析参数...");
+        
+        // 解析 URL 参数（兼容小程序环境）
+        try {
+          // 提取查询字符串
+          let queryString = "";
+          if (scanResult.includes("?")) {
+            queryString = scanResult.split("?")[1];
+          } else {
+            queryString = scanResult;
+          }
+          
+          console.log("查询字符串:", queryString);
+          
+          // 手动解析 URL 参数
+          const params: any = {};
+          const pairs = queryString.split("&");
+          
+          for (let i = 0; i < pairs.length; i++) {
+            const pair = pairs[i].split("=");
+            const key = decodeURIComponent(pair[0]);
+            const value = decodeURIComponent(pair[1] || "");
+            params[key] = value;
+          }
+          
+          console.log("解析后的参数对象:", params);
+          
+          const code = params.code || "";
+          const type = params.type || "";
+
+          console.log("=== 解析结果 ===");
+          console.log("code:", code);
+          console.log("type:", type);
+          console.log("code 长度:", code.length);
+          console.log("type 长度:", type.length);
+
+          if (!code || !type) {
+            console.error("参数为空！");
+            uni.showModal({
+              title: "提示",
+              content: `解析失败\ncode: ${code}\ntype: ${type}`,
+              showCancel: false,
+            });
+            return;
+          }
+
+          // 构造跳转 URL
+          const targetUrl = `/pages/side/scancode?code=${code}&type=${type}`;
+          console.log("准备跳转到:", targetUrl);
+
+          // 显示即将跳转的提示
+          uni.showToast({
+            title: "正在跳转...",
+            icon: "loading",
+            duration: 1000,
+          });
+
+          // 延迟跳转，让用户看到提示
+          setTimeout(() => {
+            console.log("执行跳转...");
+            uni.navigateTo({
+              url: targetUrl,
+              success: () => {
+                console.log("跳转成功！");
+              },
+              fail: (err) => {
+                console.error("跳转失败:", err);
+                uni.showModal({
+                  title: "跳转失败",
+                  content: JSON.stringify(err),
+                  showCancel: false,
+                });
+              },
+            });
+          }, 1000);
+        } catch (error) {
+          console.error("解析参数异常:", error);
+          uni.showModal({
+            title: "解析错误",
+            content: String(error),
+            showCancel: false,
+          });
+        }
+      } else {
+        console.log("不是有效的优惠券二维码，显示原始结果");
+        // 其他二维码，显示结果
+        uni.showModal({
+          title: "扫码结果",
+          content: scanResult,
+          showCancel: false,
+          confirmText: "确定",
+        });
+      }
+    },
+    fail: (err) => {
+      console.error("=== 扫码失败 ===");
+      console.error("错误信息:", err);
+      console.error("错误消息:", err.errMsg);
+
+      // 用户取消扫码不提示错误
+      if (err.errMsg && !err.errMsg.includes("cancel")) {
+        uni.showToast({
+          title: "扫码失败，请重试",
+          icon: "none",
+        });
+      }
+    },
+  });
 }
 
 // 页面加载时获取用户信息

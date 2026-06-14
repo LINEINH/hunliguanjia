@@ -54,7 +54,7 @@ async function handleCheckin() {
       // 2秒后跳转到首页
       setTimeout(() => {
         uni.switchTab({
-          url: "/pages/index/index",
+          url: "/pages/user/user",
         });
       }, 2000);
     } else {

@@ -68,26 +68,36 @@
       <view class="step" v-if="expoDetail.status === 1">
         <view class="register-form" v-if="!expoDetail.qr_code || qrCode">
           <view class="code">婚博会报名</view>
-          <view class="form-item">
-            <text class="form-label">姓名</text>
-            <input
-              class="form-input"
-              v-model="formData.user_name"
-              placeholder="请输入姓名"
-              type="text"
+          <template v-if="expoDetail.registration_status === 'checked_in'">
+            <image
+              src="https://1love-1432414161.cos.ap-chengdu.myqcloud.com/signcode.png"
+              mode="widthFix"
+              class="codeimage"
             />
-          </view>
-          <view class="form-item">
-            <text class="form-label">手机号</text>
-            <input
-              class="form-input"
-              v-model="formData.user_phone"
-              placeholder="请输入手机号"
-              type="number"
-              maxlength="11"
-            />
-          </view>
-          <view class="button" @click="handleRegister"> 立即报名 </view>
+          </template>
+
+          <template v-else>
+            <view class="form-item">
+              <text class="form-label">姓名</text>
+              <input
+                class="form-input"
+                v-model="formData.user_name"
+                placeholder="请输入姓名"
+                type="text"
+              />
+            </view>
+            <view class="form-item">
+              <text class="form-label">手机号</text>
+              <input
+                class="form-input"
+                v-model="formData.user_phone"
+                placeholder="请输入手机号"
+                type="number"
+                maxlength="11"
+              />
+            </view>
+            <view class="button" @click="handleRegister"> 立即报名 </view>
+          </template>
         </view>
         <view v-else>
           <view class="code">参会二维码</view>

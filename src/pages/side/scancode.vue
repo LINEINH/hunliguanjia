@@ -39,42 +39,46 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, computed, onMounted } from "vue";
-import { getMyCoupons } from "@/api/coupon";
 
-const submit = async () => {
-  if (!description.value.trim()) {
-    uni.showToast({ title: "请填写问题描述", icon: "none" });
-    return;
-  }
+import { getCouponInfo } from "@/api/user";
 
-  uni.showLoading({ title: "提交中" });
+// 获取优惠券信息
+const couponInfo = ref(null);
+// 获取页面参数
+function getPageParams() {
+  const pages = getCurrentPages();
+  const currentPage: any = pages[pages.length - 1];
 
+  return {
+    code: currentPage.options?.code || "",
+    type: currentPage.options?.type || "",
+  };
+}
+
+// 执行签到
+async function handleCheckin() {
   try {
-    // 提交投诉信息
-    const payload = {
-      merchant_id: 1,
-      content: description.value,
-      images: images.value,
-      phone: contact.value,
-    };
+    const { code, type } = getPageParams();
 
-    await complaint(payload);
+    if (!code || !type) {
+      throw new Error("缺少必要参数");
+    }
 
-    uni.hideLoading();
-    uni.showToast({ title: "提交成功，我们会尽快处理", icon: "success" });
+    // 调用签到接口
+    const res = await getCouponInfo(code, type);
 
-    // 提交后清空表单
-    description.value = "";
-    images.value = [];
-    contact.value = "";
-  } catch (err) {
-    uni.hideLoading();
-    console.error("提交投诉失败", err);
-    uni.showToast({ title: "提交失败，请重试", icon: "none" });
+    // 判断签到是否成功
+    if (res) {
+      couponInfo.value = res;
+    }
+  } catch (err: any) {
+    console.error("签到失败:", err);
   }
-};
+}
+
+const submit = async () => {};
 </script>
 
 <style lang="scss" scoped>

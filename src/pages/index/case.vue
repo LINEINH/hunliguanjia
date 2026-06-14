@@ -24,11 +24,6 @@
         </view>
       </view>
       <view class="hotel-name">{{ productData.title }} </view>
-      <view class="content" v-if="cleanedContent">
-        <!-- {{ productData.description }} -->
-        <rich-text :nodes="cleanedContent"></rich-text>
-      </view>
-
       <view
         class="hotel-highlights"
         v-if="productData.style_tags && productData.style_tags.length"
@@ -40,6 +35,11 @@
           >{{ tag }}</text
         >
       </view>
+      <view class="content" v-if="cleanedContent">
+        <!-- {{ productData.description }} -->
+        <rich-text :nodes="cleanedContent"></rich-text>
+      </view>
+
       <view
         class="content"
         v-if="productData.bottom_images && productData.bottom_images.length"
