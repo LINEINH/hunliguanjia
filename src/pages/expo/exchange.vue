@@ -21,7 +21,7 @@
 
               <text class="moment-subtitle">{{ moment.gift_description }}</text>
               <view class="moment-intro">
-                <view class="change" @click="exchange(moment)">兑换</view>
+                <view class="change" @click="exchange(moment)">领取</view>
               </view>
             </view>
           </view>

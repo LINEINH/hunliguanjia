@@ -232,3 +232,11 @@ export function getGifts() {
     method: 'GET'
   })
 }
+
+
+export function qrcode() {
+  return request<any>({
+    url: '/wechat/merchant/expo-qrcode',
+    method: 'POST',
+  })
+}

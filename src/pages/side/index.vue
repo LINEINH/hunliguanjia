@@ -54,6 +54,15 @@
         <text class="menu-text">核销商品</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
+      <view class="menu-item" @click="showCode()">
+        <image
+          src="/static/images/42.png"
+          mode="aspectFill"
+          class="menu-image"
+        />
+        <text class="menu-text">展会二维码</text>
+        <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
+      </view>
     </view>
 
     <view class="actions">
@@ -61,12 +70,25 @@
 
       <button class="btn-submit btn-main">在线咨询</button>
     </view>
+
+    <up-popup
+      :show="show"
+      mode="center"
+      :round="10"
+      @close="close"
+      @open="open"
+      closeable="true"
+    >
+      <view>
+        <image :src="codeUrl" mode="aspectFill" class="codeimage"></image>
+      </view>
+    </up-popup>
   </view>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { getMerchantInfo } from "@/api/user";
+import { getMerchantInfo, qrcode } from "@/api/user";
 
 // 定义方法
 const leftClick = () => {
@@ -74,6 +96,22 @@ const leftClick = () => {
   // 返回上一页
   uni.navigateBack();
 };
+
+// 创建响应式数据
+const show = ref(false);
+
+const codeUrl = ref("");
+
+function open() {
+  // 打开逻辑，比如设置 show 为 true
+  show.value = true;
+  // console.log('open');
+}
+
+function openCode(url: any) {
+  codeUrl.value = url;
+  open();
+}
 
 // 定义用户对象
 const userProfile = ref<any>(null);
@@ -327,6 +365,23 @@ function handleCouponScan(index: number) {
   });
 }
 
+function close() {
+  // 关闭逻辑，设置 show 为 false
+  show.value = false;
+  // console.log('close');
+}
+
+// 点击showcode调用接口 qrcode
+function showCode() {
+  qrcode().then((res) => {
+    console.log(res);
+    if (res) {
+      codeUrl.value = res.qr_code;
+      show.value = true;
+    }
+  });
+}
+
 // 页面加载时获取用户信息
 onMounted(() => {
   loadUserInfo();
@@ -493,5 +548,11 @@ onMounted(() => {
 .card {
   padding: 0;
   margin: 24rpx;
+}
+.codeimage {
+  width: 500rpx;
+  height: 500rpx;
+  margin: 20rpx;
+  display: block;
 }
 </style>

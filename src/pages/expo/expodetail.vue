@@ -113,6 +113,7 @@
               size="38"
               color="#EAC47B"
               class="icon"
+              @click="fetchExpoDetail()"
             ></up-icon
           ></view>
         </view>
@@ -269,6 +270,8 @@ async function handleRegister() {
         title: "报名成功",
         icon: "success",
       });
+      // 重新调用获取详情接口
+      fetchExpoDetail();
     }
 
     // 清空表单
@@ -433,11 +436,6 @@ function openMap() {
       font-size: 24rpx;
       color: #727272;
       text-align: center;
-      .renew {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
     }
     .stepcon {
       display: flex;
@@ -481,6 +479,11 @@ function openMap() {
         border-radius: 50%;
       }
     }
+  }
+  .renew {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

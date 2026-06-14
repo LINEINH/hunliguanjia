@@ -472,118 +472,192 @@ function handleStaffScan() {
     return;
   }
 
-  // 调用微信扫码API
+  console.log("=== 开始扫码 ===");
+
+  // 调用微信扫码API（支持多种码类型）
   uni.scanCode({
     onlyFromCamera: true, // 只允许从相机扫码
-    scanType: ["qrCode"], // 只识别二维码
+    scanType: ["qrCode", "barCode", "wxCode"], // 支持二维码、条形码和小程序码
+    autoDecodeCharset: true, // 自动识别字符集
     success: (res) => {
       console.log("=== 扫码成功 ===");
       console.log("完整返回:", JSON.stringify(res));
+      console.log("scanType:", res.scanType);
 
-      // 获取扫码结果
-      const scanResult = res.result;
+      // 获取扫码结果（优先使用 path 字段，兼容小程序码）
+      const scanResult = res.path || res.result || "";
       console.log("扫码结果内容:", scanResult);
       console.log("扫码结果类型:", typeof scanResult);
 
-      // 显示扫码结果
+      if (!scanResult) {
+        console.error("扫码结果为空！");
+        uni.showModal({
+          title: "提示",
+          content: "未能获取到二维码信息，请重试",
+          showCancel: false,
+        });
+        return;
+      }
+
+      // 显示扫码成功提示
       uni.showToast({
         title: "扫码成功",
         icon: "success",
         duration: 1500,
       });
 
-      // 判断是否是签到二维码（包含 userId 和 activityId 参数）
-      const hasUserId = scanResult.includes("?userId=");
-      const hasActivityId = scanResult.includes("&activityId=");
-      
-      console.log("包含 ?userId=:", hasUserId);
-      console.log("包含 &activityId=:", hasActivityId);
+      // 尝试解析参数（支持多种格式）
+      let userId = "";
+      let activityId = "";
 
-      if (hasUserId && hasActivityId) {
-        console.log("开始解析参数...");
-        
-        // 解析 URL 参数（兼容小程序环境）
-        try {
-          const queryString = scanResult.split("?")[1];
+      try {
+        // 格式1: 普通URL参数 ?userId=xxx&activityId=xxx
+        const hasUserIdParam =
+          scanResult.includes("?userId=") || scanResult.includes("&userId=");
+        const hasActivityIdParam =
+          scanResult.includes("?activityId=") ||
+          scanResult.includes("&activityId=");
+
+        if (hasUserIdParam && hasActivityIdParam) {
+          console.log("检测到普通URL参数格式");
+          // 提取查询字符串
+          let queryString = "";
+          if (scanResult.includes("?")) {
+            queryString = scanResult.split("?")[1];
+          } else {
+            queryString = scanResult;
+          }
+
           console.log("查询字符串:", queryString);
-          
+
           // 手动解析 URL 参数
           const params: any = {};
           const pairs = queryString.split("&");
-          
+
           for (let i = 0; i < pairs.length; i++) {
             const pair = pairs[i].split("=");
             const key = decodeURIComponent(pair[0]);
             const value = decodeURIComponent(pair[1] || "");
             params[key] = value;
           }
-          
+
           console.log("解析后的参数对象:", params);
-          
-          const userId = params.userId || "";
-          const activityId = params.activityId || "";
+          userId = params.userId || "";
+          activityId = params.activityId || "";
+        }
+        // 格式2: 微信小程序 scene 参数 ?scene=xxx
+        else if (
+          scanResult.includes("?scene=") ||
+          scanResult.includes("&scene=")
+        ) {
+          console.log("检测到 scene 参数格式");
 
-          console.log("=== 解析结果 ===");
-          console.log("userId:", userId);
-          console.log("activityId:", activityId);
-          console.log("userId 长度:", userId.length);
-          console.log("activityId 长度:", activityId.length);
-
-          if (!userId || !activityId) {
-            console.error("参数为空！");
-            uni.showModal({
-              title: "提示",
-              content: `解析失败\nuserId: ${userId}\nactivityId: ${activityId}`,
-              showCancel: false,
-            });
-            return;
+          // 提取 scene 参数值
+          let sceneValue = "";
+          if (scanResult.includes("?scene=")) {
+            sceneValue = scanResult.split("?scene=")[1].split("&")[0];
+          } else {
+            const parts = scanResult.split("&scene=");
+            sceneValue = parts[parts.length - 1].split("&")[0];
           }
 
-          // 构造跳转 URL
-          const targetUrl = `/pages/expo/sign?u=${userId}&a=${activityId}`;
-          console.log("准备跳转到:", targetUrl);
+          console.log("scene 原始值:", sceneValue);
 
-          // 显示即将跳转的提示
-          uni.showToast({
-            title: "正在跳转...",
-            icon: "loading",
-            duration: 1000,
-          });
+          // URL 解码 scene 参数
+          const decodedScene = decodeURIComponent(sceneValue);
+          console.log("scene 解码后:", decodedScene);
 
-          // 延迟跳转，让用户看到提示
-          setTimeout(() => {
-            console.log("执行跳转...");
-            uni.navigateTo({
-              url: targetUrl,
-              success: () => {
-                console.log("跳转成功！");
-              },
-              fail: (err) => {
-                console.error("跳转失败:", err);
-                uni.showModal({
-                  title: "跳转失败",
-                  content: JSON.stringify(err),
-                  showCancel: false,
-                });
-              },
-            });
-          }, 1000);
-        } catch (error) {
-          console.error("解析参数异常:", error);
+          // 解析 scene 中的参数 (格式: u=59&a=1)
+          const sceneParams: any = {};
+          const scenePairs = decodedScene.split("&");
+
+          for (let i = 0; i < scenePairs.length; i++) {
+            const pair = scenePairs[i].split("=");
+            const key = pair[0].trim();
+            const value = pair[1] ? pair[1].trim() : "";
+            sceneParams[key] = value;
+          }
+
+          console.log("scene 参数对象:", sceneParams);
+
+          // 映射参数：u -> userId, a -> activityId
+          userId = sceneParams.u || sceneParams.userId || "";
+          activityId = sceneParams.a || sceneParams.activityId || "";
+        }
+        // 格式3: 直接包含 u= 和 a= 参数
+        else if (scanResult.includes("u=") && scanResult.includes("a=")) {
+          console.log("检测到直接参数格式");
+
+          const params: any = {};
+          let queryString = scanResult;
+          if (scanResult.includes("?")) {
+            queryString = scanResult.split("?")[1];
+          }
+
+          const pairs = queryString.split("&");
+          for (let i = 0; i < pairs.length; i++) {
+            const pair = pairs[i].split("=");
+            const key = decodeURIComponent(pair[0]).trim();
+            const value = decodeURIComponent(pair[1] || "").trim();
+            params[key] = value;
+          }
+
+          console.log("解析后的参数对象:", params);
+          userId = params.u || params.userId || "";
+          activityId = params.a || params.activityId || "";
+        }
+
+        console.log("=== 最终解析结果 ===");
+        console.log("userId:", userId);
+        console.log("activityId:", activityId);
+        console.log("userId 长度:", userId.length);
+        console.log("activityId 长度:", activityId.length);
+
+        if (!userId || !activityId) {
+          console.error("参数为空！");
           uni.showModal({
-            title: "解析错误",
-            content: String(error),
+            title: "提示",
+            content: `参数解析失败\nuserId: ${userId}\nactivityId: ${activityId}\n\n原始二维码: ${scanResult}`,
             showCancel: false,
           });
+          return;
         }
-      } else {
-        console.log("不是签到二维码，显示原始结果");
-        // 其他二维码，显示结果
+
+        // 构造跳转 URL
+        const targetUrl = `/pages/expo/sign?u=${userId}&a=${activityId}`;
+        console.log("准备跳转到:", targetUrl);
+
+        // 显示即将跳转的提示
+        uni.showToast({
+          title: "正在跳转...",
+          icon: "loading",
+          duration: 1000,
+        });
+
+        // 延迟跳转，让用户看到提示
+        setTimeout(() => {
+          console.log("执行跳转...");
+          uni.navigateTo({
+            url: targetUrl,
+            success: () => {
+              console.log("跳转成功！");
+            },
+            fail: (err) => {
+              console.error("跳转失败:", err);
+              uni.showModal({
+                title: "跳转失败",
+                content: JSON.stringify(err),
+                showCancel: false,
+              });
+            },
+          });
+        }, 1000);
+      } catch (error) {
+        console.error("解析参数异常:", error);
         uni.showModal({
-          title: "扫码结果",
-          content: scanResult,
+          title: "解析错误",
+          content: String(error),
           showCancel: false,
-          confirmText: "确定",
         });
       }
     },
@@ -593,12 +667,18 @@ function handleStaffScan() {
       console.error("错误消息:", err.errMsg);
 
       // 用户取消扫码不提示错误
-      if (err.errMsg && !err.errMsg.includes("cancel")) {
-        uni.showToast({
-          title: "扫码失败，请重试",
-          icon: "none",
-        });
+      if (err.errMsg && err.errMsg.includes("cancel")) {
+        console.log("用户取消扫码");
+        return;
       }
+
+      // 其他错误，显示详细信息
+      uni.showModal({
+        title: "扫码失败",
+        content: `错误信息: ${err.errMsg || "未知错误"}\n\n可能原因:\n1. 相机权限未授权\n2. 光线太暗\n3. 二维码模糊或损坏`,
+        showCancel: false,
+        confirmText: "知道了",
+      });
     },
   });
 }
