@@ -113,6 +113,10 @@
                 ><up-icon name="arrow-up" size="16" color="#9CB2CD"></up-icon
               ></view>
               <view class="hint-content" v-if="currentMonthTasks.length > 0">
+                <view class="hit-title">
+                  <text class="title">本月需完成事项</text>
+                  <view class="choice">重新选择</view>
+                </view>
                 <view
                   v-for="(task, index) in currentMonthTasks"
                   :key="index"
@@ -1416,11 +1420,26 @@ onShow(() => {
         color: $text-secondary;
         text-align: center;
       }
+      .hit-title {
+        font-size: $font-md;
+        color: $text-primary;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10rpx 0;
+        .title {
+          color: #333;
+          font-size: $font-md;
+        }
+        .choice {
+          color: #bf974a;
+        }
+      }
       .hint-item {
         display: flex;
         justify-content: space-between;
         padding: $spacing-md 0;
-        margin: 0 $spacing-md;
+
         border-bottom: 1px solid #e5e5e5;
         .hint-left {
           font-size: $font-sm;
