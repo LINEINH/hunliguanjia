@@ -93,15 +93,15 @@ function openDetail(item) {
     // 判断是商家还是产品
     if (item.merchant) {
       uni.navigateTo({
-        url: `/pages/merchant/hotelDetail?id=${item.id}`,
+        url: `/pages/merchant/hotelDetail?id=${item.merchant.id}`,
       });
     } else if (item.product) {
       uni.navigateTo({
-        url: `/pages/merchant/planItem?id=${item.id}`,
+        url: `/pages/merchant/planItem?id=${item.product.id}`,
       });
-    } else {
+    } else if (item.gold_service_provider) {
       uni.navigateTo({
-        url: `/pages/user/butlerDetail?id=${item.id}`,
+        url: `/pages/user/butlerDetail?id=${item.gold_service_provider.id}`,
       });
     }
   }

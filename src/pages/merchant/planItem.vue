@@ -90,7 +90,9 @@
       <view class="hotel-footer-tel button" @click="makePhoneCall">
         电话咨询
       </view>
-      <view class="hotel-footer-online button"> 在线管家 </view>
+      <button class="hotel-footer-online button" open-type="contact">
+        在线管家
+      </button>
     </view>
   </view>
 </template>
@@ -285,10 +287,64 @@ function makePhoneCall() {
 }
 
 function handleOnlineService() {
+  console.log("点击在线管家按钮");
+
+  // #ifdef MP-WEIXIN
+  console.log("当前环境：微信小程序");
+
+  // 检查是否配置了客服功能
+  if (!uni.openCustomerServiceChat) {
+    console.error("当前环境不支持 openCustomerServiceChat API");
+    uni.showToast({
+      title: "当前版本不支持客服功能",
+      icon: "none",
+    });
+    return;
+  }
+
+  // 微信小程序环境下打开客服会话
+  uni.showLoading({
+    title: "正在打开客服...",
+  });
+
+  uni.openCustomerServiceChat({
+    extInfo: {
+      url: "", // 如果需要跳转到特定客服页面，可以在这里配置URL
+    },
+    corpId: "", // 企业微信的corpId，如果是企业微信客服需要填写
+    success: (res) => {
+      console.log("打开客服成功", res);
+      uni.hideLoading();
+    },
+    fail: (err) => {
+      console.error("打开客服失败", err);
+      uni.hideLoading();
+
+      // 显示详细错误信息
+      let errorMsg = "客服功能暂不可用";
+      if (err.errMsg) {
+        console.error("错误详情:", err.errMsg);
+        errorMsg = err.errMsg.includes("auth")
+          ? "请先在小程序后台配置客服功能"
+          : "客服功能暂不可用";
+      }
+
+      uni.showModal({
+        title: "提示",
+        content: errorMsg,
+        showCancel: false,
+      });
+    },
+  });
+  // #endif
+
+  // #ifndef MP-WEIXIN
+  console.log("当前环境：非微信小程序");
   uni.showToast({
-    title: "在线管家功能开发中",
+    title: "请在微信小程序中使用此功能",
     icon: "none",
   });
+  // #endif
 }
 
 // 切换收藏状态

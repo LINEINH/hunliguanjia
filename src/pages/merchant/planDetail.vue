@@ -110,7 +110,9 @@
       <view class="hotel-footer-tel button" @click="makePhoneCall">
         电话咨询
       </view>
-      <view class="hotel-footer-online button"> 在线管家 </view>
+      <button class="hotel-footer-online button" open-type="contact">
+        在线管家
+      </button>
     </view>
   </view>
 </template>

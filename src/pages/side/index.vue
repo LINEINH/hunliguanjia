@@ -301,7 +301,8 @@ function handleCouponScan(index: number) {
 
         // 构造跳转 URL
         const text = index === 1 ? "scancode" : "scanproduct";
-        const targetUrl = `/pages/side/${text}?code=${code}&type=${type}`;
+        const typeText = index === 1 ? "coupon" : "product";
+        const targetUrl = `/pages/side/${text}?code=${code}&type=${typeText}`;
         console.log("准备跳转到:", targetUrl);
 
         // 显示即将跳转的提示

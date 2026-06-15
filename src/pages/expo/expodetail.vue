@@ -31,7 +31,7 @@
             mode="aspectFill"
             style="width: 100%"
           />
-          <!-- <rich-text :nodes="expoDetail.introduction"></rich-text> -->
+          <!-- <rich-text :nodes="expoDetail.content"></rich-text> -->
         </view>
       </view>
 
@@ -66,7 +66,7 @@
       </view>
 
       <view class="step" v-if="expoDetail.status === 1">
-        <view class="register-form" v-if="!expoDetail.qr_code || qrCode">
+        <view class="register-form" v-if="!expoDetail.qr_code">
           <view class="code">婚博会报名</view>
           <template v-if="expoDetail.registration_status === 'checked_in'">
             <image
@@ -192,31 +192,31 @@ onLoad((options: any) => {
   // 方式2: 从 scene 参数获取（小程序码扫码）
   else if (options.scene) {
     console.log("检测到 scene 参数:", options.scene);
-    
+
     try {
       // URL 解码 scene 参数
       const decodedScene = decodeURIComponent(options.scene);
       console.log("scene 解码后:", decodedScene);
-      
+
       // 解析 scene 中的参数 (格式: id=1&m_id=8)
       const sceneParams: any = {};
       const pairs = decodedScene.split("&");
-      
+
       for (let i = 0; i < pairs.length; i++) {
         const pair = pairs[i].split("=");
         const key = pair[0].trim();
         const value = pair[1] ? pair[1].trim() : "";
         sceneParams[key] = value;
       }
-      
+
       console.log("解析后的 scene 参数:", sceneParams);
-      
+
       // 获取 id 和 m_id
       expoIdValue = Number(sceneParams.id || 0);
       merchantId = sceneParams.m_id || "";
-      
+
       console.log("解析结果 - expoId:", expoIdValue, "merchantId:", merchantId);
-      
+
       if (!expoIdValue) {
         uni.showToast({
           title: "参数错误",
@@ -326,14 +326,15 @@ async function handleRegister() {
     );
     if (res.registration) {
       // 报名成功后可以更新状态或跳转到其他页面
-      qrCode.value = res.registration.qr_code;
-      uni.hideLoading();
       uni.showToast({
         title: "报名成功",
         icon: "success",
       });
-      // 重新调用获取详情接口
-      fetchExpoDetail();
+      setTimeout(() => {
+        uni.hideLoading();
+        qrCode.value = res.registration.qr_code;
+        fetchExpoDetail();
+      }, 1500);
     }
 
     // 清空表单

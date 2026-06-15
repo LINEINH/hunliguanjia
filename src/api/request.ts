@@ -54,7 +54,8 @@ async function responseInterceptor(response: any): Promise<any> {
   } else {
     uni.showToast({
       title: data.message ||  '网络错误，请稍后重试',
-      icon: 'none'
+      icon: 'none',
+      duration: 3000
     })
     return Promise.reject(new Error('网络错误'))
   }

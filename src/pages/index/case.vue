@@ -71,7 +71,9 @@
       <view class="hotel-footer-tel button" @click="makePhoneCall">
         电话咨询
       </view>
-      <view class="hotel-footer-online button"> 在线管家 </view>
+      <button class="hotel-footer-online button" open-type="contact">
+        在线管家
+      </button>
     </view>
   </view>
 </template>
@@ -186,7 +188,7 @@ function makePhoneCall() {
   // 这里可以添加电话咨询的功能
   uni.showModal({
     title: "电话咨询",
-    content: "是否拨打商家电话？请使用授权手机号拨出，以免拨打失败！",
+    content: "是否拨打商家电话？\n请使用授权手机号拨出，以免拨打失败！",
     success: function (res) {
       if (res.confirm) {
         // 调用bind获取绑定的手机号
