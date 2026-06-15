@@ -51,7 +51,7 @@
             <up-icon
               name="star"
               size="24"
-              :color="item.isFavorited ? '#FFD700' : '#E5E5E5'"
+              :color="item.is_favorited ? '#FFD700' : '#E5E5E5'"
               @click.stop="toggleFavorite(item)"
             ></up-icon>
           </view>
@@ -253,11 +253,11 @@ async function toggleFavorite(item: any) {
     }
 
     // 切换收藏状态
-    item.isFavorited = !item.isFavorited;
+    item.is_favorited = !item.is_favorited;
 
     uni.hideLoading();
     uni.showToast({
-      title: item.isFavorited ? "收藏成功" : "已取消收藏",
+      title: item.is_favorited ? "收藏成功" : "已取消收藏",
       icon: "success",
     });
   } catch (error) {

@@ -42,12 +42,8 @@
             />
             <text class="agreement-text">
               我已阅读并同意
-              <text class="link" @click.stop="showAgreement('user')"
-                >《用户协议》</text
-              >
-              和
-              <text class="link" @click.stop="showAgreement('privacy')"
-                >《隐私政策》</text
+              <text class="link" @click.stop="showAgreement()"
+                >《用户隐私协议》</text
               >
             </text>
           </label>
@@ -59,16 +55,6 @@
     <view class="login-footer">
       <text class="footer-text">登录即代表您同意我们的服务条款</text>
     </view>
-
-    <!-- 用户协议弹窗 -->
-    <u-modal
-      v-model="showAgreementModal"
-      :title="agreementTitle"
-      :content="agreementContent"
-      :show-cancel-button="false"
-      confirm-color="#E8380D"
-      @confirm="showAgreementModal = false"
-    ></u-modal>
   </view>
 </template>
 
@@ -231,17 +217,11 @@ function handleAgreementChange(e: any) {
 /**
  * 显示用户协议或隐私政策
  */
-function showAgreement(type: "user" | "privacy") {
-  if (type === "user") {
-    agreementTitle.value = "用户协议";
-    agreementContent.value =
-      "这里是用户协议的详细内容。在实际项目中,这里应该展示完整的用户协议内容,包括服务条款、使用规则等。";
-  } else {
-    agreementTitle.value = "隐私政策";
-    agreementContent.value =
-      "这里是隐私政策的详细内容。在实际项目中,这里应该展示完整的隐私政策,包括数据收集、使用、保护等说明。";
-  }
-  showAgreementModal.value = true;
+function showAgreement() {
+  // 跳转到用户协议页面agreement
+  uni.navigateTo({
+    url: `/pages/login/agreement`,
+  });
 }
 </script>
 

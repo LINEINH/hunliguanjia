@@ -196,9 +196,9 @@ async function toggleFavorite() {
       });
       return;
     }
-    if (!hotelId.value) {
+    if (!butlerDetail.value.id) {
       uni.showToast({
-        title: "缺少酒店ID",
+        title: "缺少ID",
         icon: "none",
       });
       return;
@@ -252,7 +252,7 @@ function buyNow(index, id) {
 
   .banner {
     margin-bottom: $spacing-md;
-    margin-top: 120rpx;
+    margin-top: 180rpx;
     .banner-swiper {
       height: 520rpx;
       border-radius: $radius-md;

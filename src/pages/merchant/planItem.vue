@@ -15,6 +15,8 @@
         circular
         indicator-dots
         indicator-active-color="#fff"
+        interval="3000"
+        duration="500"
       >
         <swiper-item v-for="(item, index) in productData.images" :key="index">
           <image :src="item.image_url" mode="aspectFill" class="banner-image" />

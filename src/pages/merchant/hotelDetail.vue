@@ -72,18 +72,18 @@
           v-for="(caseItem, index) in hotelData.products"
           :key="index"
           class="hotel-list-item"
-          @click="openDetail(caseItem)"
         >
           <image
             :src="caseItem.cover_image"
             mode="aspectFill"
             class="image"
+            @click="openDetail(caseItem)"
           ></image>
           <view class="hotel-list-item-info">
-            <view class="hotel-list-item-title">
+            <view class="hotel-list-item-title" @click="openDetail(caseItem)">
               {{ caseItem.name }}
             </view>
-            <view class="hotel-list-item-intro">
+            <view class="hotel-list-item-intro" @click="openDetail(caseItem)">
               {{ caseItem.subtitle }}
             </view>
             <view class="hotel-list-item-price">

@@ -143,6 +143,12 @@
 			}
 		},
 				{
+			"path": "pages/login/agreement",
+			"style": {
+				"navigationBarTitleText": "用户协议"
+			}
+		},
+				{
 			"path": "pages/user/collection",
 			"style": {
 				"navigationBarTitleText": "我的收藏"

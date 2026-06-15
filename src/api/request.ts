@@ -52,11 +52,16 @@ async function responseInterceptor(response: any): Promise<any> {
     uni.reLaunch({ url: '/pages/login/login' })
     return Promise.reject(new Error('未授权'))
   } else {
+    // 先隐藏可能存在的 loading
+    uni.hideLoading();
+    
+    // 使用 showModal 代替 showToast，确保用户能看到错误信息
+
     uni.showToast({
-      title: data.message ||  '网络错误，请稍后重试',
-      icon: 'none',
-      duration: 3000
+      title: data.message || '网络错误，请稍后重试',
+      icon: 'none'
     })
+    
     return Promise.reject(new Error('网络错误'))
   }
 }

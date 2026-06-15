@@ -11,10 +11,7 @@
         </view>
         <view class="giftinfo">
           <view class="giftname"> {{ item.gift.gift_name }} </view>
-          <view class="gifttime">
-            {{ item.activity.start_time_formatted }}~
-            {{ item.activity.end_time_formatted }}</view
-          >
+          <view class="gifttime"> {{ item.gift.pickup_location }}</view>
           <view class="recipt-get" @click="openCode(item.qr_code_image_url)">
             <text class="recipt-get">二维码</text>
           </view>

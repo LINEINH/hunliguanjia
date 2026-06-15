@@ -33,23 +33,31 @@
           :src="
             item.merchant?.cover_image ||
             item.product?.cover_image ||
-            item.service?.cover_image
+            item.gold_service_provider?.avatar
           "
           class="goods-image"
           mode="aspectFill"
         />
         <view class="goods-info">
           <view class="goods-name">{{
-            item.merchant?.name || item.product?.name || item.service?.name
+            item.merchant?.name ||
+            item.product?.name ||
+            item.gold_service_provider?.name
           }}</view>
           <view class="goods-intro">
             <image
-              src="/static/images/user.png"
+              :src="
+                item.merchant?.avatar ||
+                item.product?.avatar ||
+                item.gold_service_provider?.avatar
+              "
               mode="aspectFill"
               class="user-icon"
             ></image>
             <text class="user-name">{{
-              item.merchant?.name || item.product?.name || item.service?.name
+              item.merchant?.name ||
+              item.product?.name ||
+              item.gold_service_provider?.name
             }}</text>
           </view>
         </view>

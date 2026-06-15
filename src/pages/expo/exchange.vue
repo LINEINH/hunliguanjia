@@ -19,7 +19,7 @@
             <view class="moment-info">
               <text class="moment-title">{{ moment.gift_name }}</text>
 
-              <text class="moment-subtitle">{{ moment.gift_description }}</text>
+              <text class="moment-subtitle">{{ moment.pickup_location }}</text>
               <view class="moment-intro">
                 <view class="change" @click="exchange(moment)">领取</view>
               </view>
