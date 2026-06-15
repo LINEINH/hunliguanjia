@@ -25,7 +25,7 @@
     <!-- 选择婚期和预算 / 日历组件 -->
     <view class="date-budget">
       <!-- 未选择时显示选择器 -->
-      <view class="data-selector" v-if="!weddingDate || !selectedBudget">
+      <view class="data-selector" v-if="!weddingDate">
         <view class="date-selector" @click="handleDateClick">
           <text class="budget-title">WEDDING DAY</text>
           <text class="budget-data">婚期</text>
@@ -41,7 +41,7 @@
         </view>
       </view>
 
-      <!-- 已选择时显示日历组件 -->
+      <!-- 已选择婚期时显示日历组件 -->
       <template v-else>
         <view class="calendar-container">
           <view class="calendar-header">
@@ -115,7 +115,7 @@
               <view class="hint-content" v-if="currentMonthTasks.length > 0">
                 <view class="hit-title">
                   <text class="title">本月需完成事项</text>
-                  <view class="choice">重新选择</view>
+                  <view class="choice" @click="handleReSelect">重新选择</view>
                 </view>
                 <view
                   v-for="(task, index) in currentMonthTasks"
@@ -266,6 +266,64 @@
         </view>
       </view>
     </view>
+
+    <!-- 重新选择弹窗 -->
+    <view
+      v-if="showReSelectPicker"
+      class="reselect-picker-mask"
+      @click="showReSelectPicker = false"
+    >
+      <view class="reselect-picker-container" @click.stop>
+        <view class="reselect-picker-header">
+          <text class="reselect-picker-title">重新选择</text>
+          <text
+            class="reselect-picker-close"
+            @click="showReSelectPicker = false"
+            >×</text
+          >
+        </view>
+        <view class="reselect-picker-content">
+          <!-- 婚期选择 -->
+          <view class="reselect-item" @click="handleReSelectDate">
+            <view class="reselect-label">婚期</view>
+            <view class="reselect-value">{{
+              tempWeddingDate || "选择婚礼时间"
+            }}</view>
+            <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          </view>
+
+          <!-- 桌数输入 -->
+          <view class="reselect-item reselect-input-item">
+            <view class="reselect-label">桌数</view>
+            <input
+              type="number"
+              class="reselect-input"
+              placeholder="请输入桌数"
+              v-model="tempTableCountForReSelect"
+            />
+          </view>
+
+          <!-- 总预算输入 -->
+          <view class="reselect-item reselect-input-item">
+            <view class="reselect-label">总预算（元）</view>
+            <input
+              type="text"
+              class="reselect-input"
+              placeholder="请输入总预算"
+              v-model="tempTotalBudgetForReSelect"
+            />
+          </view>
+        </view>
+        <view class="reselect-picker-footer">
+          <button
+            class="reselect-picker-btn confirm-btn"
+            @click="confirmReSelect"
+          >
+            确定
+          </button>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -284,12 +342,20 @@ const showDatePicker = ref<boolean>(false);
 // 预算选择器显示状态
 const showBudgetPicker = ref<boolean>(false);
 
+// 重新选择弹窗显示状态
+const showReSelectPicker = ref<boolean>(false);
+
 // 已选预算
 const selectedBudget = ref<string>("");
 
 // 桌数和总预算输入
 const tableCount = ref<string>("");
 const totalBudget = ref<string>("");
+
+// 重新选择时的临时变量
+const tempWeddingDate = ref<string>("");
+const tempTableCountForReSelect = ref<string>("");
+const tempTotalBudgetForReSelect = ref<string>("");
 
 // 预算选项
 const budgetOptions = [
@@ -414,6 +480,9 @@ async function loadWeddingPlan() {
           );
           totalBudget.value = budgetInWan;
           selectedBudget.value = `${tableCount.value}桌，${budgetInWan}`;
+        } else if (response.table_count) {
+          // 如果有桌数但没有总预算，也设置 selectedBudget
+          selectedBudget.value = `${tableCount.value}桌`;
         }
 
         // 初始化日历
@@ -703,15 +772,23 @@ function confirmDate() {
   const day = days.value[pickerValue.value[2]];
 
   // 格式化日期为 YYYY-MM-DD
-  weddingDate.value = `${year}-${String(month).padStart(2, "0")}-${String(
+  const formattedDate = `${year}-${String(month).padStart(2, "0")}-${String(
     day
   ).padStart(2, "0")}`;
 
-  console.log("选择的婚期:", weddingDate.value);
+  console.log("选择的婚期:", formattedDate);
+
+  // 如果是在重新选择弹窗中，更新临时变量
+  if (showReSelectPicker.value) {
+    tempWeddingDate.value = formattedDate;
+  } else {
+    weddingDate.value = formattedDate;
+  }
+
   showDatePicker.value = false;
 
   // 如果预算也已选择，初始化日历
-  if (selectedBudget.value) {
+  if (selectedBudget.value && !showReSelectPicker.value) {
     initCalendar();
   }
 }
@@ -798,6 +875,103 @@ const confirmBudgetInput = async () => {
     console.error("生成婚礼计划失败:", error);
     uni.showToast({
       title: "生成计划失败，请重试",
+      icon: "none",
+    });
+  }
+};
+
+// 处理重新选择按钮点击
+function handleReSelect() {
+  console.log("点击重新选择按钮");
+  console.log("当前 weddingDate:", weddingDate.value);
+  console.log("当前 tableCount:", tableCount.value);
+  console.log("当前 totalBudget:", totalBudget.value);
+
+  // 带出之前选择的值
+  tempWeddingDate.value = weddingDate.value;
+  tempTableCountForReSelect.value = tableCount.value;
+  tempTotalBudgetForReSelect.value = totalBudget.value;
+
+  showReSelectPicker.value = true;
+  console.log("showReSelectPicker 设置为:", showReSelectPicker.value);
+}
+
+// 处理重新选择婚期
+function handleReSelectDate() {
+  showDatePicker.value = true;
+}
+
+// 确认重新选择
+const confirmReSelect = async () => {
+  // 验证输入
+  if (!tempWeddingDate.value) {
+    uni.showToast({
+      title: "请选择婚期",
+      icon: "none",
+    });
+    return;
+  }
+
+  if (!tempTableCountForReSelect.value.trim()) {
+    uni.showToast({
+      title: "请填写桌数",
+      icon: "none",
+    });
+    return;
+  }
+
+  if (!tempTotalBudgetForReSelect.value.trim()) {
+    uni.showToast({
+      title: "请填写总预算",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: "生成计划中...",
+      mask: true,
+    });
+
+    // 调用婚礼计划接口
+    const response = await weddingPlan(
+      tempWeddingDate.value,
+      tempTotalBudgetForReSelect.value,
+      tempTableCountForReSelect.value
+    );
+
+    uni.hideLoading();
+
+    // 更新页面数据
+    if (response && response.planning_phases) {
+      // 更新婚期和预算信息
+      weddingDate.value = tempWeddingDate.value;
+      tableCount.value = tempTableCountForReSelect.value;
+      totalBudget.value = tempTotalBudgetForReSelect.value;
+      selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
+
+      // 更新规划阶段数据
+      planningPhases.value = response.planning_phases;
+
+      // 初始化日历
+      initCalendar();
+
+      // 关闭弹窗
+      showReSelectPicker.value = false;
+
+      uni.showToast({
+        title: "计划更新成功",
+        icon: "success",
+      });
+    } else {
+      throw new Error("数据格式错误");
+    }
+  } catch (error) {
+    uni.hideLoading();
+    console.error("重新生成婚礼计划失败:", error);
+    uni.showToast({
+      title: "更新计划失败，请重试",
       icon: "none",
     });
   }
@@ -1073,7 +1247,7 @@ onShow(() => {
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: flex-end;
-    z-index: 9999;
+    z-index: 10000;
   }
 
   .date-picker-container,
@@ -1215,17 +1389,17 @@ onShow(() => {
     }
   }
 
-  // 日历组件样式
+  // 日历容器样式
   .calendar-container {
     width: 100%;
-    padding: $spacing-md 0;
+    padding: 32rpx 0;
   }
 
   .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 $spacing-md $spacing-md;
+    padding: 0 32rpx 32rpx;
 
     .calendar-nav {
       width: 56rpx;
@@ -1233,15 +1407,15 @@ onShow(() => {
       display: flex;
       justify-content: center;
       border-radius: 20rpx;
-
       border: 0.77px solid #9cb2cd;
+
       &:active {
         background-color: #f0cd8c;
       }
     }
 
     .calendar-title {
-      font-size: $font-lg;
+      font-size: 36rpx;
       font-weight: bold;
       color: rgba(128, 128, 128, 1);
     }
@@ -1250,14 +1424,14 @@ onShow(() => {
   .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    padding: $spacing-sm $spacing-md;
+    padding: 16rpx 0;
     border-bottom: 1px solid #f0f0f0;
 
     .weekday {
       text-align: center;
-      font-size: $font-sm;
-      color: $text-secondary;
-      padding: $spacing-sm 0;
+      font-size: 28rpx;
+      color: #999;
+      padding: 16rpx 0;
     }
   }
 
@@ -1265,7 +1439,7 @@ onShow(() => {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8rpx;
-    padding: $spacing-md;
+    padding: 0 32rpx;
 
     .calendar-day {
       aspect-ratio: 1;
@@ -1273,12 +1447,12 @@ onShow(() => {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-radius: $radius-sm;
+      border-radius: 8rpx;
       position: relative;
 
       .day-number {
-        font-size: $font-md;
-        color: $text-primary;
+        font-size: 32rpx;
+        color: #333;
       }
 
       .day-label {
@@ -1294,8 +1468,6 @@ onShow(() => {
       }
 
       &.day-today {
-        // background-color: #fff3e0;
-
         .day-number {
           color: #d4a574;
           font-weight: bold;
@@ -1323,7 +1495,7 @@ onShow(() => {
 
   // 周视图样式
   .week-view {
-    padding: $spacing-md;
+    padding: 32rpx;
 
     .week-days {
       display: grid;
@@ -1336,18 +1508,18 @@ onShow(() => {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border-radius: $radius-sm;
-        padding: $spacing-xs;
+        border-radius: 8rpx;
+        padding: 8rpx;
 
         .week-day-weekday {
           font-size: 24rpx;
-          color: $text-secondary;
+          color: #999;
           margin-bottom: 4rpx;
         }
 
         .week-day-number {
-          font-size: $font-lg;
-          color: $text-primary;
+          font-size: 36rpx;
+          color: #333;
           font-weight: bold;
         }
 
@@ -1364,8 +1536,6 @@ onShow(() => {
         }
 
         &.day-today {
-          // background-color: #fff3e0;
-
           .week-day-number {
             color: #d4a574;
           }
@@ -1389,113 +1559,202 @@ onShow(() => {
       }
     }
   }
+
   .expand-hint {
     display: flex;
     justify-content: center;
     align-items: center;
+
     .hint-text {
-      font-size: $font-sm;
-      color: $text-secondary;
+      font-size: 28rpx;
+      color: #999;
     }
 
     .hint-icon {
-      font-size: $font-sm;
-      color: $text-secondary;
+      font-size: 28rpx;
+      color: #999;
     }
   }
+
   // 月视图样式
   .month-view {
     .collapse-hint {
       display: flex;
       flex-direction: column;
-      padding: $spacing-md $spacing-lg;
-      gap: $spacing-xs;
-      .hint-text {
-        font-size: $font-sm;
-        color: $text-secondary;
-      }
+      padding: 32rpx 48rpx;
+      gap: 8rpx;
 
-      .hint-icon {
-        font-size: $font-sm;
-        color: $text-secondary;
-        text-align: center;
-      }
       .hit-title {
-        font-size: $font-md;
-        color: $text-primary;
+        font-size: 32rpx;
+        color: #333;
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin: 10rpx 0;
+
         .title {
           color: #333;
-          font-size: $font-md;
+          font-size: 32rpx;
         }
+
         .choice {
           color: #bf974a;
         }
       }
+
       .hint-item {
         display: flex;
         justify-content: space-between;
-        padding: $spacing-md 0;
-
+        padding: 32rpx 0;
         border-bottom: 1px solid #e5e5e5;
+
         .hint-left {
-          font-size: $font-sm;
-          color: $text-primary;
+          font-size: 28rpx;
+          color: #333;
           flex: 1;
           display: flex;
           align-items: center;
+
           .hint-image {
             width: 30rpx;
             height: 30rpx;
-            margin-right: $spacing-sm;
+            margin-right: 16rpx;
           }
         }
+
         .hint-right {
-          font-size: $font-sm;
-          color: $text-primary;
+          font-size: 28rpx;
+          color: #333;
           display: flex;
           align-items: center;
         }
+
         .price {
           color: #bf974a;
-          font-size: $font-md;
+          font-size: 32rpx;
         }
       }
+
       .hint-empty {
-        padding: $spacing-lg 0;
+        padding: 48rpx 0;
         text-align: center;
+
         .empty-text {
-          font-size: $font-sm;
-          color: $text-secondary;
+          font-size: 28rpx;
+          color: #999;
         }
       }
     }
   }
-}
 
-.budget-input-section {
-  display: flex;
-  margin-bottom: 20rpx;
-  padding: 0 40rpx;
-  flex-direction: column;
-  width: 100%;
-}
+  .planItem {
+    margin: $spacing-md;
+    padding-bottom: 30rpx;
+  }
 
-.input-label {
-  font-size: 32rpx;
-  color: #212121;
-  margin-bottom: 30rpx;
-}
+  // 重新选择弹窗样式
+  .reselect-picker-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
 
-.budget-input {
-  flex: 1;
-  height: 80rpx;
-  border: 1rpx solid #bcbcbc;
-  border-radius: 10rpx;
-  padding: 0 20rpx;
-  font-size: 32rpx;
+  .reselect-picker-container {
+    width: 700rpx;
+    background-color: #fff;
+    border-radius: 16rpx;
+    overflow: hidden;
+  }
+
+  .reselect-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32rpx;
+    border-bottom: 1rpx solid #e5e5e5;
+
+    .reselect-picker-title {
+      font-size: 32rpx;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .reselect-picker-close {
+      font-size: 48rpx;
+      color: #999;
+      line-height: 1;
+    }
+  }
+
+  .reselect-picker-content {
+    padding: 32rpx;
+  }
+
+  .reselect-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24rpx 0;
+    border-bottom: 1rpx solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .reselect-label {
+      font-size: 28rpx;
+      color: #333;
+    }
+
+    .reselect-value {
+      flex: 1;
+      text-align: right;
+      font-size: 28rpx;
+      color: #000;
+      margin-right: 16rpx;
+    }
+  }
+
+  .reselect-input-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16rpx;
+
+    .reselect-input {
+      width: 100%;
+      height: 80rpx;
+      border: 1rpx solid #e5e5e5;
+      border-radius: 8rpx;
+      padding: 0 24rpx;
+      font-size: 28rpx;
+      box-sizing: border-box;
+    }
+  }
+
+  .reselect-picker-footer {
+    padding: 24rpx 32rpx 32rpx;
+
+    .reselect-picker-btn {
+      width: 100%;
+      height: 88rpx;
+      background: linear-gradient(180deg, #f1daa6 0%, #eac47b 100%);
+      border-radius: 44rpx;
+      color: #fff;
+      font-size: 32rpx;
+      font-weight: bold;
+      border: none;
+
+      &::after {
+        border: none;
+      }
+    }
+  }
 }
 </style>
