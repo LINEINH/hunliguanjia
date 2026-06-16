@@ -396,6 +396,7 @@ const weddingDateObj = ref<Date | null>(null);
 
 // 首页数据
 const homeData = ref<any>(null);
+const planning = ref<any>(null);
 
 // 轮播图数据
 const banners = ref<any[]>([]);
@@ -475,11 +476,11 @@ async function loadWeddingPlan() {
         }
         if (response.total_budget) {
           // 将预算转换为万元显示
-          const budgetInWan = (Number(response.total_budget) / 10000).toFixed(
-            0
-          );
-          totalBudget.value = budgetInWan;
-          selectedBudget.value = `${tableCount.value}桌，${budgetInWan}`;
+          // const budgetInWan = (Number(response.total_budget) / 10000).toFixed(
+          //   0
+          // );
+          totalBudget.value = response.total_budget;
+          selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
         } else if (response.table_count) {
           // 如果有桌数但没有总预算，也设置 selectedBudget
           selectedBudget.value = `${tableCount.value}桌`;
@@ -852,16 +853,23 @@ const confirmBudgetInput = async () => {
     uni.hideLoading();
 
     // 处理返回的规划数据
-    if (response && response && response.planning_phases) {
-      planningPhases.value = response.planning_phases;
+    if (response && response.planning_phases) {
+      if (response.warning) {
+        uni.showToast({
+          title: response.warning,
+          icon: "error",
+        });
+      } else {
+        planningPhases.value = response.planning_phases;
+        planning.value = response;
+        // 根据当前日历月份更新任务列表
+        updateCurrentMonthTasks();
 
-      // 根据当前日历月份更新任务列表
-      updateCurrentMonthTasks();
-
-      uni.showToast({
-        title: "计划生成成功",
-        icon: "success",
-      });
+        uni.showToast({
+          title: "计划生成成功",
+          icon: "success",
+        });
+      }
     } else {
       throw new Error("数据格式错误");
     }
@@ -882,7 +890,7 @@ const confirmBudgetInput = async () => {
 
 // 处理重新选择按钮点击
 function handleReSelect() {
-  console.log("点击重新选择按钮");
+  console.log("点击重新选择按钮", planning.value);
   console.log("当前 weddingDate:", weddingDate.value);
   console.log("当前 tableCount:", tableCount.value);
   console.log("当前 totalBudget:", totalBudget.value);

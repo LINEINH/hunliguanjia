@@ -135,6 +135,11 @@
 			"style": {
 				"navigationBarTitleText": "我的礼品"
 			}
+		},{
+			"path": "pages/user/tasting",
+			"style": {
+				"navigationBarTitleText": "婚礼品鉴官"
+			}
 		},
 		{
 			"path": "pages/login/login",

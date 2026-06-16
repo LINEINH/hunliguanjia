@@ -267,7 +267,7 @@
 
     <!-- 其他功能 -->
     <view class="card menu-list">
-      <view class="menu-item" @click="navigateTo('/pages/user/butler')">
+      <view class="menu-item" @click="navigateTo('/pages/user/tasting')">
         <image
           src="/static/images/11.png"
           mode="aspectFill"
@@ -675,7 +675,9 @@ function handleStaffScan() {
       // 其他错误，显示详细信息
       uni.showModal({
         title: "扫码失败",
-        content: `错误信息: ${err.errMsg || "未知错误"}\n\n可能原因:\n1. 相机权限未授权\n2. 光线太暗\n3. 二维码模糊或损坏`,
+        content: `错误信息: ${
+          err.errMsg || "未知错误"
+        }\n\n可能原因:\n1. 相机权限未授权\n2. 光线太暗\n3. 二维码模糊或损坏`,
         showCancel: false,
         confirmText: "知道了",
       });
