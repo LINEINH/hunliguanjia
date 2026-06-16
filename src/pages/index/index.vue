@@ -920,7 +920,10 @@ const confirmReSelect = async () => {
     return;
   }
 
-  if (!tempTableCountForReSelect.value.trim()) {
+  if (
+    !tempTableCountForReSelect.value ||
+    !String(tempTableCountForReSelect.value).trim()
+  ) {
     uni.showToast({
       title: "请填写桌数",
       icon: "none",
@@ -928,7 +931,10 @@ const confirmReSelect = async () => {
     return;
   }
 
-  if (!tempTotalBudgetForReSelect.value.trim()) {
+  if (
+    !tempTotalBudgetForReSelect.value ||
+    !String(tempTotalBudgetForReSelect.value).trim()
+  ) {
     uni.showToast({
       title: "请填写总预算",
       icon: "none",
@@ -954,24 +960,31 @@ const confirmReSelect = async () => {
     // 更新页面数据
     if (response && response.planning_phases) {
       // 更新婚期和预算信息
-      weddingDate.value = tempWeddingDate.value;
-      tableCount.value = tempTableCountForReSelect.value;
-      totalBudget.value = tempTotalBudgetForReSelect.value;
-      selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
+      if (response.warning) {
+        uni.showToast({
+          title: response.warning,
+          icon: "error",
+        });
+      } else {
+        weddingDate.value = tempWeddingDate.value;
+        tableCount.value = tempTableCountForReSelect.value;
+        totalBudget.value = tempTotalBudgetForReSelect.value;
+        selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
 
-      // 更新规划阶段数据
-      planningPhases.value = response.planning_phases;
+        // 更新规划阶段数据
+        planningPhases.value = response.planning_phases;
 
-      // 初始化日历
-      initCalendar();
+        // 初始化日历
+        initCalendar();
 
-      // 关闭弹窗
-      showReSelectPicker.value = false;
+        // 关闭弹窗
+        showReSelectPicker.value = false;
 
-      uni.showToast({
-        title: "计划更新成功",
-        icon: "success",
-      });
+        uni.showToast({
+          title: "计划更新成功",
+          icon: "success",
+        });
+      }
     } else {
       throw new Error("数据格式错误");
     }

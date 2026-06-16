@@ -169,6 +169,7 @@ const expoDetail = ref<any>(null);
 const loading = ref(true);
 const expoId = ref<number>(0);
 const qrCode = ref<string>("");
+const merchantIdRouter = ref<string>("");
 
 // 报名表单数据
 const formData = ref({
@@ -214,6 +215,7 @@ onLoad((options: any) => {
       // 获取 id 和 m_id
       expoIdValue = Number(sceneParams.id || 0);
       merchantId = sceneParams.m_id || "";
+      merchantIdRouter.value = sceneParams.m_id || "";
 
       console.log("解析结果 - expoId:", expoIdValue, "merchantId:", merchantId);
 
@@ -322,7 +324,8 @@ async function handleRegister() {
     const res = await registerExpo(
       expoId.value.toString(),
       formData.value.user_name,
-      formData.value.user_phone
+      formData.value.user_phone,
+      merchantIdRouter.value || ""
     );
     if (res.registration) {
       // 报名成功后可以更新状态或跳转到其他页面

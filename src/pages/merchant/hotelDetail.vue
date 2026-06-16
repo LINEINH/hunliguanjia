@@ -29,12 +29,13 @@
         <text class="price">¥{{ hotelData.starting_price }}起</text>
       </view>
       <view class="hotel-time">
+        <view class="ratezu"
+          ><text class="rate">{{ hotelData.rating }}</text
+          ><text class="fen">分</text></view
+        >
         {{ hotelData.business_status }} {{ hotelData.business_hours }}
       </view>
-      <view class="hotel-rate">
-        <text class="rate">{{ hotelData.rating }}分</text>
-        {{ hotelData.description }}
-      </view>
+
       <view
         class="hotel-highlights"
         v-if="hotelData.personnel_tags && hotelData.personnel_tags.length > 0"
@@ -51,7 +52,15 @@
         <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
         {{ hotelData.address }}</view
       >
+      <!-- <view class="hotel-rate">
+        {{ hotelData.description }}
+      </view> -->
+
+      <view class="content" v-if="cleanedContent">
+        <rich-text :nodes="cleanedContent"></rich-text>
+      </view>
       <view class="hotel-intro">{{ hotelData.landmark }}</view>
+
       <view class="hotel-fuli" v-if="CouponsData && CouponsData.length > 0">
         <view class="hotel-fuli-title">特惠福利</view>
         <view
@@ -140,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 
 import {
@@ -441,6 +450,37 @@ function openMap() {
     },
   });
 }
+
+// 富文本
+// 计算属性:清理后的内容
+const cleanedContent = computed(() => {
+  return cleanHtmlContent(hotelData.value.description || "");
+});
+
+// 清理HTML中的图片内联样式并添加宽度控制
+function cleanHtmlContent(html: string): string {
+  if (!html) return html;
+
+  // 移除img标签中的style属性
+  let cleaned = html.replace(
+    /<img([^>]*)\s+style\s*=\s*["'][^"']*["']/gi,
+    "<img$1"
+  );
+
+  // 如果style是空的,也移除
+  cleaned = cleaned.replace(
+    /<img([^>]*)\s+style\s*=\s*["']\s*["']/gi,
+    "<img$1"
+  );
+
+  // 为所有img标签添加width:100%的style属性
+  cleaned = cleaned.replace(
+    /<img([^>]*?)>/gi,
+    '<img$1 style="width:100%;height:auto;display:block;">'
+  );
+
+  return cleaned;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -485,13 +525,7 @@ function openMap() {
     .hotel-time {
       color: #808080;
       font-size: 28rpx;
-      margin: 20rpx 0;
-      font-weight: bold;
-    }
-    .hotel-rate {
-      color: #808080;
-      font-size: 26rpx;
-      margin-top: 30rpx;
+      margin: 10rpx 0;
       .rate {
         border-radius: 20rpx;
         background: linear-gradient(
@@ -502,6 +536,10 @@ function openMap() {
         );
         padding: 3rpx 10rpx;
         color: #d43030;
+      }
+      .fen {
+        font-size: 24rpx;
+        color: #333;
       }
     }
     .hotel-highlights {
@@ -520,7 +558,7 @@ function openMap() {
     .hotel-address {
       font-size: 28rpx;
       color: #808080;
-      margin: 20rpx 0;
+      margin: 10rpx 0;
       display: flex;
       align-items: center;
       gap: 10rpx;
@@ -669,6 +707,42 @@ function openMap() {
   .detail-image {
     width: 100%;
     display: block;
+  }
+  .content {
+    background: #fff;
+    border-radius: 20rpx;
+    :deep(rich-text) {
+      line-height: 1.8;
+      font-size: 28rpx;
+      color: #383838;
+
+      // 强制所有图片元素宽度100%
+      img,
+      image,
+      [class*="img"],
+      [class*="image"] {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        border-radius: 10rpx;
+        object-fit: contain;
+      }
+
+      // 处理 div 容器中的图片
+      div img,
+      p img,
+      span img {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+      }
+
+      p {
+        margin-bottom: $spacing-sm;
+      }
+    }
   }
 }
 </style>

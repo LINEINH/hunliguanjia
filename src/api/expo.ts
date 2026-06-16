@@ -34,14 +34,15 @@ export function getExpoDetail(id: number) {
 /**
  * 报名婚博会
  */
-export function registerExpo(activity_id: string,user_name: string, user_phone: string) {
+export function registerExpo(activity_id: string,user_name: string, user_phone: string,merchant_id: string) {
   return request({
     url: `/wechat/expo/register`,
     method: 'POST',
     data: {
       activity_id,
       user_name,
-      user_phone
+      user_phone,
+      merchant_id
     }
   })
 }

@@ -240,3 +240,16 @@ export function qrcode() {
     method: 'POST',
   })
 }
+
+
+// 报名
+export function enroll(user_name: string, user_phone: string) {
+  return request({
+    url: `/wechat/expo/register`,
+    method: 'POST',
+    data: {
+      user_name,
+      user_phone
+    }
+  })
+}

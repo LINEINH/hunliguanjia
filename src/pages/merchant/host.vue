@@ -344,9 +344,9 @@ const loadMerchants = async (page = 1) => {
     let merchantsData = [];
     let paginationInfo = {};
 
-    if (response) {
+    if (response && response.list) {
       // 正确提取商家数据
-      merchantsData = response || [];
+      merchantsData = response.list || [];
       // 提取分页信息
       paginationInfo = response.pagination || {}; // 如果response.data不是数组而是包含分页信息的对象
     } else {
