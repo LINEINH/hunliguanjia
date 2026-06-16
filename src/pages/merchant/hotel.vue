@@ -44,6 +44,22 @@
       </view>
     </view>
 
+    <view class="banner" v-if="banners && banners.length">
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        indicator-active-color="#fff"
+        interval="3000"
+        duration="500"
+      >
+        <swiper-item v-for="(item, index) in banners" :key="index">
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
+        </swiper-item>
+      </swiper>
+    </view>
+
     <up-overlay :show="show" @click="show = false">
       <view class="filter-dialog" @tap.stop>
         <view class="filter-content">
@@ -118,10 +134,11 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
 
-import { getHotelFilter, merchants } from "@/api/product";
+import { getHotelFilter, getBanners, merchants } from "@/api/product";
 
 // 搜索关键词
 const searchKeyword = ref("");
+const banners = ref([]);
 
 // 添加筛选条件数据的响应式变量
 const filterData = ref(null);
@@ -227,6 +244,17 @@ async function loadFilterConditions() {
     loading.value = false;
   }
 }
+
+// 获取banner
+const loadGetBanner = async () => {
+  try {
+    const response = await getBanners(2);
+    banners.value = response || [];
+    console.log("banner:", response);
+  } catch (error) {
+    console.error("请求推荐商家数据出错:", error);
+  }
+};
 
 // 调用接口获取商家列表
 async function loadMerchants(params = {}, resetPage = true) {
@@ -469,6 +497,7 @@ function confirmAreaSelection() {
 onMounted(() => {
   loadFilterConditions();
   loadMerchants({}, true);
+  loadGetBanner();
 });
 
 const filteredHotels = computed(() => {
@@ -504,6 +533,20 @@ function openDetail(hotel) {
   .page {
     background: #f0f0f0;
     min-height: 100vh;
+  }
+  .banner {
+    margin-bottom: $spacing-md;
+    margin-top: 380rpx;
+    .banner-swiper {
+      height: 460rpx;
+      border-radius: $radius-md;
+      overflow: hidden;
+    }
+
+    .banner-image {
+      width: 100%;
+      height: 100%;
+    }
   }
   .fixedcon {
     position: fixed;

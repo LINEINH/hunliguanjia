@@ -119,10 +119,6 @@
           <view class="description">{{
             merchant.description || "暂无描述"
           }}</view>
-          <view class="hotel-desc">
-            <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
-            <text class="text">{{ merchant.address || "暂无地址" }}</text>
-          </view>
 
           <view class="hotel-intro">
             <image
@@ -431,7 +427,7 @@ function openDetail(hotel) {
 // 获取banner
 const loadGetBanner = async () => {
   try {
-    const response = await getBanners(1);
+    const response = await getBanners(6);
     banners.value = response || [];
     console.log("banner:", response);
   } catch (error) {
@@ -451,9 +447,9 @@ const loadGetDictionary = async () => {
     if (district && district.length > 0) {
       newFiltersList.push({
         id: 1,
-        name: "区域",
+        name: "性别",
         type: "district",
-        options: district, // 直接使用API返回的district数组，不再添加"全部"
+        options: ["男", "女"], // 直接使用API返回的district数组，不再添加"全部"
       });
     }
 

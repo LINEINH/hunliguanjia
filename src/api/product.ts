@@ -79,6 +79,13 @@ export function getBanners(type:number) {
   })
 }
 
+// 获取banner
+export function getBannerMix() {
+  return request<any>({
+    url: `/wechat/banners?banner_type=mixed_home`,
+    method: 'GET'
+  })
+}
 
 // 获取优惠券 /api/v1/wechat/coupons/available?merchant_id=1
 export function getCoupons(id: number) {

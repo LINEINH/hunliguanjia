@@ -61,6 +61,8 @@
         circular
         indicator-dots
         indicator-active-color="#fff"
+        interval="3000"
+        duration="500"
       >
         <swiper-item v-for="(item, index) in banners" :key="index">
           <image :src="item.image_url" mode="aspectFill" class="banner-image" />
@@ -141,6 +143,14 @@
           <view class="hotel-desc">
             <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
             <text class="text">{{ merchant.address || "暂无地址" }}</text>
+          </view>
+          <view class="hotel-highlights">
+            <text
+              v-for="(h, idx) in merchant.personnel_tags"
+              :key="idx"
+              class="highlight"
+              >{{ h }}</text
+            >
           </view>
 
           <view class="hotel-intro">
@@ -782,7 +792,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   margin-bottom: 6px;
-  height: 60rpx;
+  height: 40rpx;
   margin-top: 20rpx;
 }
 .hotel-name {
@@ -790,7 +800,7 @@ onMounted(() => {
   font-weight: 600;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   overflow: hidden;
 }
 .hotel-time {
@@ -833,9 +843,23 @@ onMounted(() => {
   .text {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     overflow: hidden;
   }
+}
+.hotel-highlights {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  height: 48rpx;
+}
+.highlight {
+  font-size: 24rpx;
+  color: #ab7e2b;
+  border: 1px solid #ab7e2b;
+  padding: 4rpx 12rpx;
+  border-radius: 24rpx;
+  height: 32rpx;
 }
 .hotel-price {
   font-size: 26rpx;

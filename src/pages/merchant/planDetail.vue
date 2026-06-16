@@ -15,6 +15,8 @@
         circular
         indicator-dots
         indicator-active-color="#fff"
+        interval="3000"
+        duration="500"
       >
         <swiper-item v-for="(item, index) in productData.images" :key="index">
           <image :src="item.image_url" mode="aspectFill" class="banner-image" />
@@ -46,7 +48,20 @@
             <text class="user-intro">{{ productData.subtitle }}</text>
           </view>
         </view>
-        <text class="user-description">{{ productData.description }}</text>
+        <view class="user-description">{{ productData.description }}</view>
+        <view class="hotel-intro" @click="openDetail(productData.merchant)">
+          <image
+            :src="productData.merchant.logo"
+            mode="aspectFill"
+            class="user-icon"
+            v-if="productData.merchant && productData.merchant.logo"
+          ></image>
+          <view class="right">
+            <view class="user-name">{{ productData.merchant.name }}</view>
+
+            <!-- <text class="id">ID:{{ productData.merchant.contact_name }}</text> -->
+          </view>
+        </view>
       </view>
     </view>
 
@@ -231,6 +246,15 @@ function rightClick() {
   console.log("right click");
 }
 
+function openDetail(hotel: any) {
+  console.log("打开酒店详情：", hotel);
+  if (hotel && hotel.id) {
+    uni.navigateTo({
+      url: `/pages/merchant/hotelDetail?id=${hotel.id}`,
+    });
+  }
+}
+
 function gobackMerchant(merchantId: number) {
   uni.navigateTo({
     url: `/pages/merchant/hotelDetail?id=${merchantId}`,
@@ -383,7 +407,7 @@ async function toggleFavorite() {
   padding-bottom: 100rpx;
 
   .banner {
-    margin-top: 80rpx;
+    margin-top: 160rpx;
     .banner-swiper {
       height: 1200rpx;
       overflow: hidden;

@@ -55,25 +55,18 @@
     </view>
 
     <view class="hotel-footer">
-      <view class="hotel-footer-item">
+      <view class="hotel-footer-item" @click="openDetail()">
         <up-icon name="arrow-left" size="24" color="#E5E5E5"></up-icon>
-        <text>返回</text>
+        <text>前往商家</text>
       </view>
-      <!-- <view class="hotel-footer-item" @click="toggleFavorite">
-        <up-icon
-          name="star"
-          size="24"
-          :color="isFavorited ? '#FFD700' : '#E5E5E5'"
-        ></up-icon>
-        <text>{{ isFavorited ? "已收藏" : "收藏" }}</text>
-      </view> -->
-
-      <view class="hotel-footer-tel button" @click="makePhoneCall">
-        电话咨询
+      <view class="right-button">
+        <view class="hotel-footer-tel button" @click="makePhoneCall">
+          电话咨询
+        </view>
+        <button class="hotel-footer-online button" open-type="contact">
+          在线管家
+        </button>
       </view>
-      <button class="hotel-footer-online button" open-type="contact">
-        在线管家
-      </button>
     </view>
   </view>
 </template>
@@ -450,7 +443,12 @@ function toggleFavorite() {
       align-items: center;
       color: #999999;
       font-size: 26rpx;
-      margin-right: 20rpx;
+      margin-left: 20rpx;
+    }
+    .right-button {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
     }
     .button {
       border-radius: 20rpx;
@@ -460,6 +458,7 @@ function toggleFavorite() {
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-right: 20rpx;
     }
     .hotel-footer-tel {
       background: linear-gradient(

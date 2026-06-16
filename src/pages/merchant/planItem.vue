@@ -24,7 +24,7 @@
       </swiper>
     </view>
     <view class="hotel-info">
-      <view class="hotel-intro">
+      <view class="hotel-intro" @click="openDetail(productData.merchant)">
         <image
           :src="productData.merchant.logo"
           mode="aspectFill"
@@ -33,15 +33,16 @@
         ></image>
         <view class="right">
           <view class="user-name">{{ productData.merchant.name }}</view>
-          <text class="price"
-            ><text class="small">¥</text
-            >{{ productData.min_price || productData.price
-            }}<text class="small">起</text></text
-          >
+
           <!-- <text class="id">ID:{{ productData.merchant.contact_name }}</text> -->
         </view>
       </view>
       <view class="hotel-name">{{ productData.name }} </view>
+      <view class="hotel-price"
+        ><text class="small">¥</text
+        >{{ productData.min_price || productData.price
+        }}<text class="small">起</text></view
+      >
       <view class="hotel-address">
         {{ productData.description }}
       </view>
@@ -198,6 +199,15 @@ onMounted(() => {
     });
   }
 });
+
+function openDetail(hotel: any) {
+  console.log("打开酒店详情：", hotel);
+  if (hotel && hotel.id) {
+    uni.navigateTo({
+      url: `/pages/merchant/hotelDetail?id=${hotel.id}`,
+    });
+  }
+}
 
 function rightClick() {
   console.log("right click");
@@ -409,7 +419,7 @@ async function toggleFavorite() {
   padding-bottom: 100rpx;
 
   .banner {
-    margin-top: 80rpx;
+    margin-top: 160rpx;
     .banner-swiper {
       height: 1200rpx;
       overflow: hidden;
@@ -433,6 +443,16 @@ async function toggleFavorite() {
       justify-content: space-between;
       align-items: center;
     }
+    .hotel-price {
+      font-size: 32rpx;
+      color: #bf974a;
+      font-weight: bold;
+      .small {
+        font-size: $font-xs;
+        font-weight: 400;
+      }
+    }
+
     .hotel-highlights {
       display: flex;
       gap: 6px;
@@ -518,15 +538,6 @@ async function toggleFavorite() {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        .price {
-          font-size: 32rpx;
-          color: #bf974a;
-          font-weight: bold;
-        }
-        .small {
-          font-size: $font-xs;
-          font-weight: 400;
-        }
       }
       .id {
         font-size: $font-xs;

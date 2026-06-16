@@ -68,7 +68,7 @@
 import { ref, onMounted } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 import {
-  getBanners,
+  getBannerMix,
   getProductRecommend,
   favoriteProduct,
   unfavoriteProduct,
@@ -174,7 +174,7 @@ const getCategoryName = (categoryId: number): string => {
 // 获取banner
 const loadGetBanner = async () => {
   try {
-    const response = await getBanners(1);
+    const response = await getBannerMix();
     // 假设响应数据格式为 { data: [...] } 或直接是数组
     banners.value = response || [];
     console.log("banner:", response);
