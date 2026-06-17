@@ -5,10 +5,10 @@
       <swiper class="banner-swiper" autoplay circular indicator-dots>
         <swiper-item v-for="(item, index) in banners" :key="index">
           <image
-            :src="item"
+            :src="item.image_url"
             mode="aspectFill"
             class="banner-image"
-            @click="handleBannerClick(item)"
+            @click="handleBannerClick()"
           />
         </swiper-item>
       </swiper>
@@ -55,6 +55,19 @@
       </view>
       <view class="button" @click="handleRegister"> 立即参与 </view>
     </view>
+
+    <up-popup
+      :show="show"
+      mode="center"
+      :round="10"
+      @close="close"
+      @open="open"
+      closeable="true"
+    >
+      <view>
+        <image :src="codeUrl" mode="aspectFill" class="codeimage"></image>
+      </view>
+    </up-popup>
   </view>
 </template>
 
@@ -70,7 +83,7 @@ import { useUserStore } from "@/store/modules/user";
 const userStore = useUserStore();
 
 // 定义banner
-const banners = ref([]);
+const banners = ref<any>([]);
 
 // 报名表单数据
 const formData = ref({
@@ -85,11 +98,18 @@ function changeStream() {
   formData.value.is_live_stream = !formData.value.is_live_stream;
 }
 
-function handleBannerClick(item: any) {
-  // 跳转到详情页面
-  uni.navigateTo({
-    url: "/pages/merchant/detail?id=" + item.id,
-  });
+async function handleBannerClick() {
+  try {
+    const response = await getBanner("wine_tasting_popu");
+    if (response) {
+      codeUrl.value = response[0].image_url;
+      open();
+    }
+  } catch (error) {
+    console.error("请求推荐商家数据出错:", error);
+  }
+
+  open();
 }
 
 // 处理报名
@@ -181,6 +201,19 @@ const loadGetBanner = async () => {
   }
 };
 
+// 创建响应式数据
+const show = ref(false);
+
+const codeUrl = ref("");
+
+function open() {
+  show.value = true;
+}
+function close() {
+  // 关闭逻辑，设置 show 为 false
+  show.value = false;
+  // console.log('close');
+}
 onMounted(() => {
   loadGetBanner();
 });
@@ -196,7 +229,6 @@ onMounted(() => {
   padding-bottom: 100rpx;
 
   .banner {
-    margin-top: 80rpx;
     .banner-swiper {
       height: 500rpx;
       overflow: hidden;

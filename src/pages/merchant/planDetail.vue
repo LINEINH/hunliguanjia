@@ -44,6 +44,7 @@
             <view class="hotel-rate">
               <text class="rate">{{ productData.rating }}分</text>
               {{ productData.experience_years }}年经验
+              <text class="gender">{{ showGender(productData.gender) }}</text>
             </view>
             <text class="user-intro">{{ productData.subtitle }}</text>
           </view>
@@ -252,6 +253,17 @@ function openDetail(hotel: any) {
     uni.navigateTo({
       url: `/pages/merchant/hotelDetail?id=${hotel.id}`,
     });
+  }
+}
+
+// 根本male famle 显示男女
+function showGender(gender: string) {
+  if (gender == "male") {
+    return "男";
+  } else if (gender == "female") {
+    return "女";
+  } else {
+    return "未知";
   }
 }
 
@@ -489,6 +501,9 @@ async function toggleFavorite() {
           color: #808080;
           font-size: 26rpx;
           margin-top: 10rpx;
+          .gender {
+            margin-left: 20rpx;
+          }
           .rate {
             border-radius: 20rpx;
             background: linear-gradient(
