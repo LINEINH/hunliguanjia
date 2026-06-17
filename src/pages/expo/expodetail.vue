@@ -563,29 +563,32 @@ function openMap() {
   }
   .logolist {
     margin-top: $spacing-md;
-
     .logo-scroll {
       width: 100%;
       white-space: nowrap;
+      overflow-x: auto;
+      /* 隐藏滚动条 */
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
 
     .logo-grid {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: $spacing-md;
-      min-width: 100%;
-      padding-bottom: $spacing-sm;
+      display: grid;
+      grid-template-rows: repeat(4, 120rpx);
+      grid-auto-flow: column;
+      grid-auto-columns: 120rpx;
+      gap: 24rpx;
+      padding-bottom: 16rpx;
     }
 
     .logoItem {
-      width: calc((100vw - #{$spacing-md * 2 + $spacing-md * 4}) / 3);
-      max-width: 200rpx;
-      flex-shrink: 0;
-      
+      width: 120rpx;
+      height: 120rpx;
       .logoItemImg {
         width: 100%;
-        height: 200rpx;
-        border-radius: $radius-md;
+        height: 100%;
+        border-radius: 50%;
       }
     }
   }

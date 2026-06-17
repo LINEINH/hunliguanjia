@@ -334,11 +334,11 @@ const loadMerchants = async (page = 1) => {
         // 综合排序处理
         handleSortFilter(selectedValue, params);
       } else if (
-        filterDef.type === "district" &&
+        filterDef.type === "gender" &&
         typeof selectedValue === "object"
       ) {
         // 区域筛选(对象类型，取id)
-        params.district = selectedValue.name;
+        params.gender = selectedValue.value;
       } else if (typeof selectedValue === "string") {
         // 其他字符串类型直接传值
         params[filterDef.type] = selectedValue;
@@ -452,14 +452,23 @@ const loadGetDictionary = async () => {
     // 构建筛选项列表
     const newFiltersList = [];
 
-    if (district && district.length > 0) {
-      newFiltersList.push({
-        id: 1,
-        name: "性别",
-        type: "district",
-        options: ["男", "女"], // 直接使用API返回的district数组，不再添加"全部"
-      });
-    }
+    newFiltersList.push({
+      id: 1,
+      name: "性别",
+      options: [
+        {
+          id: 1,
+          name: "男",
+          value: "male",
+        },
+        {
+          id: 2,
+          name: "女",
+          value: "female",
+        },
+      ], // 直接使用API返回的district数组，不再添加"全部"
+      type: "gender",
+    });
 
     newFiltersList.push({
       id: 2,
