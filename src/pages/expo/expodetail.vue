@@ -155,13 +155,17 @@
             class="titleimage"
         /></view>
         <view class="logolist">
-          <view
-            class="logoItem"
-            v-for="(item, index) in expoDetail.merchant_logos"
-            :key="index"
-          >
-            <image :src="item" mode="aspectFill" class="logoItemImg" />
-          </view>
+          <scroll-view scroll-x class="logo-scroll" show-scrollbar="false">
+            <view class="logo-grid">
+              <view
+                class="logoItem"
+                v-for="(item, index) in expoDetail.merchant_logos"
+                :key="index"
+              >
+                <image :src="item" mode="aspectFill" class="logoItemImg" />
+              </view>
+            </view>
+          </scroll-view>
         </view>
       </view>
     </view>
@@ -558,18 +562,30 @@ function openMap() {
     }
   }
   .logolist {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-md;
+    margin-top: $spacing-md;
+
+    .logo-scroll {
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .logo-grid {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: $spacing-md;
+      min-width: 100%;
+      padding-bottom: $spacing-sm;
+    }
 
     .logoItem {
-      width: 100rpx;
-      margin: 0 20rpx;
-      margin-top: 20rpx;
+      width: calc((100vw - #{$spacing-md * 2 + $spacing-md * 4}) / 3);
+      max-width: 200rpx;
+      flex-shrink: 0;
+      
       .logoItemImg {
-        width: 100rpx;
-        height: 100rpx;
-        border-radius: 50%;
+        width: 100%;
+        height: 200rpx;
+        border-radius: $radius-md;
       }
     }
   }
