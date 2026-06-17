@@ -537,7 +537,7 @@ function openDetail(hotel) {
   }
   .banner {
     margin-bottom: $spacing-md;
-    margin-top: 380rpx;
+    margin-top: 20rpx;
     .banner-swiper {
       height: 460rpx;
       border-radius: $radius-md;

@@ -262,3 +262,21 @@ export function merchantsAll() {
     method: 'GET'
   })
 }
+
+
+// 获取banner
+export function getBanner(type:string) {
+  return request<any>({
+    url: `/wechat/banners?banner_type=${type}`,
+    method: 'GET'
+  })
+}
+
+// 婚礼品鉴官-报名提交 /api/v1/wechat/wine-tasting/register "name": "姓名", 
+export function registerTasting(name: string,phone:string,is_live_stream:boolean) {
+  return request<any>({
+    url: '/wechat/wine-tasting/registe',
+    method: 'POST',
+    data: { name, phone, is_live_stream }
+  })
+}

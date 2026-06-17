@@ -41,6 +41,19 @@
       </view>
 
       <view
+        class="viedoList"
+        v-if="productData.top_media && productData.top_media.length"
+      >
+        <view
+          class="video-item"
+          v-for="(item, index) in productData.top_media"
+          :key="index"
+        >
+          <video :src="item" controls="true" width="100%"></video>
+        </view>
+      </view>
+
+      <view
         class="content"
         v-if="productData.bottom_images && productData.bottom_images.length"
       >
@@ -331,7 +344,6 @@ function toggleFavorite() {
       margin-top: $spacing-md;
       background: #fff;
       border-radius: 20rpx;
-      padding-bottom: $spacing-md;
       :deep(rich-text) {
         line-height: 1.8;
         font-size: 28rpx;
@@ -487,7 +499,6 @@ function toggleFavorite() {
     margin-top: $spacing-md;
     background: #fff;
     border-radius: 20rpx;
-    padding-bottom: $spacing-md;
     :deep(rich-text) {
       line-height: 1.8;
       font-size: 28rpx;
@@ -518,6 +529,15 @@ function toggleFavorite() {
 
       p {
         margin-bottom: $spacing-sm;
+      }
+    }
+  }
+  .viedoList {
+    margin-top: $spacing-md;
+    .video-item {
+      margin-bottom: $spacing-md;
+      video {
+        width: 100%;
       }
     }
   }

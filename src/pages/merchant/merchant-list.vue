@@ -29,13 +29,15 @@
         <text class="empty-text">暂无数据</text>
       </view>
       <view class="goods-item" v-for="(item, index) in goodsList" :key="index">
-        <view class="tag">{{ getCategoryName(item.category_id) }}</view>
-        <image
-          :src="item.cover_image"
-          class="goods-image"
-          mode="aspectFill"
-          @click="openDetail(item)"
-        />
+        <view class="goods-image-wrapper">
+          <image
+            :src="item.cover_image"
+            class="goods-image"
+            mode="aspectFill"
+            @click="openDetail(item)"
+          />
+          <view class="tag">{{ getCategoryName(item.category_id) }}</view>
+        </view>
         <view class="goods-info">
           <view class="goods-name" @click="openDetail(item)">{{
             item.name
@@ -239,12 +241,12 @@ async function toggleFavorite(item: any) {
 
   try {
     uni.showLoading({
-      title: item.isFavorited ? "取消收藏中..." : "收藏中...",
+      title: item.is_favorited ? "取消收藏中..." : "收藏中...",
       mask: true,
     });
 
     // 根据当前收藏状态调用不同的接口
-    if (item.isFavorited) {
+    if (item.is_favorited) {
       // 取消收藏：target_id为商品ID，type为product
       await unfavoriteProduct(item.id, "product");
     } else {
@@ -353,28 +355,20 @@ onShow(() => {
       margin-bottom: 20rpx;
       margin-left: 2%;
 
-      .tag {
-        border-radius: 0 0 20rpx 20rpx;
-        background: linear-gradient(
-          213.75deg,
-          #3e3e3e 0%,
-          #393939 44.44%,
-          #000000 100%
-        );
-        font-size: $font-xs;
-        z-index: 1;
-        width: 140rpx;
-        height: 40rpx;
-        text-align: center;
-        color: #e9cc90;
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translate(-50%, 0%);
-      }
-
       .goods-image {
         width: 100%;
+      }
+      .goods-image-wrapper {
+        position: relative;
+        .tag {
+          font-size: $font-xs;
+          z-index: 1;
+          text-align: center;
+          color: #fff;
+          position: absolute;
+          bottom: 20rpx;
+          left: 20rpx;
+        }
       }
 
       .goods-info {

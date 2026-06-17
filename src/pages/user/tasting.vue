@@ -1,20 +1,44 @@
 
 <template>
   <view class="tasting">
-    <!-- <view class="banner">
+    <view class="banner">
       <swiper class="banner-swiper" autoplay circular indicator-dots>
-        <swiper-item v-for="(item, index) in productData.images" :key="index">
-          <image :src="item" mode="aspectFill" class="banner-image" />
+        <swiper-item v-for="(item, index) in banners" :key="index">
+          <image
+            :src="item"
+            mode="aspectFill"
+            class="banner-image"
+            @click="handleBannerClick(item)"
+          />
         </swiper-item>
       </swiper>
-    </view> -->
+    </view>
     <view class="register-form">
-      <view class="code">婚博会报名</view>
+      <view class="code">管家带你实地体验备婚流程</view>
+      <view class="form-item">
+        <text class="form-label">是否参与直播</text>
+        <view class="stream">
+          <view
+            class="stream-btn"
+            :class="{ active: formData.is_live_stream }"
+            @click="changeStream()"
+          >
+            是
+          </view>
+          <view
+            class="stream-btn"
+            :class="{ active: !formData.is_live_stream }"
+            @click="changeStream()"
+          >
+            否
+          </view>
+        </view>
+      </view>
       <view class="form-item">
         <text class="form-label">姓名</text>
         <input
           class="form-input"
-          v-model="formData.user_name"
+          v-model="formData.name"
           placeholder="请输入姓名"
           type="text"
         />
@@ -23,7 +47,7 @@
         <text class="form-label">手机号</text>
         <input
           class="form-input"
-          v-model="formData.user_phone"
+          v-model="formData.phone"
           placeholder="请输入手机号"
           type="number"
           maxlength="11"
@@ -38,18 +62,35 @@
 import { ref, onMounted, computed } from "vue";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 
-import { enroll } from "@/api/user";
+import { getBanner, registerTasting } from "@/api/user";
 
 import { useUserStore } from "@/store/modules/user";
 
 // 获取用户store
 const userStore = useUserStore();
 
+// 定义banner
+const banners = ref([]);
+
 // 报名表单数据
 const formData = ref({
-  user_name: "",
-  user_phone: "",
+  name: "",
+  phone: "",
+  is_live_stream: true,
 });
+
+// 写changeStream方法
+// 改变is_live_stream状态
+function changeStream() {
+  formData.value.is_live_stream = !formData.value.is_live_stream;
+}
+
+function handleBannerClick(item: any) {
+  // 跳转到详情页面
+  uni.navigateTo({
+    url: "/pages/merchant/detail?id=" + item.id,
+  });
+}
 
 // 处理报名
 async function handleRegister() {
@@ -69,7 +110,7 @@ async function handleRegister() {
   }
 
   // 表单验证
-  if (!formData.value.user_name || !formData.value.user_name.trim()) {
+  if (!formData.value.name || !formData.value.name.trim()) {
     uni.showToast({
       title: "请输入姓名",
       icon: "none",
@@ -77,7 +118,7 @@ async function handleRegister() {
     return;
   }
 
-  if (!formData.value.user_phone || !formData.value.user_phone.trim()) {
+  if (!formData.value.phone || !formData.value.phone.trim()) {
     uni.showToast({
       title: "请输入手机号",
       icon: "none",
@@ -87,7 +128,7 @@ async function handleRegister() {
 
   // 手机号格式验证
   const phoneRegex = /^1[3-9]\d{9}$/;
-  if (!phoneRegex.test(formData.value.user_phone)) {
+  if (!phoneRegex.test(formData.value.phone)) {
     uni.showToast({
       title: "请输入正确的手机号",
       icon: "none",
@@ -100,9 +141,10 @@ async function handleRegister() {
       title: "报名中...",
     });
 
-    const res = await enroll(
-      formData.value.user_name,
-      formData.value.user_phone
+    const res = await registerTasting(
+      formData.value.name,
+      formData.value.phone,
+      formData.value.is_live_stream
     );
     if (res.registration) {
       // 报名成功后可以更新状态或跳转到其他页面
@@ -114,8 +156,9 @@ async function handleRegister() {
 
     // 清空表单
     formData.value = {
-      user_name: "",
-      user_phone: "",
+      name: "",
+      phone: "",
+      is_live_stream: true,
     };
   } catch (error) {
     uni.hideLoading();
@@ -127,19 +170,20 @@ async function handleRegister() {
   }
 }
 
-// 产品数据
-const productData = ref<any>({});
+// 获取banner
+const loadGetBanner = async () => {
+  try {
+    const response = await getBanner("wine_tasting");
+    banners.value = response || [];
+    console.log("banner:", response);
+  } catch (error) {
+    console.error("请求推荐商家数据出错:", error);
+  }
+};
 
-// 产品ID
-const hotelId = ref<number | null>(null);
-
-// 收藏状态
-const isFavorited = ref<boolean>(false);
-
-// onLoad 参数接收器
-const props = defineProps<{
-  id?: string;
-}>();
+onMounted(() => {
+  loadGetBanner();
+});
 
 // 计算属性:清理后的内容
 </script>
@@ -154,7 +198,7 @@ const props = defineProps<{
   .banner {
     margin-top: 80rpx;
     .banner-swiper {
-      height: 1200rpx;
+      height: 500rpx;
       overflow: hidden;
     }
     .banner-image {
@@ -189,6 +233,43 @@ const props = defineProps<{
         &:focus {
           border-color: #bf974a;
           background-color: #fff;
+        }
+      }
+      .stream {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 30rpx $spacing-md;
+        box-sizing: border-box;
+        .stream-btn {
+          color: #808080;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 310rpx;
+          height: 80rpx;
+          border-radius: 20rpx;
+          background: linear-gradient(
+              0deg,
+              rgba(229, 229, 229, 1),
+              rgba(229, 229, 229, 1)
+            ),
+            linear-gradient(
+              135deg,
+              rgba(241, 218, 166, 1) 0%,
+              rgba(249, 236, 204, 1) 33.03%,
+              rgba(233, 204, 144, 1) 100%
+            );
+        }
+        .active {
+          color: #612500;
+          background: linear-gradient(
+            135deg,
+            rgba(241, 218, 166, 1) 0%,
+            rgba(249, 236, 204, 1) 33.03%,
+            rgba(233, 204, 144, 1) 100%
+          );
         }
       }
     }
