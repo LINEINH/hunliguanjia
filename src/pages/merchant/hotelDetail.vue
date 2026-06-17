@@ -57,7 +57,23 @@
       </view> -->
 
       <view class="content" v-if="cleanedContent">
-        <rich-text :nodes="cleanedContent"></rich-text>
+        <!-- 先渲染视频部分 -->
+        <view
+          v-for="(video, index) in videoList"
+          :key="index"
+          class="video-container"
+        >
+          <video
+            :src="video.src"
+            :poster="video.poster || ''"
+            controls
+            show-center-play-btn
+            class="video-player"
+          ></video>
+        </view>
+
+        <!-- 再渲染其他富文本内容（不含视频） -->
+        <rich-text :nodes="textOnlyContent"></rich-text>
       </view>
       <view class="hotel-intro">{{ hotelData.landmark }}</view>
 
@@ -457,6 +473,55 @@ const cleanedContent = computed(() => {
   return cleanHtmlContent(hotelData.value.description || "");
 });
 
+// 从富文本中提取视频列表
+const videoList = computed(() => {
+  const description = hotelData.value.description || "";
+  if (!description) return [];
+
+  const videos: Array<{ src: string; poster: string }> = [];
+
+  // 匹配 <video> 标签中的 <source src="...">
+  const videoRegex = /<video[^>]*>([\s\S]*?)<\/video>/gi;
+  let match;
+
+  while ((match = videoRegex.exec(description)) !== null) {
+    const videoTag = match[0];
+
+    // 提取 poster 属性
+    const posterMatch = videoTag.match(/poster\s*=\s*["']([^"']*)["']/i);
+    const poster = posterMatch ? posterMatch[1] : "";
+
+    // 提取 source src
+    const sourceMatch = videoTag.match(
+      /<source[^>]*src\s*=\s*["']([^"']*)["'][^>]*>/i
+    );
+    if (sourceMatch && sourceMatch[1]) {
+      videos.push({
+        src: sourceMatch[1],
+        poster: poster,
+      });
+    }
+  }
+
+  console.log("提取到的视频列表:", videos);
+  return videos;
+});
+
+// 移除视频标签后的纯文本内容
+const textOnlyContent = computed(() => {
+  let content = hotelData.value.description || "";
+  if (!content) return "";
+
+  // 移除所有 <video>...</video> 标签及其内容
+  content = content.replace(
+    /<div[^>]*data-w-e-type=["']video["'][^>]*>[\s\S]*?<\/div>/gi,
+    ""
+  );
+  content = content.replace(/<video[^>]*>[\s\S]*?<\/video>/gi, "");
+
+  return cleanHtmlContent(content);
+});
+
 // 清理HTML中的图片内联样式并添加宽度控制
 function cleanHtmlContent(html: string): string {
   if (!html) return html;
@@ -715,6 +780,18 @@ function cleanHtmlContent(html: string): string {
   .content {
     background: #fff;
     border-radius: 20rpx;
+
+    // 视频容器样式
+    .video-container {
+      margin: $spacing-md 0;
+
+      .video-player {
+        width: 100%;
+        height: 400rpx;
+        border-radius: 10rpx;
+      }
+    }
+
     :deep(rich-text) {
       line-height: 1.8;
       font-size: 28rpx;
