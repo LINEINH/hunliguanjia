@@ -70,6 +70,12 @@
           v-if="expoDetail.registration_status === 'checked_in'"
           class="checked_in"
         >
+          <image
+            src="/static/images/44.png"
+            mode="widthFix"
+            class="okImg"
+            v-if="expoDetail.gift && expoDetail.gift.status === 1"
+          />
           <view class="code">婚博会礼品</view>
           <view class="gift_name">{{ expoDetail.gift.gift_name }}</view>
           <image
@@ -507,8 +513,16 @@ function openMap() {
       display: block;
     }
     .checked_in {
+      position: relative;
       .pickup_location {
         text-align: center;
+      }
+      .okImg {
+        width: 200rpx;
+        position: absolute;
+        right: 120rpx;
+        top: 120rpx;
+        background: #fff;
       }
     }
     .intro {

@@ -48,7 +48,7 @@
           v-if="banners && banners.length > 0"
         />
 
-        <view class="picture-bg">
+        <!-- <view class="picture-bg">
           <view class="user-intro-title">
             <image
               src="/static/images/18.png"
@@ -61,7 +61,7 @@
           <view class="user-intro-content">
             十年婚礼经验，专属顾问一对一，让完美婚礼触手可及花小钱办大事，婚礼管家帮您省心省力更省钱
           </view>
-        </view>
+        </view> -->
       </view>
     </view>
 
