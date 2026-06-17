@@ -275,7 +275,7 @@ export function getBanner(type:string) {
 // 婚礼品鉴官-报名提交 /api/v1/wechat/wine-tasting/register "name": "姓名", 
 export function registerTasting(name: string,phone:string,is_live_stream:boolean) {
   return request<any>({
-    url: '/wechat/wine-tasting/registe',
+    url: '/wechat/wine-tasting/register',
     method: 'POST',
     data: { name, phone, is_live_stream }
   })

@@ -27,7 +27,7 @@
         /></view>
         <view class="stepcon">
           <image
-            src="https://zjj.movieclub.top/act.png"
+            :src="expoDetail.gift_exchange_image"
             mode="aspectFill"
             style="width: 100%"
           />
@@ -66,17 +66,25 @@
       </view>
 
       <view class="step" v-if="expoDetail.status === 1">
-        <view class="register-form" v-if="!expoDetail.qr_code">
-          <view class="code">婚博会报名</view>
-          <template v-if="expoDetail.registration_status === 'checked_in'">
-            <image
-              src="https://1love-1432414161.cos.ap-chengdu.myqcloud.com/signcode.png"
-              mode="widthFix"
-              class="codeimage"
-            />
-          </template>
-
-          <template v-else>
+        <view
+          v-if="expoDetail.registration_status === 'checked_in'"
+          class="checked_in"
+        >
+          <view class="code">婚博会礼品</view>
+          <view class="gift_name">{{ expoDetail.gift.gift_name }}</view>
+          <image
+            :src="expoDetail.gift.qr_code_image_url"
+            mode="widthFix"
+            class="codeimage"
+          />
+          <view class="pickup_location"
+            >{{ expoDetail.gift.merchant_name }}
+            {{ expoDetail.gift.pickup_location }}</view
+          >
+        </view>
+        <template v-else>
+          <view class="register-form" v-if="!expoDetail.qr_code">
+            <view class="code">婚博会报名</view>
             <view class="form-item">
               <text class="form-label">姓名</text>
               <input
@@ -97,28 +105,28 @@
               />
             </view>
             <view class="button" @click="handleRegister"> 立即报名 </view>
-          </template>
-        </view>
-        <view v-else>
-          <view class="code">参会二维码</view>
-          <image
-            :src="expoDetail.qr_code || '/static/images/post.png'"
-            mode="aspectFill"
-            class="codeimage"
-          />
-          <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
-          <view class="renew"
-            ><up-icon
-              name="reload"
-              size="38"
-              color="#EAC47B"
-              class="icon"
-              @click="fetchExpoDetail()"
-            ></up-icon
-          ></view>
-        </view>
+          </view>
+          <view v-else>
+            <view class="code">参会二维码</view>
+            <image
+              :src="expoDetail.qr_code || '/static/images/post.png'"
+              mode="aspectFill"
+              class="codeimage"
+            />
+            <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
+            <view class="renew"
+              ><up-icon
+                name="reload"
+                size="38"
+                color="#EAC47B"
+                class="icon"
+                @click="fetchExpoDetail()"
+              ></up-icon
+            ></view>
+          </view>
+        </template>
       </view>
-
+      <!-- 
       <view class="ad">
         <image
           src="/static/images/post1.png"
@@ -126,7 +134,7 @@
           class="ad-image"
           @click="navigateToDetail"
         />
-      </view>
+      </view> -->
 
       <view class="step">
         <view class="steptitle">
@@ -497,6 +505,11 @@ function openMap() {
       height: 400rpx;
       margin: 32rpx auto;
       display: block;
+    }
+    .checked_in {
+      .pickup_location {
+        text-align: center;
+      }
     }
     .intro {
       font-size: 24rpx;

@@ -41,17 +41,26 @@
         </view>
       </view>
       <view class="user-intro" @click="navigateTo('/pages/user/butler')">
-        <view class="user-intro-title">
-          <image
-            src="/static/images/18.png"
-            mode="aspectFill"
-            class="user-icon"
-          />
-          <text class="user-intro-title-text">婚礼管家服务</text>
-          <view class="user-primary">咨询</view>
-        </view>
-        <view class="user-intro-content">
-          十年婚礼经验，专属顾问一对一，让完美婚礼触手可及花小钱办大事，婚礼管家帮您省心省力更省钱
+        <image
+          :src="banners[0].image_url"
+          class="user-bg"
+          mode="aspectFill"
+          v-if="banners && banners.length > 0"
+        />
+
+        <view class="picture-bg">
+          <view class="user-intro-title">
+            <image
+              src="/static/images/18.png"
+              mode="aspectFill"
+              class="user-icon"
+            />
+            <text class="user-intro-title-text">婚礼管家服务</text>
+            <view class="user-primary">咨询</view>
+          </view>
+          <view class="user-intro-content">
+            十年婚礼经验，专属顾问一对一，让完美婚礼触手可及花小钱办大事，婚礼管家帮您省心省力更省钱
+          </view>
         </view>
       </view>
     </view>
@@ -285,7 +294,7 @@
         <text class="menu-text">我的优惠券</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
-      <view class="menu-item" @click="navigateTo('/pages/user/gift')">
+      <!-- <view class="menu-item" @click="navigateTo('/pages/user/gift')">
         <image
           src="/static/images/13.png"
           mode="aspectFill"
@@ -293,7 +302,7 @@
         />
         <text class="menu-text">我的礼品</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
-      </view>
+      </view> -->
       <view class="menu-item" @click="navigateTo('/pages/user/collection')">
         <image
           src="/static/images/14.png"
@@ -349,7 +358,7 @@
 import { onMounted, ref } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 import { useUserStore } from "@/store/modules/user";
-import { getUserInfo } from "@/api/user";
+import { getUserInfo, getBanner } from "@/api/user";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 import { weddingPlan, getWeddingPlan } from "@/api/index";
 
@@ -360,6 +369,8 @@ const isLogin = ref<any>(checkLogin());
 console.log("isLogin:", isLogin.value);
 // 定义用户对象
 const userProfile = ref<any>(null);
+// 定义banner
+const banners = ref<any>([]);
 
 // 婚期日期
 const weddingDate = ref<string>("");
@@ -1088,6 +1099,17 @@ async function loadUserInfo() {
   }
 }
 
+// 获取banner
+const loadGetBanner = async () => {
+  try {
+    const response = await getBanner("wedding_butler_bg");
+    banners.value = response || [];
+    console.log("banner:", response);
+  } catch (error) {
+    console.error("请求推荐商家数据出错:", error);
+  }
+};
+
 // 加载婚礼计划数据
 async function loadWeddingPlanData() {
   try {
@@ -1108,6 +1130,7 @@ onMounted(() => {
   if (checkLogin()) {
     loadUserInfo();
   }
+  loadGetBanner();
 });
 
 // 页面显示时重新加载数据（tabbar 切换时触发）
@@ -1598,12 +1621,24 @@ onShow(() => {
       }
     }
     .user-intro {
-      margin-top: $spacing-md;
-      background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ec100de21.png");
-      background-size: cover;
-      background-position: center;
-      border-radius: 20rpx;
-      padding: 48rpx 32rpx;
+      width: 690rpx;
+      height: 225rpx;
+      margin: 30rpx auto 0;
+      position: relative;
+      .user-bg {
+        width: 680rpx;
+        height: 225rpx;
+        border-radius: 20rpx;
+      }
+      .picture-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 30rpx;
+        box-sizing: border-box;
+      }
       .user-intro-title {
         display: flex;
         align-items: center;

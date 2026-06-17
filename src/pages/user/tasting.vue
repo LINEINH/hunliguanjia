@@ -146,10 +146,10 @@ async function handleRegister() {
       formData.value.phone,
       formData.value.is_live_stream
     );
-    if (res.registration) {
+    if (res) {
       // 报名成功后可以更新状态或跳转到其他页面
       uni.showToast({
-        title: "报名成功",
+        title: "参与成功",
         icon: "success",
       });
     }

@@ -70,7 +70,7 @@ function getPageParams() {
 
   return {
     code: currentPage.options?.code || "",
-    type: currentPage.options?.type || "",
+    type: "gift",
   };
 }
 

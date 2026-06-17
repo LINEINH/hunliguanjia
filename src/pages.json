@@ -203,7 +203,7 @@
 		{
 			"path": "pages/side/scanproduct",
 			"style": {
-				"navigationBarTitleText": "核销卡券"
+				"navigationBarTitleText": "核销礼品"
 			}
 		}
 	],
