@@ -253,3 +253,12 @@ export function enroll(user_name: string, user_phone: string) {
     }
   })
 }
+
+
+// 获取所有商户
+export function merchantsAll() {
+  return request<any>({
+    url: '/wechat/merchants/all',
+    method: 'GET'
+  })
+}

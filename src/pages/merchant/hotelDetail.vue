@@ -526,6 +526,9 @@ function cleanHtmlContent(html: string): string {
       color: #808080;
       font-size: 28rpx;
       margin: 10rpx 0;
+      .ratezu {
+        margin-bottom: 10rpx;
+      }
       .rate {
         border-radius: 20rpx;
         background: linear-gradient(
@@ -536,6 +539,7 @@ function cleanHtmlContent(html: string): string {
         );
         padding: 3rpx 10rpx;
         color: #d43030;
+        margin-right: 10rpx;
       }
       .fen {
         font-size: 24rpx;

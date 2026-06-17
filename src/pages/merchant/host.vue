@@ -2,8 +2,8 @@
 <template>
   <view class="page">
     <view class="fixedcon">
-      <up-navbar :title="pageTitle" @rightClick="rightClick" :autoBack="true">
-      </up-navbar>
+      <!-- <up-navbar :title="pageTitle" @rightClick="rightClick" :autoBack="true">
+      </up-navbar> -->
       <view class="search-bar">
         <view class="search-box">
           <view class="search-box-left">
@@ -54,14 +54,6 @@
       </view>
     </view>
 
-    <view class="banner">
-      <swiper class="banner-swiper" autoplay circular indicator-dots>
-        <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
-        </swiper-item>
-      </swiper>
-    </view>
-
     <up-overlay :show="show" @click="show = false">
       <view class="filter-dialog" @tap.stop>
         <view class="filter-content">
@@ -89,7 +81,23 @@
       </view>
     </up-overlay>
     <!-- 酒店列表 -->
-    <scroll-view class="list" scroll-y="true" @scrolltolower="loadMore">
+    <scroll-view
+      class="list"
+      scroll-y="true"
+      @scrolltolower="loadMore"
+      :lower-threshold="100"
+    >
+      <view class="banner">
+        <swiper class="banner-swiper" autoplay circular indicator-dots>
+          <swiper-item v-for="(item, index) in banners" :key="index">
+            <image
+              :src="item.image_url"
+              mode="aspectFill"
+              class="banner-image"
+            />
+          </swiper-item>
+        </swiper>
+      </view>
       <view v-if="merchantList.length === 0" class="empty">暂无匹配的商家</view>
       <view
         v-for="merchant in merchantList"
@@ -508,20 +516,21 @@ onMounted(() => {
 @import "@/styles/variables.scss";
 .page {
   background: #f0f0f0;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .fixedcon {
   position: fixed;
   left: 0;
   right: 0;
-  top: 170rpx;
+  top: 0;
   z-index: 99999;
+  height: 190rpx;
 }
 
 .banner {
   margin-bottom: $spacing-md;
-  margin-top: 380rpx;
   .banner-swiper {
     height: 460rpx;
     border-radius: $radius-md;
@@ -616,7 +625,10 @@ onMounted(() => {
   min-width: 80px;
 }
 .list {
-  min-height: 400rpx;
+  height: calc(100vh - 100rpx);
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 200rpx;
 }
 .hotel-card {
   display: flex;
@@ -754,7 +766,7 @@ onMounted(() => {
   padding-right: 0;
   border-radius: 0 0 20rpx 20rpx;
   position: fixed;
-  top: 346rpx;
+  top: 190rpx;
   width: 100%;
   .filter-content {
     border-top: 1px solid #e5e5e5;

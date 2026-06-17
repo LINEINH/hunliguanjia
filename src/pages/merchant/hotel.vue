@@ -1,8 +1,6 @@
 <template>
   <view class="hotel-page">
     <view class="fixedcon">
-      <up-navbar title="婚庆酒店" @rightClick="rightClick" :autoBack="true">
-      </up-navbar>
       <view class="search-bar">
         <view class="search-box">
           <view class="search-box-left">
@@ -44,22 +42,6 @@
       </view>
     </view>
 
-    <view class="banner" v-if="banners && banners.length">
-      <swiper
-        class="banner-swiper"
-        autoplay
-        circular
-        indicator-dots
-        indicator-active-color="#fff"
-        interval="3000"
-        duration="500"
-      >
-        <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
-        </swiper-item>
-      </swiper>
-    </view>
-
     <up-overlay :show="show" @click="show = false">
       <view class="filter-dialog" @tap.stop>
         <view class="filter-content">
@@ -84,8 +66,27 @@
       class="list"
       scroll-y="true"
       @scrolltolower="loadMoreMerchants"
-      :lower-threshold="50"
+      :lower-threshold="100"
     >
+      <view class="banner" v-if="banners && banners.length">
+        <swiper
+          class="banner-swiper"
+          autoplay
+          circular
+          indicator-dots
+          indicator-active-color="#fff"
+          interval="3000"
+          duration="500"
+        >
+          <swiper-item v-for="(item, index) in banners" :key="index">
+            <image
+              :src="item.image_url"
+              mode="aspectFill"
+              class="banner-image"
+            />
+          </swiper-item>
+        </swiper>
+      </view>
       <view v-if="filteredHotels.length === 0" class="empty"
         >暂无匹配的酒店</view
       >
@@ -552,8 +553,9 @@ function openDetail(hotel) {
     position: fixed;
     left: 0;
     right: 0;
-    top: 170rpx;
+    top: 0;
     z-index: 99999;
+    height: 190rpx;
   }
   .search-bar {
     display: flex;
@@ -643,8 +645,10 @@ function openDetail(hotel) {
     min-width: 80px;
   }
   .list {
-    min-height: 400rpx;
-    padding-top: 360rpx;
+    height: calc(100vh - 100rpx);
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 200rpx;
   }
   .hotel-card {
     display: flex;
@@ -762,7 +766,7 @@ function openDetail(hotel) {
     padding-right: 0;
     border-radius: 0 0 20rpx 20rpx;
     position: fixed;
-    top: 346rpx;
+    top: 190rpx;
     width: 100%;
     .filter-content {
       border-top: 1px solid #e5e5e5;

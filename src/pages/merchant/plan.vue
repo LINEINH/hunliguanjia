@@ -54,22 +54,6 @@
       </view>
     </view>
 
-    <view class="banner">
-      <swiper
-        class="banner-swiper"
-        autoplay
-        circular
-        indicator-dots
-        indicator-active-color="#fff"
-        interval="3000"
-        duration="500"
-      >
-        <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
-        </swiper-item>
-      </swiper>
-    </view>
-
     <up-overlay :show="show" @click="show = false">
       <view class="filter-dialog" @tap.stop>
         <view class="filter-content">
@@ -110,7 +94,31 @@
       </view>
     </view>
     <!-- 酒店列表 -->
-    <scroll-view class="list" scroll-y="true" @scrolltolower="loadMore">
+    <scroll-view
+      class="list"
+      scroll-y="true"
+      @scrolltolower="loadMore"
+      :lower-threshold="100"
+    >
+      <view class="banner">
+        <swiper
+          class="banner-swiper"
+          autoplay
+          circular
+          indicator-dots
+          indicator-active-color="#fff"
+          interval="3000"
+          duration="500"
+        >
+          <swiper-item v-for="(item, index) in banners" :key="index">
+            <image
+              :src="item.image_url"
+              mode="aspectFill"
+              class="banner-image"
+            />
+          </swiper-item>
+        </swiper>
+      </view>
       <view v-if="merchantList.length === 0" class="empty">暂无匹配的商家</view>
       <view
         v-for="merchant in merchantList"
@@ -138,7 +146,7 @@
             <text class="rate">{{ merchant.rating }}分</text>
           </view>
           <view class="description">{{
-            merchant.description || "暂无描述"
+            merchant.short_description || "暂无描述"
           }}</view>
           <view class="hotel-desc">
             <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
@@ -769,7 +777,9 @@ onMounted(() => {
   min-width: 80px;
 }
 .list {
-  min-height: 400rpx;
+  height: calc(100vh - 50rpx);
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 }
 .hotel-card {
   display: flex;
@@ -784,6 +794,7 @@ onMounted(() => {
   height: 360rpx;
   border-radius: 6px;
   margin-right: 10px;
+  flex-shrink: 0;
 }
 .hotel-info {
   flex: 1;
