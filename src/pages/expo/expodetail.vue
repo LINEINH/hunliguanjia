@@ -20,8 +20,7 @@
             src="/static/images/left.png"
             mode="aspectFill"
             class="titleimage"
-            lazy-load
-          />
+            lazy-load />
           01.活动流程
           <image
             src="/static/images/right.png"
@@ -46,8 +45,7 @@
             src="/static/images/left.png"
             mode="aspectFill"
             class="titleimage"
-            lazy-load
-          />
+            lazy-load />
           02.展会地址
           <image
             src="/static/images/right.png"
@@ -160,8 +158,7 @@
             src="/static/images/left.png"
             mode="aspectFill"
             class="titleimage"
-            lazy-load
-          />
+            lazy-load />
           03.参会商家
           <image
             src="/static/images/right.png"
@@ -177,7 +174,12 @@
                 v-for="(item, index) in expoDetail.merchant_logos"
                 :key="index"
               >
-                <image :src="item" mode="aspectFill" class="logoItemImg" lazy-load />
+                <image
+                  :src="item"
+                  mode="aspectFill"
+                  class="logoItemImg"
+                  lazy-load
+                />
               </view>
             </view>
           </scroll-view>
@@ -534,6 +536,9 @@ function openMap() {
     .checked_in {
       position: relative;
       .pickup_location {
+        text-align: center;
+      }
+      .gift_name {
         text-align: center;
       }
       .okImg {

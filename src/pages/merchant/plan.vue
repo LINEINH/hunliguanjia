@@ -423,7 +423,7 @@ const loadMerchants = async (page = 1) => {
       } else if (filterDef.type === "experience") {
         // 从业时长处理
         handleExperienceFilter(selectedValue, params);
-      } else if (filterDef.type === "sort_order") {
+      } else if (filterDef.type === "sort_by") {
         // 综合排序处理
         handleSortFilter(selectedValue, params);
       } else if (

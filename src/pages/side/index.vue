@@ -66,9 +66,9 @@
     </view>
 
     <view class="actions">
-      <button class="btn-index btn-main">商家首页</button>
+      <button class="btn-index btn-main" @click="openDetail()">商家首页</button>
 
-      <button class="btn-submit btn-main">在线咨询</button>
+      <button class="btn-submit btn-main" open-type="contact">在线咨询</button>
     </view>
 
     <up-popup
@@ -97,6 +97,11 @@ const leftClick = () => {
   uni.navigateBack();
 };
 
+function openDetail() {
+  uni.navigateTo({
+    url: `/pages/merchant/hotelDetail?id=${userProfile.value.id}`,
+  });
+}
 // 创建响应式数据
 const show = ref(false);
 
