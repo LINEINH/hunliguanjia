@@ -305,15 +305,15 @@ const handleBudgetFilter = (value, params) => {
 
   // 解析预算区间字符串
   if (value === "1000以下") {
-    params.meal_standard_max = 1000;
+    params.budget_max = 1000;
   } else if (value === "5000以上") {
-    params.meal_standard_min = 5000;
+    params.budget_min = 5000;
   } else if (value.includes("-")) {
     // 去除非数字和横杠的字符后再转换数字
     const cleanValue = value.replace(/[^\d-]/g, "");
     const [min, max] = cleanValue.split("-").map(Number);
-    params.meal_standard_min = min;
-    params.meal_standard_max = max;
+    params.budget_min = min;
+    params.budget_max = max;
   }
 };
 
@@ -553,9 +553,9 @@ const loadGetDictionary = async () => {
         options: district, // 直接使用API返回的district数组，不再添加"全部"
       });
     }
-
+    console.log("获取筛选条件成功:", category.value, "ssssss");
     // 根据 category.value 的值 显示不同的 预算区间
-    if (category.value === 7) {
+    if (Number(category.value) === 7) {
       newFiltersList.push({
         id: 2,
         name: "预算区间",
@@ -567,10 +567,10 @@ const loadGetDictionary = async () => {
           "3980-4980",
           "4980-6980",
           "6980-12800",
-          "1280以上",
+          "12800以上",
         ],
       });
-    } else if (category.value === 8 || category.value === 9) {
+    } else if (Number(category.value) === 8 || Number(category.value) === 9) {
       newFiltersList.push({
         id: 2,
         name: "预算区间",
@@ -585,7 +585,7 @@ const loadGetDictionary = async () => {
           "12000以上",
         ],
       });
-    } else if (category.value === 4) {
+    } else if (Number(category.value) === 4) {
       newFiltersList.push({
         id: 2,
         name: "预算区间",
@@ -600,7 +600,7 @@ const loadGetDictionary = async () => {
           "120000以上",
         ],
       });
-    } else if (category.value === 3) {
+    } else if (Number(category.value) === 3) {
       newFiltersList.push({
         id: 2,
         name: "预算区间",

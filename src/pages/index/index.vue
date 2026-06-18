@@ -121,6 +121,7 @@
                   v-for="(task, index) in currentMonthTasks"
                   :key="index"
                   class="hint-item"
+                  @click="handleTaskClick(task)"
                 >
                   <view class="hint-left">
                     <image
@@ -1043,6 +1044,81 @@ function updateCurrentMonthTasks() {
     currentMonthTasks.value = matchedPhase.tasks;
   } else {
     currentMonthTasks.value = [];
+  }
+}
+
+const categories = ref([
+  {
+    id: 1,
+    name: "婚纱照",
+    icon: "/static/images/19.png",
+    path: "/pages/merchant/plan?title=婚纱照&category=1",
+  },
+  {
+    id: 2,
+    name: "婚礼酒店",
+    icon: "/static/images/20.png",
+    path: "/pages/merchant/hotel",
+  },
+  {
+    id: 3,
+    name: "婚礼策划",
+    icon: "/static/images/21.png",
+    path: "/pages/merchant/plan?title=婚礼策划&category=3",
+  },
+  {
+    id: 4,
+    name: "婚纱礼服",
+    icon: "/static/images/22.png",
+    path: "/pages/merchant/plan?title=婚纱礼服&category=4",
+  },
+  {
+    id: 5,
+    name: "目的地婚礼",
+    icon: "/static/images/23.png",
+    path: "/pages/merchant/plan?title=目的地婚礼&category=5",
+  },
+  {
+    id: 6,
+    name: "婚礼主持",
+    icon: "/static/images/24.png",
+    path: "/pages/merchant/host?title=婚礼主持",
+  },
+  {
+    id: 7,
+    name: "婚礼跟妆",
+    icon: "/static/images/25.png",
+    path: "/pages/merchant/plan?title=婚礼跟妆&category=7",
+  },
+  {
+    id: 8,
+    name: "婚礼摄影",
+    icon: "/static/images/26.png",
+    path: "/pages/merchant/plan?title=婚礼摄影&category=8",
+  },
+  {
+    id: 9,
+    name: "婚礼摄像",
+    icon: "/static/images/27.png",
+    path: "/pages/merchant/plan?title=婚礼摄像&category=9",
+  },
+  {
+    id: 10,
+    name: "婚礼周边",
+    icon: "/static/images/28.png",
+    path: "/pages/merchant/plan?title=婚礼周边&category=10",
+  },
+]);
+//  创建handleTaskClick方法跳转到商家页面
+function handleTaskClick(task: any) {
+  // 根据taskid 循环遍历categories  取出path 跳转到对应页面
+  for (let i = 0; i < categories.value.length; i++) {
+    if (categories.value[i].id === task.category_id) {
+      uni.navigateTo({
+        url: categories.value[i].path,
+      });
+      return;
+    }
   }
 }
 
