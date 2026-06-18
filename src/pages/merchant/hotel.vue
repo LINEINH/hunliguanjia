@@ -105,7 +105,7 @@
             ><text class="rate">{{ hotel.rating }}分</text>
             {{ hotel.business_status }} {{ hotel.business_hours }}
           </view>
-          <view class="hotel-desc"> {{ hotel.description }} </view>
+          <view class="hotel-desc"> {{ hotel.short_description }} </view>
           <view class="hotel-highlights">
             <text
               v-for="(h, idx) in hotel.personnel_tags"
