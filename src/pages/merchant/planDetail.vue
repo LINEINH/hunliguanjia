@@ -19,7 +19,7 @@
         duration="500"
       >
         <swiper-item v-for="(item, index) in productData.images" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" lazy-load />
         </swiper-item>
       </swiper>
     </view>
@@ -31,6 +31,7 @@
             mode="aspectFill"
             class="user-icon"
             v-if="productData.cover_image"
+            lazy-load
           ></image>
           <view class="right">
             <view class="user-name">
@@ -56,6 +57,7 @@
             mode="aspectFill"
             class="user-icon"
             v-if="productData.merchant && productData.merchant.logo"
+            lazy-load
           ></image>
           <view class="right">
             <view class="user-name">{{ productData.merchant.name }}</view>

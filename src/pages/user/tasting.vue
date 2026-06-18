@@ -100,7 +100,7 @@ function changeStream() {
 
 async function handleBannerClick() {
   try {
-    const response = await getBanner("wine_tasting_popu");
+    const response = await getBanner("wine_tasting_popup");
     if (response) {
       codeUrl.value = response[0].image_url;
       open();

@@ -10,6 +10,7 @@
           :src="expoDetail.cover_image || '/static/images/post.png'"
           mode="widthFix"
           class="banner-image"
+          lazy-load
         />
       </view>
 
@@ -18,18 +19,22 @@
           <image
             src="/static/images/left.png"
             mode="aspectFill"
-            class="titleimage" />
+            class="titleimage"
+            lazy-load
+          />
           01.活动流程
           <image
             src="/static/images/right.png"
             mode="aspectFill"
             class="titleimage"
+            lazy-load
         /></view>
         <view class="stepcon">
           <image
             :src="expoDetail.gift_exchange_image"
             mode="aspectFill"
             style="width: 100%"
+            lazy-load
           />
           <!-- <rich-text :nodes="expoDetail.content"></rich-text> -->
         </view>
@@ -40,12 +45,15 @@
           <image
             src="/static/images/left.png"
             mode="aspectFill"
-            class="titleimage" />
+            class="titleimage"
+            lazy-load
+          />
           02.展会地址
           <image
             src="/static/images/right.png"
             mode="aspectFill"
             class="titleimage"
+            lazy-load
         /></view>
         <view class="map">
           <view class="stepcon" @click="openMap">
@@ -59,6 +67,7 @@
                 :src="expoDetail.address_image"
                 mode="widthFix"
                 class="map"
+                lazy-load
               />
             </view>
           </view>
@@ -75,6 +84,7 @@
             mode="widthFix"
             class="okImg"
             v-if="expoDetail.gift && expoDetail.gift.status === 1"
+            lazy-load
           />
           <view class="code">婚博会礼品</view>
           <view class="gift_name">{{ expoDetail.gift.gift_name }}</view>
@@ -82,6 +92,7 @@
             :src="expoDetail.gift.qr_code_image_url"
             mode="widthFix"
             class="codeimage"
+            lazy-load
           />
           <view class="pickup_location"
             >{{ expoDetail.gift.merchant_name }}
@@ -118,6 +129,7 @@
               :src="expoDetail.qr_code || '/static/images/post.png'"
               mode="aspectFill"
               class="codeimage"
+              lazy-load
             />
             <view class="intro">*展会入场凭证，入场时向工作人员出示即可。</view>
             <view class="renew"
@@ -147,12 +159,15 @@
           <image
             src="/static/images/left.png"
             mode="aspectFill"
-            class="titleimage" />
+            class="titleimage"
+            lazy-load
+          />
           03.参会商家
           <image
             src="/static/images/right.png"
             mode="aspectFill"
             class="titleimage"
+            lazy-load
         /></view>
         <view class="logolist">
           <scroll-view scroll-x class="logo-scroll" show-scrollbar="false">
@@ -162,7 +177,7 @@
                 v-for="(item, index) in expoDetail.merchant_logos"
                 :key="index"
               >
-                <image :src="item" mode="aspectFill" class="logoItemImg" />
+                <image :src="item" mode="aspectFill" class="logoItemImg" lazy-load />
               </view>
             </view>
           </scroll-view>

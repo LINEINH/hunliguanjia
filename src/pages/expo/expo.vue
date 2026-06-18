@@ -10,7 +10,7 @@
         indicator-active-color="#fff"
       >
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" lazy-load />
         </swiper-item>
       </swiper>
     </view>
@@ -20,6 +20,7 @@
         mode="widthFix"
         class="ad-image"
         @click="navigateToDetail(ongoingExpos[0].id)"
+        lazy-load
       />
     </view>
     <view class="cardtitle">精彩回顾</view>
@@ -42,6 +43,7 @@
               :src="item.cover_image"
               mode="aspectFill"
               class="card-image"
+              lazy-load
             />
             <view class="card-info">
               <view class="card-host">

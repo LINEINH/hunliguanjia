@@ -89,7 +89,7 @@
         :class="{ 'category-active': Number(category) === Number(item.id) }"
         @click="handleCategoryClick(item)"
       >
-        <image :src="item.icon" class="category-icon" />
+        <image :src="item.icon" class="category-icon" lazy-load />
         <text class="category-name">{{ item.name }}</text>
       </view>
     </view>
@@ -115,6 +115,7 @@
               :src="item.image_url"
               mode="aspectFill"
               class="banner-image"
+              lazy-load
             />
           </swiper-item>
         </swiper>
@@ -135,6 +136,7 @@
               : '')
           "
           mode="aspectFill"
+          lazy-load
         />
         <view class="hotel-info">
           <view class="hotel-row">
@@ -166,6 +168,7 @@
               :src="merchant.logo"
               mode="aspectFill"
               class="user-icon"
+              lazy-load
             ></image>
             <text class="user-name">{{ merchant.name }}</text>
           </view>
@@ -336,7 +339,7 @@ const handleSortFilter = (value, params) => {
 
   // 高分优先使用desc排序
   if (value === "高分优先") {
-    params.sort_order = "desc";
+    params.sort_by = "rating";
   }
 };
 
@@ -638,7 +641,7 @@ const loadGetDictionary = async () => {
     newFiltersList.push({
       id: 4,
       name: "综合排序",
-      type: "sort_order",
+      type: "sort_by",
       options: ["高分优先"], // 直接使用API返回的service_category数组
     });
 

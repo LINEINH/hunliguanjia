@@ -9,7 +9,7 @@
         indicator-active-color="#fff"
       >
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
+          <image :src="item.image_url" mode="aspectFill" class="banner-image" lazy-load />
         </swiper-item>
       </swiper>
     </view>
@@ -20,7 +20,7 @@
         class="category-item"
         @click="navigateToCategory(category)"
       >
-        <image :src="category.icon" class="category-icon" />
+        <image :src="category.icon" class="category-icon" lazy-load />
         <text class="category-name">{{ category.name }}</text>
       </view>
     </view>
@@ -35,6 +35,7 @@
             class="goods-image"
             mode="aspectFill"
             @click="openDetail(item)"
+            lazy-load
           />
           <view class="tag">{{ getCategoryName(item.category_id) }}</view>
         </view>
@@ -48,6 +49,7 @@
               mode="aspectFill"
               class="user-icon"
               @click="openDetail(item)"
+              lazy-load
             ></image>
             <text class="user-name">{{ item.merchant.name }}</text>
             <up-icon

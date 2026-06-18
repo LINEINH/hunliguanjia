@@ -19,7 +19,7 @@
         duration="500"
       >
         <swiper-item v-for="(item, index) in hotelData.images" :key="index">
-          <image :src="item" mode="aspectFill" class="banner-image" />
+          <image :src="item" mode="aspectFill" class="banner-image" lazy-load />
         </swiper-item>
       </swiper>
     </view>
@@ -105,6 +105,7 @@
             mode="aspectFill"
             class="image"
             @click="openDetail(caseItem)"
+            lazy-load
           ></image>
           <view class="hotel-list-item-info">
             <view class="hotel-list-item-title" @click="openDetail(caseItem)">
@@ -135,6 +136,7 @@
           class="detail-image"
           v-for="(item, index) in hotelData.detail_images"
           :key="index"
+          lazy-load
         />
       </view>
     </view>

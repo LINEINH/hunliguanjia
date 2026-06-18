@@ -94,6 +94,7 @@
               :src="item.image_url"
               mode="aspectFill"
               class="banner-image"
+              lazy-load
             />
           </swiper-item>
         </swiper>
@@ -114,6 +115,7 @@
               : '')
           "
           mode="aspectFill"
+          lazy-load
         />
         <view class="hotel-info">
           <view class="hotel-row">
@@ -133,6 +135,7 @@
               :src="merchant.merchant.logo"
               mode="aspectFill"
               class="user-icon"
+              lazy-load
             ></image>
             <text class="user-name">{{ merchant.merchant.name }}</text>
           </view>
@@ -214,16 +217,16 @@ const handleBudgetFilter = (value, params) => {
   if (typeof value !== "string") return;
 
   // 解析预算区间字符串
-  if (value === "1000以下") {
-    params.meal_standard_max = 1000;
-  } else if (value === "5000以上") {
-    params.meal_standard_min = 5000;
+  if (value === "2000以下") {
+    params.max_price = 2000;
+  } else if (value === "8000以上") {
+    params.min_price = 8000;
   } else if (value.includes("-")) {
     // 去除非数字和横杠的字符后再转换数字
     const cleanValue = value.replace(/[^\d-]/g, "");
     const [min, max] = cleanValue.split("-").map(Number);
-    params.meal_standard_min = min;
-    params.meal_standard_max = max;
+    params.min_price = min;
+    params.max_price = max;
   }
 };
 
@@ -249,7 +252,7 @@ const handleSortFilter = (value, params) => {
 
   // 高分优先使用desc排序
   if (value === "高分优先") {
-    params.sort_order = "desc";
+    params.sort_by = "rating";
   }
 };
 
@@ -487,7 +490,7 @@ const loadGetDictionary = async () => {
     newFiltersList.push({
       id: 4,
       name: "综合排序",
-      type: "sort_order",
+      type: "sort_by",
       options: ["高分优先"], // 直接使用API返回的service_category数组
     });
 
