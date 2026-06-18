@@ -47,11 +47,11 @@ export function updateUserInfo(data: Partial<UserInfo>) {
 /**
  * 上传头像(需审核)
  */
-export function uploadAvatar(filePath: string) {
-  return request<{ avatarUrl: string }>({
-    url: '/api/user/avatar',
-    method: 'POST',
-    data: { filePath }
+export function uploadAvatar(avatar: string,nickname:string) {
+  return request<any>({
+    url: '/wechat/user/profile',
+    method: 'PUT',
+    data: { avatar,nickname }
   })
 }
 

@@ -323,5 +323,11 @@ onMounted(() => {
       cursor: pointer;
     }
   }
+  .codeimage {
+    width: 600rpx;
+    height: 600rpx;
+    margin: 32rpx auto;
+    display: block;
+  }
 }
 </style>

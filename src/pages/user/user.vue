@@ -9,10 +9,16 @@
       }"
     >
       <view class="user-info" @click="handleLogin">
-        <image
-          :src="userStore.avatar || '/static/images/user.png'"
-          class="user-avatar"
-        />
+        <button
+          open-type="chooseAvatar"
+          @chooseavatar="onChooseAvatar"
+          class="avatar-button"
+        >
+          <image
+            :src="userStore.avatar || '/static/images/user.png'"
+            class="user-avatar"
+          />
+        </button>
         <view class="user-detail">
           <view class="user-top">
             <text class="user-nickname">{{ userStore.nickname }}</text>
@@ -421,7 +427,7 @@
 import { onMounted, ref } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 import { useUserStore } from "@/store/modules/user";
-import { getUserInfo, getBanner } from "@/api/user";
+import { getUserInfo, getBanner, uploadAvatar } from "@/api/user";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 import { weddingPlan, getWeddingPlan } from "@/api/index";
 
@@ -1375,6 +1381,56 @@ function handleTaskClick(task: any) {
   }
 }
 
+// 处理选择头像
+async function onChooseAvatar(e: any) {
+  console.log("选择头像回调:1111111", e);
+  // 用户取消选择
+
+  console.log("上传头像结果:", e.detail.avatarUrl);
+  try {
+    const avatarTempFilePath = e.detail.avatarUrl;
+
+    if (!avatarTempFilePath) {
+      throw new Error("获取头像临时路径失败");
+    }
+
+    uni.showLoading({
+      title: "上传中...",
+      mask: true,
+    });
+
+    // 上传头像到服务器
+    const res = await uploadAvatar(avatarTempFilePath, "");
+    console.log("上传头像结果:", res);
+    // 更新本地用户信息
+    if (res) {
+      // 重新调用用户信息接口
+      getUserInfo();
+      uni.hideLoading();
+      uni.showToast({
+        title: "头像更新成功",
+        icon: "success",
+        duration: 1500,
+      });
+    } else {
+      throw new Error("头像上传失败");
+    }
+  } catch (error: any) {
+    console.error("上传头像失败:", error);
+    uni.hideLoading();
+    let errorMessage = "上传失败，请稍后重试";
+    if (error.message) {
+      errorMessage = error.message;
+    }
+
+    uni.showToast({
+      title: errorMessage,
+      icon: "none",
+      duration: 2000,
+    });
+  }
+}
+
 // 页面加载时获取用户信息
 onMounted(() => {
   if (checkLogin()) {
@@ -1852,6 +1908,17 @@ onShow(() => {
       display: flex;
       align-items: center;
       padding-top: 140rpx;
+      .avatar-button {
+        padding: 0;
+        margin: 0;
+        border: none;
+        background: transparent;
+        line-height: normal;
+
+        &::after {
+          border: none;
+        }
+      }
       .user-avatar {
         width: 120rpx;
         height: 120rpx;
