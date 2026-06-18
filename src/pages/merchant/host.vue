@@ -474,14 +474,7 @@ const loadGetDictionary = async () => {
       id: 2,
       name: "预算区间",
       type: "meal_standard",
-      options: [
-        "1000以下",
-        "1000-2000",
-        "2000-3000",
-        "3000-4000",
-        "4000-5000",
-        "5000以上",
-      ], // 直接使用API返回的venue_type数组
+      options: ["2000以下", "2000-3500", "3500-5000", "5000-8000", "8000以上"], // 直接使用API返回的venue_type数组
     });
 
     newFiltersList.push({

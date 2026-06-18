@@ -31,13 +31,13 @@
 		{
 			"path": "pages/merchant/hotel",
 			"style": {
-				"navigationBarTitleText": "婚庆酒店"
+				"navigationBarTitleText": "婚礼酒店"
 			}
 		},
 		{
 			"path": "pages/merchant/hotelDetail",
 			"style": {
-				"navigationBarTitleText": "婚庆酒店详情",
+				"navigationBarTitleText": "婚礼酒店详情",
 				"navigationStyle": "custom"
 			}
 		},

@@ -551,19 +551,82 @@ const loadGetDictionary = async () => {
       });
     }
 
-    newFiltersList.push({
-      id: 2,
-      name: "预算区间",
-      type: "meal_standard",
-      options: [
-        "1000以下",
-        "1000-2000",
-        "2000-3000",
-        "3000-4000",
-        "4000-5000",
-        "5000以上",
-      ], // 直接使用API返回的venue_type数组
-    });
+    // 根据 category.value 的值 显示不同的 预算区间
+    if (category.value === 7) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "1680以下",
+          "1680-2980",
+          "2980-3980",
+          "3980-4980",
+          "4980-6980",
+          "6980-12800",
+          "1280以上",
+        ],
+      });
+    } else if (category.value === 8 || category.value === 9) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "3500以下",
+          "3500-4500",
+          "4500-6000",
+          "6000-7000",
+          "7000-9000",
+          "9000-12000",
+          "12000以上",
+        ],
+      });
+    } else if (category.value === 4) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "2000以下",
+          "2000-4000",
+          "4000-6000",
+          "6000-8000",
+          "8000-10000",
+          "10000-120000",
+          "120000以上",
+        ],
+      });
+    } else if (category.value === 3) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "10000以下",
+          "10000-20000",
+          "20000-30000",
+          "30000-50000",
+          "50000-80000",
+          "80000-100000",
+          "100000以上",
+        ],
+      });
+    } else {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "1000以下",
+          "1000-2000",
+          "2000-3000",
+          "3000-4000",
+          "4000-5000",
+          "5000以上",
+        ], // 直接使用API返回的venue_type数组
+      });
+    }
 
     newFiltersList.push({
       id: 3,
