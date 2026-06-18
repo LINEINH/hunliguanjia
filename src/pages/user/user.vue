@@ -8,20 +8,55 @@
         'user-headerBg': userProfile && userProfile.gold_service_order,
       }"
     >
-      <view class="user-info" @click="handleLogin">
+      <view class="user-info">
+        <!-- 未登录时显示默认头像 -->
+        <image
+          v-if="!userStore.isLoggedIn"
+          :src="'/static/images/user.png'"
+          class="user-avatar"
+          @click="handleLogin"
+        />
+        <!-- 已登录时显示 chooseAvatar 按钮 -->
         <button
+          v-else
           open-type="chooseAvatar"
           @chooseavatar="onChooseAvatar"
           class="avatar-button"
         >
           <image
-            :src="userStore.avatar || '/static/images/user.png'"
+            :src="
+              (userStore.userInfo && userStore.userInfo.avatar) ||
+              '/static/images/user.png'
+            "
             class="user-avatar"
           />
         </button>
         <view class="user-detail">
           <view class="user-top">
-            <text class="user-nickname">{{ userStore.nickname }}</text>
+            <!-- 未登录时显示默认文本 -->
+            <text
+              v-if="!userStore.isLoggedIn"
+              class="user-nickname"
+              @click="handleLogin"
+              >点击登录</text
+            >
+            <!-- 已登录时显示昵称输入框 -->
+            <input
+              v-else
+              type="nickname"
+              :value="userStore.userInfo && userStore.userInfo.nickname"
+              @blur="onNicknameBlur"
+              class="user-nickname-input"
+              placeholder="请输入昵称"
+              maxlength="20"
+            />
+          </view>
+          <view class="user-date">
+            <text v-if="userProfile && userProfile.wedding_plan"
+              >婚期：{{
+                userProfile.wedding_plan.wedding_date || "未设置"
+              }}</text
+            >
             <image
               src="/static/images/16.png"
               mode="aspectFill"
@@ -40,9 +75,7 @@
               v-else
             />
           </view>
-          <text class="user-date" v-if="userProfile && userProfile.wedding_plan"
-            >婚期：{{ userProfile.wedding_plan.wedding_date || "未设置" }}</text
-          >
+
           <!-- <text class="user-tip" v-if="!userStore.isLoggedIn">点击登录</text> -->
         </view>
       </view>
@@ -427,7 +460,12 @@
 import { onMounted, ref } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 import { useUserStore } from "@/store/modules/user";
-import { getUserInfo, getBanner, uploadAvatar } from "@/api/user";
+import {
+  getUserInfo,
+  getBanner,
+  uploadAvatar,
+  updateUserInfo,
+} from "@/api/user";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 import { weddingPlan, getWeddingPlan } from "@/api/index";
 
@@ -769,6 +807,162 @@ function handleStaffScan() {
 async function handleLogin() {
   if (userStore.isLoggedIn) return;
   uni.navigateTo({ url: "/pages/login/login" });
+}
+
+// 处理选择头像
+async function onChooseAvatar(e: any) {
+  console.log("选择头像回调:", e);
+
+  // 检查是否登录
+  if (!checkLogin()) {
+    uni.showModal({
+      title: "提示",
+      content: "请先登录后再更换头像",
+      confirmText: "去登录",
+      cancelText: "取消",
+      success: (res) => {
+        if (res.confirm) {
+          navigateToLogin();
+        }
+      },
+    });
+    return;
+  }
+
+  // // 用户取消选择
+  // if (e.detail.errMsg === "chooseAvatar:fail user deny") {
+  //   uni.showToast({
+  //     title: "您取消了选择",
+  //     icon: "none",
+  //   });
+  //   return;
+  // }
+
+  // // 获取失败
+  // if (e.detail.errMsg !== "chooseAvatar:ok") {
+  //   uni.showToast({
+  //     title: "选择头像失败",
+  //     icon: "none",
+  //   });
+  //   return;
+  // }
+  console.log("选择头像回调:", e.detail.avatarUrl);
+
+  try {
+    const avatarTempFilePath = e.detail.avatarUrl;
+
+    if (!avatarTempFilePath) {
+      throw new Error("获取头像临时路径失败");
+    }
+
+    uni.showLoading({
+      title: "上传中...",
+      mask: true,
+    });
+
+    // 上传头像到服务器
+    const res = await uploadAvatar(
+      avatarTempFilePath,
+      userProfile.value.nickname
+    );
+
+    // 更新本地用户信息
+    if (res) {
+      userStore.updateUserInfo({
+        avatar: avatarTempFilePath,
+      });
+      uni.hideLoading();
+      uni.showToast({
+        title: "头像更新成功",
+        icon: "success",
+        duration: 1500,
+      });
+    } else {
+      throw new Error("头像上传失败");
+    }
+  } catch (error: any) {
+    console.error("上传头像失败:", error);
+    uni.hideLoading();
+
+    let errorMessage = "上传失败，请稍后重试";
+    if (error.message) {
+      errorMessage = error.message;
+    }
+
+    uni.showToast({
+      title: errorMessage,
+      icon: "none",
+      duration: 2000,
+    });
+  }
+}
+
+// 处理昵称修改
+async function onNicknameBlur(e: any) {
+  const newNickname = e.detail.value.trim();
+
+  // 检查是否登录
+  if (!checkLogin()) {
+    uni.showModal({
+      title: "提示",
+      content: "请先登录后再修改昵称",
+      confirmText: "去登录",
+      cancelText: "取消",
+      success: (res) => {
+        if (res.confirm) {
+          navigateToLogin();
+        }
+      },
+    });
+    return;
+  }
+
+  // 如果昵称为空或与当前相同，不处理
+  if (!newNickname || newNickname === userStore.nickname) {
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: "保存中...",
+      mask: true,
+    });
+
+    const res = await uploadAvatar(userProfile.value.avator, newNickname);
+    if (res) {
+      userStore.updateUserInfo({
+        nickname: newNickname,
+      });
+      uni.showToast({
+        title: "昵称修改成功",
+        icon: "success",
+        duration: 1500,
+      });
+    } else {
+      throw new Error("昵称修改失败");
+    }
+
+    uni.hideLoading();
+    uni.showToast({
+      title: "昵称修改成功",
+      icon: "success",
+      duration: 1500,
+    });
+  } catch (error: any) {
+    console.error("修改昵称失败:", error);
+    uni.hideLoading();
+
+    let errorMessage = "修改失败，请稍后重试";
+    if (error.message) {
+      errorMessage = error.message;
+    }
+
+    uni.showToast({
+      title: errorMessage,
+      icon: "none",
+      duration: 2000,
+    });
+  }
 }
 
 // 处理婚期点击
@@ -1136,6 +1330,8 @@ async function loadUserInfo() {
     const userInfo: any = await getUserInfo();
     // 更新 store 中的用户信息
     userStore.updateUserInfo(userInfo);
+    // 打印store中的用户信息
+    console.log("store中的用户信息:", userStore.userInfo);
     console.log("用户信息:", userInfo);
     // 更新用户信息对象
     userProfile.value = userInfo;
@@ -1378,56 +1574,6 @@ function handleTaskClick(task: any) {
       });
       return;
     }
-  }
-}
-
-// 处理选择头像
-async function onChooseAvatar(e: any) {
-  console.log("选择头像回调:1111111", e);
-  // 用户取消选择
-
-  console.log("上传头像结果:", e.detail.avatarUrl);
-  try {
-    const avatarTempFilePath = e.detail.avatarUrl;
-
-    if (!avatarTempFilePath) {
-      throw new Error("获取头像临时路径失败");
-    }
-
-    uni.showLoading({
-      title: "上传中...",
-      mask: true,
-    });
-
-    // 上传头像到服务器
-    const res = await uploadAvatar(avatarTempFilePath, "");
-    console.log("上传头像结果:", res);
-    // 更新本地用户信息
-    if (res) {
-      // 重新调用用户信息接口
-      getUserInfo();
-      uni.hideLoading();
-      uni.showToast({
-        title: "头像更新成功",
-        icon: "success",
-        duration: 1500,
-      });
-    } else {
-      throw new Error("头像上传失败");
-    }
-  } catch (error: any) {
-    console.error("上传头像失败:", error);
-    uni.hideLoading();
-    let errorMessage = "上传失败，请稍后重试";
-    if (error.message) {
-      errorMessage = error.message;
-    }
-
-    uni.showToast({
-      title: errorMessage,
-      icon: "none",
-      duration: 2000,
-    });
   }
 }
 
@@ -1908,6 +2054,8 @@ onShow(() => {
       display: flex;
       align-items: center;
       padding-top: 140rpx;
+
+      // 头像按钮样式，去除默认 button 样式
       .avatar-button {
         padding: 0;
         margin: 0;
@@ -1919,6 +2067,7 @@ onShow(() => {
           border: none;
         }
       }
+
       .user-avatar {
         width: 120rpx;
         height: 120rpx;
@@ -1947,6 +2096,8 @@ onShow(() => {
         .user-date {
           font-size: $font-md;
           color: #808080;
+          display: flex;
+          align-items: center;
         }
 
         .user-tip {
@@ -2144,6 +2295,10 @@ onShow(() => {
       }
     }
   }
+}
+.user-nickname-input {
+  font-size: 38rpx;
+  color: #000000;
 }
 .card {
   padding: 0;
