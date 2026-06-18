@@ -154,10 +154,15 @@
                 ><up-icon name="arrow-up" size="16" color="#9CB2CD"></up-icon
               ></view>
               <view class="hint-content" v-if="currentMonthTasks.length > 0">
+                <view class="hit-title">
+                  <text class="title">本月需完成事项</text>
+                  <view class="choice" @click="handleReSelect">重新选择</view>
+                </view>
                 <view
                   v-for="(task, index) in currentMonthTasks"
                   :key="index"
                   class="hint-item"
+                  @click="handleTaskClick(task)"
                 >
                   <view class="hint-left">
                     <image
@@ -346,6 +351,64 @@
         />
         <text class="menu-text">员工扫一扫</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
+      </view>
+    </view>
+
+    <!-- 重新选择弹窗 -->
+    <view
+      v-if="showReSelectPicker"
+      class="reselect-picker-mask"
+      @click="showReSelectPicker = false"
+    >
+      <view class="reselect-picker-container" @click.stop>
+        <view class="reselect-picker-header">
+          <text class="reselect-picker-title">重新选择</text>
+          <text
+            class="reselect-picker-close"
+            @click="showReSelectPicker = false"
+            >×</text
+          >
+        </view>
+        <view class="reselect-picker-content">
+          <!-- 婚期选择 -->
+          <view class="reselect-item" @click="handleReSelectDate">
+            <view class="reselect-label">婚期</view>
+            <view class="reselect-value">{{
+              tempWeddingDate || "选择婚礼时间"
+            }}</view>
+            <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          </view>
+
+          <!-- 桌数输入 -->
+          <view class="reselect-item reselect-input-item">
+            <view class="reselect-label">桌数</view>
+            <input
+              type="number"
+              class="reselect-input"
+              placeholder="请输入桌数"
+              v-model="tempTableCountForReSelect"
+            />
+          </view>
+
+          <!-- 总预算输入 -->
+          <view class="reselect-item reselect-input-item">
+            <view class="reselect-label">总预算（元）</view>
+            <input
+              type="text"
+              class="reselect-input"
+              placeholder="请输入总预算"
+              v-model="tempTotalBudgetForReSelect"
+            />
+          </view>
+        </view>
+        <view class="reselect-picker-footer">
+          <button
+            class="reselect-picker-btn confirm-btn"
+            @click="confirmReSelect"
+          >
+            确定
+          </button>
+        </view>
       </view>
     </view>
 
@@ -1079,11 +1142,8 @@ async function loadUserInfo() {
         tableCount.value = String(userInfo.wedding_plan.table_count);
       }
       if (userInfo.wedding_plan.total_budget) {
-        const budgetInWan = (
-          Number(userInfo.wedding_plan.total_budget) / 10000
-        ).toFixed(0);
-        totalBudget.value = budgetInWan;
-        selectedBudget.value = `${tableCount.value}桌，${budgetInWan}`;
+        totalBudget.value = userInfo.wedding_plan.total_budget;
+        selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
       }
 
       // 获取婚礼计划数据（包括 planningPhases）
@@ -1122,6 +1182,196 @@ async function loadWeddingPlanData() {
     }
   } catch (error) {
     console.error("获取婚礼计划数据失败:", error);
+  }
+}
+const planning = ref<any>(null);
+// 重新选择弹窗显示状态
+const showReSelectPicker = ref<boolean>(false);
+// 重新选择时的临时变量
+const tempWeddingDate = ref<string>("");
+const tempTableCountForReSelect = ref<string>("");
+const tempTotalBudgetForReSelect = ref<string>("");
+// 处理重新选择按钮点击
+function handleReSelect() {
+  console.log("点击重新选择按钮", planning.value);
+  console.log("当前 weddingDate:", weddingDate.value);
+  console.log("当前 tableCount:", tableCount.value);
+  console.log("当前 totalBudget:", totalBudget.value);
+
+  // 带出之前选择的值
+  tempWeddingDate.value = weddingDate.value;
+  tempTableCountForReSelect.value = tableCount.value;
+  tempTotalBudgetForReSelect.value = totalBudget.value;
+
+  showReSelectPicker.value = true;
+  console.log("showReSelectPicker 设置为:", showReSelectPicker.value);
+}
+// 处理重新选择婚期
+function handleReSelectDate() {
+  showDatePicker.value = true;
+}
+
+// 确认重新选择
+const confirmReSelect = async () => {
+  // 验证输入
+  if (!tempWeddingDate.value) {
+    uni.showToast({
+      title: "请选择婚期",
+      icon: "none",
+    });
+    return;
+  }
+
+  if (
+    !tempTableCountForReSelect.value ||
+    !String(tempTableCountForReSelect.value).trim()
+  ) {
+    uni.showToast({
+      title: "请填写桌数",
+      icon: "none",
+    });
+    return;
+  }
+
+  if (
+    !tempTotalBudgetForReSelect.value ||
+    !String(tempTotalBudgetForReSelect.value).trim()
+  ) {
+    uni.showToast({
+      title: "请填写总预算",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: "生成计划中...",
+      mask: true,
+    });
+
+    // 调用婚礼计划接口
+    const response = await weddingPlan(
+      tempWeddingDate.value,
+      tempTotalBudgetForReSelect.value,
+      tempTableCountForReSelect.value
+    );
+
+    uni.hideLoading();
+
+    // 更新页面数据
+    if (response && response.planning_phases) {
+      // 更新婚期和预算信息
+      if (response.warning) {
+        uni.showToast({
+          title: response.warning,
+          icon: "error",
+        });
+      } else {
+        weddingDate.value = tempWeddingDate.value;
+        tableCount.value = tempTableCountForReSelect.value;
+        totalBudget.value = tempTotalBudgetForReSelect.value;
+        selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
+
+        // 更新规划阶段数据
+        planningPhases.value = response.planning_phases;
+
+        // 初始化日历
+        initCalendar();
+
+        // 关闭弹窗
+        showReSelectPicker.value = false;
+
+        uni.showToast({
+          title: "计划更新成功",
+          icon: "success",
+        });
+      }
+    } else {
+      throw new Error("数据格式错误");
+    }
+  } catch (error) {
+    uni.hideLoading();
+    console.error("重新生成婚礼计划失败:", error);
+    uni.showToast({
+      title: "更新计划失败，请重试",
+      icon: "none",
+    });
+  }
+};
+
+const categories = ref([
+  {
+    id: 1,
+    name: "婚纱照",
+    icon: "/static/images/19.png",
+    path: "/pages/merchant/plan?title=婚纱照&category=1",
+  },
+  {
+    id: 2,
+    name: "婚礼酒店",
+    icon: "/static/images/20.png",
+    path: "/pages/merchant/hotel",
+  },
+  {
+    id: 3,
+    name: "婚礼策划",
+    icon: "/static/images/21.png",
+    path: "/pages/merchant/plan?title=婚礼策划&category=3",
+  },
+  {
+    id: 4,
+    name: "婚纱礼服",
+    icon: "/static/images/22.png",
+    path: "/pages/merchant/plan?title=婚纱礼服&category=4",
+  },
+  {
+    id: 5,
+    name: "目的地婚礼",
+    icon: "/static/images/23.png",
+    path: "/pages/merchant/plan?title=目的地婚礼&category=5",
+  },
+  {
+    id: 6,
+    name: "婚礼主持",
+    icon: "/static/images/24.png",
+    path: "/pages/merchant/host?title=婚礼主持",
+  },
+  {
+    id: 7,
+    name: "婚礼跟妆",
+    icon: "/static/images/25.png",
+    path: "/pages/merchant/plan?title=婚礼跟妆&category=7",
+  },
+  {
+    id: 8,
+    name: "婚礼摄影",
+    icon: "/static/images/26.png",
+    path: "/pages/merchant/plan?title=婚礼摄影&category=8",
+  },
+  {
+    id: 9,
+    name: "婚礼摄像",
+    icon: "/static/images/27.png",
+    path: "/pages/merchant/plan?title=婚礼摄像&category=9",
+  },
+  {
+    id: 10,
+    name: "婚礼周边",
+    icon: "/static/images/28.png",
+    path: "/pages/merchant/plan?title=婚礼周边&category=10",
+  },
+]);
+//  创建handleTaskClick方法跳转到商家页面
+function handleTaskClick(task: any) {
+  // 根据taskid 循环遍历categories  取出path 跳转到对应页面
+  for (let i = 0; i < categories.value.length; i++) {
+    if (categories.value[i].id === task.category_id) {
+      uni.navigateTo({
+        url: categories.value[i].path,
+      });
+      return;
+    }
   }
 }
 
@@ -1528,6 +1778,24 @@ onShow(() => {
         text-align: center;
       }
 
+      .hit-title {
+        font-size: 32rpx;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10rpx 0;
+
+        .title {
+          color: #333;
+          font-size: 32rpx;
+        }
+
+        .choice {
+          color: #bf974a;
+        }
+      }
+
       .hint-item {
         display: flex;
         justify-content: space-between;
@@ -1702,6 +1970,111 @@ onShow(() => {
     .menu-arrow {
       font-size: 40rpx;
       color: $text-secondary;
+    }
+  }
+
+  // 重新选择弹窗样式
+  .reselect-picker-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .reselect-picker-container {
+    width: 700rpx;
+    background-color: #fff;
+    border-radius: 16rpx;
+    overflow: hidden;
+  }
+
+  .reselect-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32rpx;
+    border-bottom: 1rpx solid #e5e5e5;
+
+    .reselect-picker-title {
+      font-size: 32rpx;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .reselect-picker-close {
+      font-size: 48rpx;
+      color: #999;
+      line-height: 1;
+    }
+  }
+
+  .reselect-picker-content {
+    padding: 32rpx;
+  }
+
+  .reselect-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24rpx 0;
+    border-bottom: 1rpx solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .reselect-label {
+      font-size: 28rpx;
+      color: #333;
+    }
+
+    .reselect-value {
+      flex: 1;
+      text-align: right;
+      font-size: 28rpx;
+      color: #000;
+      margin-right: 16rpx;
+    }
+  }
+
+  .reselect-input-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16rpx;
+
+    .reselect-input {
+      width: 100%;
+      height: 80rpx;
+      border: 1rpx solid #e5e5e5;
+      border-radius: 8rpx;
+      padding: 0 24rpx;
+      font-size: 28rpx;
+      box-sizing: border-box;
+    }
+  }
+
+  .reselect-picker-footer {
+    padding: 24rpx 32rpx 32rpx;
+
+    .reselect-picker-btn {
+      width: 100%;
+      height: 88rpx;
+      background: linear-gradient(180deg, #f1daa6 0%, #eac47b 100%);
+      border-radius: 44rpx;
+      color: #fff;
+      font-size: 32rpx;
+      font-weight: bold;
+      border: none;
+
+      &::after {
+        border: none;
+      }
     }
   }
 }
