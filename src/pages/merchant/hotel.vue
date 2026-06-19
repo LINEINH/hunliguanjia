@@ -257,6 +257,17 @@ const loadGetBanner = async () => {
   }
 };
 
+function shuffle(arr) {
+  const result = [...arr];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
 // 调用接口获取商家列表
 async function loadMerchants(params = {}, resetPage = true) {
   console.log("接口调用参数:", params);
@@ -279,7 +290,7 @@ async function loadMerchants(params = {}, resetPage = true) {
     if (response) {
       if (resetPage) {
         // 重置数据
-        merchantList.value = response.list || [];
+        merchantList.value = shuffle(response.list) || [];
         total.value =
           response.pagination.total ||
           (response.list && response.list.length ? response.list.length : 0);

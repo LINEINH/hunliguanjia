@@ -811,7 +811,13 @@ function onPickerChange(e: any) {
     pickerValue.value[2] = days.value.length - 1;
   }
 }
-
+// 格式化日期
+const formatDate = (dateString: any) => {
+  const date = new Date(dateString);
+  return `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+};
 // 确认选择日期
 function confirmDate() {
   const year = years.value[pickerValue.value[0]];
@@ -823,7 +829,13 @@ function confirmDate() {
     day
   ).padStart(2, "0")}`;
 
-  console.log("选择的婚期:", formattedDate);
+  if (formattedDate === formatDate(new Date())) {
+    uni.showToast({
+      title: "请选择正确的婚期",
+      icon: "error",
+    });
+    return;
+  }
 
   // 如果是在重新选择弹窗中，更新临时变量
   if (showReSelectPicker.value) {
@@ -929,6 +941,9 @@ const confirmBudgetInput = async () => {
       });
       // 清除可能存在的旧计划数据，但保留用户的选择
       planningPhases.value = [];
+      // 清除婚期和预算
+      weddingDate.value = "";
+      selectedBudget.value = "";
       // 注意：这里不重置weddingDate和selectedBudget，保持用户的选择
     }
     // 既没有计划数据也没有warning，则视为数据格式错误
@@ -944,6 +959,9 @@ const confirmBudgetInput = async () => {
       title: "生成计划失败，请重试",
       icon: "none",
     });
+    // 清除婚期和预算
+    weddingDate.value = "";
+    selectedBudget.value = "";
   }
 };
 
@@ -1020,6 +1038,9 @@ const confirmReSelect = async () => {
         title: response.warning,
         icon: "error",
       });
+      // 清除婚期和预算
+      weddingDate.value = "";
+      selectedBudget.value = "";
     } else if (response && response.planning_phases) {
       weddingDate.value = tempWeddingDate.value;
       tableCount.value = tempTableCountForReSelect.value;
@@ -1049,6 +1070,9 @@ const confirmReSelect = async () => {
       title: "更新计划失败，请重试",
       icon: "none",
     });
+    // 清除婚期和预算
+    weddingDate.value = "";
+    selectedBudget.value = "";
   }
 };
 
@@ -1406,6 +1430,7 @@ onShow(() => {
     background-color: #fff;
     border-radius: 32rpx 32rpx 0 0;
     overflow: hidden;
+    z-index: 9999999;
   }
 
   .date-picker-header,
@@ -1780,7 +1805,7 @@ onShow(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 99;
   }
 
   .reselect-picker-container {

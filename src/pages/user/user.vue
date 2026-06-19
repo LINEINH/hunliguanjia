@@ -1022,6 +1022,13 @@ function onPickerChange(e: any) {
   }
 }
 
+// 格式化日期
+const formatDate = (dateString: any) => {
+  const date = new Date(dateString);
+  return `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+};
 // 确认选择日期
 function confirmDate() {
   const year = years.value[pickerValue.value[0]];
@@ -1032,14 +1039,21 @@ function confirmDate() {
   weddingDate.value = `${year}-${String(month).padStart(2, "0")}-${String(
     day
   ).padStart(2, "0")}`;
-
-  console.log("选择的婚期:", weddingDate.value);
-  showDatePicker.value = false;
-
-  // 如果预算也已选择，初始化日历
-  if (selectedBudget.value) {
-    initCalendar();
+  // 如果选择的婚期是今天 报错 不可以选择当天
+  if (weddingDate.value === formatDate(new Date())) {
+    uni.showToast({
+      title: "请选择正确的婚期",
+      icon: "error",
+    });
+    return;
   }
+  // 如果是在重新选择弹窗中，更新临时变量
+  if (showReSelectPicker.value) {
+    tempWeddingDate.value = weddingDate.value;
+  } else {
+    weddingDate.value = weddingDate.value;
+  }
+  showDatePicker.value = false;
 }
 
 // 新增预算输入确认函数
@@ -1101,6 +1115,9 @@ const confirmBudgetInput = async () => {
           title: response.warning,
           icon: "error",
         });
+        // 清除婚期和预算
+        weddingDate.value = "";
+        selectedBudget.value = "";
       } else {
         uni.showToast({
           title: "计划生成成功",
@@ -1114,6 +1131,9 @@ const confirmBudgetInput = async () => {
         title: response.warning,
         icon: "error",
       });
+      // 清除婚期和预算
+      weddingDate.value = "";
+      selectedBudget.value = "";
       // 清除可能存在的旧计划数据，但保留用户的选择
       planningPhases.value = [];
       // 注意：这里不重置weddingDate和selectedBudget，保持用户的选择
@@ -1131,6 +1151,9 @@ const confirmBudgetInput = async () => {
       title: "生成计划失败，请重试",
       icon: "none",
     });
+    // 清除婚期和预算
+    weddingDate.value = "";
+    selectedBudget.value = "";
   }
 };
 
@@ -1413,6 +1436,11 @@ async function loadWeddingPlanData() {
     ) {
       planningPhases.value = response.planning_phases;
       console.log("婚礼计划数据:", planningPhases.value);
+    } else {
+      weddingDate.value = "";
+      selectedBudget.value = "";
+      tableCount.value = "";
+      totalBudget.value = "";
     }
   } catch (error) {
     console.error("获取婚礼计划数据失败:", error);
@@ -1526,6 +1554,9 @@ const confirmReSelect = async () => {
       title: "更新计划失败，请重试",
       icon: "none",
     });
+    // 清除婚期和预算
+    weddingDate.value = "";
+    selectedBudget.value = "";
   }
 };
 
@@ -2229,7 +2260,7 @@ onShow(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 99;
   }
 
   .reselect-picker-container {

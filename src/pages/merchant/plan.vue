@@ -388,6 +388,17 @@ function confirmAreaSelection() {
 // 搜索关键词状态
 const searchKeyword = ref("");
 
+function shuffle(arr) {
+  const result = [...arr];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
 // 从接口获取商家列表
 const loadMerchants = async (page = 1) => {
   if (loading.value || (!hasMore.value && page > 1)) return;
@@ -447,7 +458,7 @@ const loadMerchants = async (page = 1) => {
 
     if (response) {
       // 正确提取商家数据
-      merchantsData = response.list || [];
+      merchantsData = shuffle(response.list) || [];
       // 提取分页信息
       paginationInfo = response.pagination || {}; // 如果response.data不是数组而是包含分页信息的对象
     } else {
