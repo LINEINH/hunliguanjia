@@ -57,7 +57,8 @@
       </view> -->
 
       <view class="content" v-if="cleanedContent">
-        <!-- 先渲染视频部分 -->
+        <!-- 再渲染其他富文本内容（不含视频） -->
+        <rich-text :nodes="textOnlyContent"></rich-text>
         <view
           v-for="(video, index) in videoList"
           :key="index"
@@ -71,9 +72,6 @@
             class="video-player"
           ></video>
         </view>
-
-        <!-- 再渲染其他富文本内容（不含视频） -->
-        <rich-text :nodes="textOnlyContent"></rich-text>
       </view>
       <view class="hotel-intro">{{ hotelData.landmark }}</view>
 
