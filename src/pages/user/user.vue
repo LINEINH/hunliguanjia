@@ -108,7 +108,10 @@
     <view class="date-budget">
       <!-- 未选择时显示选择器 -->
 
-      <view class="data-selector" v-if="!weddingDate || !selectedBudget">
+      <view
+        class="data-selector"
+        v-if="!weddingDate || !selectedBudget || !planningPhases.length"
+      >
         <view class="date-selector" @click="handleDateClick">
           <text class="budget-title">WEDDING DAY</text>
           <text class="budget-data">婚期</text>
@@ -282,7 +285,7 @@
     >
       <view class="budget-picker-container" @click.stop>
         <view class="budget-picker-header">
-          <text class="budget-picker-title">填写桌数</text>
+          <text class="budget-picker-title">预算范围</text>
           <text class="budget-picker-close" @click="showBudgetPicker = false"
             >×</text
           >
@@ -1077,25 +1080,50 @@ const confirmBudgetInput = async () => {
 
     uni.hideLoading();
 
-    // 处理返回的规划数据
-    if (response && response.planning_phases) {
+    // 检查是否有planning_phases数据
+    if (
+      response &&
+      response.planning_phases &&
+      response.planning_phases.length > 0
+    ) {
+      // 有计划数据，不管是否有warning都更新计划
       planningPhases.value = response.planning_phases;
-
+      planning.value = response;
       // 根据当前日历月份更新任务列表
       updateCurrentMonthTasks();
 
+      // 初始化日历
+      initCalendar();
+
+      // 如果有warning，先显示warning
+      if (response.warning) {
+        uni.showToast({
+          title: response.warning,
+          icon: "error",
+        });
+      } else {
+        uni.showToast({
+          title: "计划生成成功",
+          icon: "success",
+        });
+      }
+    }
+    // 没有计划数据但有warning，只显示warning
+    else if (response && response.warning) {
       uni.showToast({
-        title: "计划生成成功",
-        icon: "success",
+        title: response.warning,
+        icon: "error",
       });
-    } else {
+      // 清除可能存在的旧计划数据，但保留用户的选择
+      planningPhases.value = [];
+      // 注意：这里不重置weddingDate和selectedBudget，保持用户的选择
+    }
+    // 既没有计划数据也没有warning，则视为数据格式错误
+    else {
       throw new Error("数据格式错误");
     }
 
-    // 如果婚期也已选择，初始化日历
-    if (weddingDate.value) {
-      initCalendar();
-    }
+    // 移除了手动初始化日历的逻辑，改为依赖响应式数据更新
   } catch (error) {
     uni.hideLoading();
     console.error("生成婚礼计划失败:", error);
@@ -1378,7 +1406,11 @@ async function loadWeddingPlanData() {
     const response = await getWeddingPlan();
 
     // 处理返回的规划数据
-    if (response && response.planning_phases) {
+    if (
+      response &&
+      response.planning_phases &&
+      response.planning_phases.length
+    ) {
       planningPhases.value = response.planning_phases;
       console.log("婚礼计划数据:", planningPhases.value);
     }
@@ -1460,35 +1492,30 @@ const confirmReSelect = async () => {
     );
 
     uni.hideLoading();
+    if (response.warning) {
+      uni.showToast({
+        title: response.warning,
+        icon: "error",
+      });
+    } else if (response && response.planning_phases) {
+      weddingDate.value = tempWeddingDate.value;
+      tableCount.value = tempTableCountForReSelect.value;
+      totalBudget.value = tempTotalBudgetForReSelect.value;
+      selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
 
-    // 更新页面数据
-    if (response && response.planning_phases) {
-      // 更新婚期和预算信息
-      if (response.warning) {
-        uni.showToast({
-          title: response.warning,
-          icon: "error",
-        });
-      } else {
-        weddingDate.value = tempWeddingDate.value;
-        tableCount.value = tempTableCountForReSelect.value;
-        totalBudget.value = tempTotalBudgetForReSelect.value;
-        selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
+      // 更新规划阶段数据
+      planningPhases.value = response.planning_phases;
 
-        // 更新规划阶段数据
-        planningPhases.value = response.planning_phases;
+      // 初始化日历
+      initCalendar();
 
-        // 初始化日历
-        initCalendar();
+      // 关闭弹窗
+      showReSelectPicker.value = false;
 
-        // 关闭弹窗
-        showReSelectPicker.value = false;
-
-        uni.showToast({
-          title: "计划更新成功",
-          icon: "success",
-        });
-      }
+      uni.showToast({
+        title: "计划更新成功",
+        icon: "success",
+      });
     } else {
       throw new Error("数据格式错误");
     }

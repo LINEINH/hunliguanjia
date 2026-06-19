@@ -41,8 +41,8 @@
         </view>
       </view>
 
-      <!-- 已选择婚期时显示日历组件 -->
-      <template v-else>
+      <!-- 选择完婚期和预算范围后显示日历组件 -->
+      <template v-else-if="planningPhases.length > 0">
         <view class="calendar-container">
           <view class="calendar-header">
             <view class="calendar-nav" @click.stop="prevMonth">
@@ -150,6 +150,46 @@
           </view>
         </view>
       </template>
+
+      <!-- 如果只选择了婚期而没选择预算，显示已选信息和提示 -->
+      <template v-else-if="weddingDate && !selectedBudget">
+        <view class="data-selector">
+          <view class="date-selector" @click="handleDateClick">
+            <text class="budget-title">WEDDING DAY</text>
+            <text class="budget-data">婚期</text>
+            <text class="budget-text">{{ weddingDate || "选择婚礼时间" }}</text>
+          </view>
+          <view class="line"></view>
+          <view class="budget-selector" @click="handleBudgetClick">
+            <text class="budget-title">WEDDING BUDGET</text>
+            <text class="budget-data">预算范围</text>
+            <text class="budget-text">{{
+              selectedBudget || "选择婚礼预算"
+            }}</text>
+          </view>
+        </view>
+      </template>
+
+      <!-- 如果选择了婚期和预算但没有计划数据（如出现warning时），显示已选信息和重新选择提示 -->
+      <template
+        v-else-if="weddingDate && selectedBudget && planningPhases.length === 0"
+      >
+        <view class="data-selector">
+          <view class="date-selector" @click="handleDateClick">
+            <text class="budget-title">WEDDING DAY</text>
+            <text class="budget-data">婚期</text>
+            <text class="budget-text">{{ weddingDate || "选择婚礼时间" }}</text>
+          </view>
+          <view class="line"></view>
+          <view class="budget-selector" @click="handleBudgetClick">
+            <text class="budget-title">WEDDING BUDGET</text>
+            <text class="budget-data">预算范围</text>
+            <text class="budget-text">{{
+              selectedBudget || "选择婚礼预算"
+            }}</text>
+          </view>
+        </view>
+      </template>
     </view>
 
     <!-- 美好瞬间 - 两列商品展示 -->
@@ -224,7 +264,6 @@
       </view>
     </view>
 
-    <!-- 自定义预算选择器弹窗 -->
     <view
       v-if="showBudgetPicker"
       class="budget-picker-mask"
@@ -462,9 +501,12 @@ async function loadWeddingPlan() {
 
   try {
     const response = await getWeddingPlan();
-
     // 处理返回的规划数据
-    if (response && response.planning_phases) {
+    if (
+      response &&
+      response.planning_phases &&
+      response.planning_phases.length
+    ) {
       planningPhases.value = response.planning_phases;
 
       // 如果已有婚期日期，更新日历和任务
@@ -492,10 +534,13 @@ async function loadWeddingPlan() {
       }
 
       console.log("婚期规划数据:", response);
+    } else {
+      // 如果服务端没有有效数据，不重置本地状态，保持用户的选择
+      console.log("服务端无有效婚期规划数据，保留本地用户选择");
     }
   } catch (error) {
     console.error("获取婚期规划失败:", error);
-    // 不显示错误提示，避免影响用户体验
+    // 不显示错误提示，避免影响用户体验，同时保留本地用户选择
   }
 }
 
@@ -788,11 +833,6 @@ function confirmDate() {
   }
 
   showDatePicker.value = false;
-
-  // 如果预算也已选择，初始化日历
-  if (selectedBudget.value && !showReSelectPicker.value) {
-    initCalendar();
-  }
 }
 
 // 确认选择预算
@@ -853,32 +893,50 @@ const confirmBudgetInput = async () => {
 
     uni.hideLoading();
 
-    // 处理返回的规划数据
-    if (response && response.planning_phases) {
+    // 检查是否有planning_phases数据
+    if (
+      response &&
+      response.planning_phases &&
+      response.planning_phases.length > 0
+    ) {
+      // 有计划数据，不管是否有warning都更新计划
+      planningPhases.value = response.planning_phases;
+      planning.value = response;
+      // 根据当前日历月份更新任务列表
+      updateCurrentMonthTasks();
+
+      // 初始化日历
+      initCalendar();
+
+      // 如果有warning，先显示warning
       if (response.warning) {
         uni.showToast({
           title: response.warning,
           icon: "error",
         });
       } else {
-        planningPhases.value = response.planning_phases;
-        planning.value = response;
-        // 根据当前日历月份更新任务列表
-        updateCurrentMonthTasks();
-
         uni.showToast({
           title: "计划生成成功",
           icon: "success",
         });
       }
-    } else {
+    }
+    // 没有计划数据但有warning，只显示warning
+    else if (response && response.warning) {
+      uni.showToast({
+        title: response.warning,
+        icon: "error",
+      });
+      // 清除可能存在的旧计划数据，但保留用户的选择
+      planningPhases.value = [];
+      // 注意：这里不重置weddingDate和selectedBudget，保持用户的选择
+    }
+    // 既没有计划数据也没有warning，则视为数据格式错误
+    else {
       throw new Error("数据格式错误");
     }
 
-    // 如果婚期也已选择，初始化日历
-    if (weddingDate.value) {
-      initCalendar();
-    }
+    // 移除了手动初始化日历的逻辑，改为依赖响应式数据更新
   } catch (error) {
     uni.hideLoading();
     console.error("生成婚礼计划失败:", error);
@@ -957,35 +1015,30 @@ const confirmReSelect = async () => {
     );
 
     uni.hideLoading();
+    if (response.warning) {
+      uni.showToast({
+        title: response.warning,
+        icon: "error",
+      });
+    } else if (response && response.planning_phases) {
+      weddingDate.value = tempWeddingDate.value;
+      tableCount.value = tempTableCountForReSelect.value;
+      totalBudget.value = tempTotalBudgetForReSelect.value;
+      selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
 
-    // 更新页面数据
-    if (response && response.planning_phases) {
-      // 更新婚期和预算信息
-      if (response.warning) {
-        uni.showToast({
-          title: response.warning,
-          icon: "error",
-        });
-      } else {
-        weddingDate.value = tempWeddingDate.value;
-        tableCount.value = tempTableCountForReSelect.value;
-        totalBudget.value = tempTotalBudgetForReSelect.value;
-        selectedBudget.value = `${tableCount.value}桌，${totalBudget.value}`;
+      // 更新规划阶段数据
+      planningPhases.value = response.planning_phases;
 
-        // 更新规划阶段数据
-        planningPhases.value = response.planning_phases;
+      // 初始化日历
+      initCalendar();
 
-        // 初始化日历
-        initCalendar();
+      // 关闭弹窗
+      showReSelectPicker.value = false;
 
-        // 关闭弹窗
-        showReSelectPicker.value = false;
-
-        uni.showToast({
-          title: "计划更新成功",
-          icon: "success",
-        });
-      }
+      uni.showToast({
+        title: "计划更新成功",
+        icon: "success",
+      });
     } else {
       throw new Error("数据格式错误");
     }
@@ -1344,14 +1397,14 @@ onShow(() => {
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: flex-end;
-    z-index: 10000;
+    z-index: 9999;
   }
 
   .date-picker-container,
   .budget-picker-container {
     width: 100%;
     background-color: #fff;
-    border-radius: $radius-lg $radius-lg 0 0;
+    border-radius: 32rpx 32rpx 0 0;
     overflow: hidden;
   }
 
@@ -1360,13 +1413,13 @@ onShow(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $spacing-lg;
+    padding: 32rpx;
     border-bottom: 1px solid #f0f0f0;
     position: relative;
 
     .date-picker-title,
     .budget-picker-title {
-      font-size: $font-md;
+      font-size: 32rpx;
       color: #000;
       position: absolute;
       left: 50%;
@@ -1376,7 +1429,7 @@ onShow(() => {
     .date-picker-close,
     .budget-picker-close {
       font-size: 48rpx;
-      color: $text-secondary;
+      color: #999;
       line-height: 1;
       margin-left: auto;
     }
@@ -1390,79 +1443,47 @@ onShow(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: $font-md;
-    color: $text-primary;
+    font-size: 32rpx;
+    color: #333;
   }
 
   .budget-picker-content {
     max-height: 600rpx;
     overflow-y: auto;
-    padding: $spacing-md 0;
+    padding: 32rpx 0;
     display: flex;
     flex-wrap: wrap;
     align-content: center;
     justify-content: space-around;
   }
 
-  .budget-option {
+  .budget-input-section {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 16px;
-    border: 0.5px solid #383838;
-    transition: background-color 0.2s;
-    width: 45%;
-    height: 100rpx;
     margin-bottom: 20rpx;
-    &:active {
-      background-color: #f9f9f9;
-    }
-
-    &.budget-option-selected {
-      background-color: #fdf6e6;
-      border: 0.5px solid #eac47b;
-      .budget-radio {
-        .budget-radio-inner {
-          opacity: 1;
-        }
-      }
-
-      .budget-option-text {
-        color: #d4a574;
-      }
-    }
+    padding: 0 40rpx;
+    flex-direction: column;
+    width: 100%;
   }
 
-  .budget-radio {
-    width: 32rpx;
-    height: 32rpx;
-    border: 2rpx solid #ccc;
-    margin-right: $spacing-sm;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
+  .input-label {
+    font-size: 32rpx;
+    color: #212121;
+    margin-bottom: 30rpx;
   }
 
-  .budget-radio-inner {
-    width: 16rpx;
-    height: 16rpx;
-    background-color: #d4a574;
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .budget-option-text {
-    font-size: $font-md;
-    color: $text-primary;
+  .budget-input {
+    flex: 1;
+    height: 80rpx;
+    border: 1rpx solid #bcbcbc;
+    border-radius: 10rpx;
+    padding: 0 20rpx;
+    font-size: 32rpx;
   }
 
   .date-picker-footer,
   .budget-picker-footer {
     display: flex;
-    padding: $spacing-md $spacing-lg;
-    // border-top: 1px solid #f0f0f0;
+    padding: 32rpx 48rpx;
 
     .date-picker-btn,
     .budget-picker-btn {
@@ -1470,8 +1491,8 @@ onShow(() => {
       height: 80rpx;
       line-height: 80rpx;
       text-align: center;
-      border-radius: $radius-md;
-      font-size: $font-md;
+      border-radius: 32rpx;
+      font-size: 32rpx;
       border: none;
 
       &::after {
@@ -1485,7 +1506,6 @@ onShow(() => {
       color: #612500;
     }
   }
-
   // 日历容器样式
   .calendar-container {
     width: 100%;
