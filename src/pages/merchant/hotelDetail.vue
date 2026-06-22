@@ -688,7 +688,7 @@ function cleanHtmlContent(html: string): string {
             // 超过两行显示省略号
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 1;
             overflow: hidden;
             text-overflow: ellipsis;
           }
