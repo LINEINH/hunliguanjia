@@ -1,6 +1,6 @@
-# 婚庆服务平台 - C端小程序
+# 壹嫁婚选 - C端小程序
 
-基于 UniApp + Vue 3 + TypeScript + uView Plus + Pinia 技术栈开发的婚庆服务平台C端小程序。
+基于 UniApp + Vue 3 + TypeScript + uView Plus + Pinia 技术栈开发的壹嫁婚选C端小程序。
 
 ## 项目简介
 

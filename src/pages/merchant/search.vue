@@ -42,7 +42,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, onMounted } from "vue";
+import { onShow, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+import { getMerchantList, searchMerchants } from "@/api/merchant";
+
 const show = ref(false);
 const showOptionsList = ref([]);
 const tempSelectedfilters = ref([0]); // 临时存储选中的筛选项
@@ -277,6 +280,24 @@ function openDetail(hotel) {
     });
   }
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "搜索服务 - 壹嫁婚选",
+    path: "/pages/merchant/search",
+    imageUrl: "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "搜索婚庆服务 - 壹嫁婚选",
+    path: "/pages/merchant/search",
+    imageUrl: "",
+  };
+});
 </script>
 
 <style lang="scss" scoped>

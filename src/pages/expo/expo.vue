@@ -65,7 +65,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { onShow } from "@dcloudio/uni-app";
+import { onShow, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import { getExpoList } from "@/api/expo";
 import type { WeddingExpo } from "@/types/expo";
 import { reactive } from "vue";
@@ -148,6 +148,24 @@ onMounted(() => {
 // 页面显示时重新加载数据（tabbar 切换时触发）
 onShow(() => {
   fetchExpoList();
+});
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "婚博会 - 壹嫁婚选",
+    path: "/pages/expo/expo",
+    imageUrl: ongoingExpos.value[0].cover_image || "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "婚博会活动 - 壹嫁婚选",
+    path: "/pages/expo/expo",
+    imageUrl: ongoingExpos.value[0].cover_image || "",
+  };
 });
 </script>
 

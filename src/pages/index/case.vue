@@ -102,7 +102,7 @@ import { ref, onMounted, computed } from "vue";
 import { getCasesDetail } from "@/api/index";
 import { bind, unbind } from "@/api/product";
 import { useUserStore } from "@/store/modules/user";
-
+import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 // 获取用户store
 const userStore = useUserStore();
 
@@ -306,6 +306,24 @@ function toggleFavorite() {
     });
   }
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "美好瞬间 - 壹嫁婚选",
+    path: "/pages/index/case",
+    imageUrl: productData.value.images[0],
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "美好瞬间 - 婚庆服务案例",
+    path: "/pages/index/case",
+    imageUrl: productData.value.images[0],
+  };
+});
 </script>
 
 <style lang="scss" scoped>

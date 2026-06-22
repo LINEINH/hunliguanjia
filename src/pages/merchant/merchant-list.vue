@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { onShow } from "@dcloudio/uni-app";
+import { onShow, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import {
   getBannerMix,
   getProductRecommend,
@@ -298,6 +298,24 @@ onMounted(() => {
 onShow(() => {
   loadGetBanner();
   loadGetProductRecommend();
+});
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "婚礼服务-壹嫁婚选",
+    path: "/pages/merchant/merchant-list",
+    imageUrl: banners.value[0].image_url,
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "婚礼服务-壹嫁婚选",
+    path: "/pages/merchant/merchant-list",
+    imageUrl: banners.value[0].image_url,
+  };
 });
 </script>
 

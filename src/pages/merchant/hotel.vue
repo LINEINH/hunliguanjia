@@ -130,7 +130,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
-
+import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import { getHotelFilter, getBanners, merchants } from "@/api/product";
 
 // 搜索关键词
@@ -533,6 +533,24 @@ function openDetail(hotel) {
     });
   }
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "婚礼酒店 - 壹嫁婚选",
+    path: "/pages/merchant/hotel",
+    imageUrl: "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "婚礼酒店预订 - 壹嫁婚选",
+    path: "/pages/merchant/hotel",
+    imageUrl: "",
+  };
+});
 </script>
 
 <style lang="scss" scoped>

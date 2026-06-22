@@ -14,7 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import { checkin } from "@/api/expo";
 
 const loading = ref(true);
@@ -70,8 +71,26 @@ async function handleCheckin() {
   }
 }
 
-onMounted(() => {
+onLoad(() => {
   handleCheckin();
+});
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "现场签到 - 壹嫁婚选",
+    path: "/pages/expo/sign",
+    imageUrl: "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "婚博会现场签到 - 壹嫁婚选",
+    path: "/pages/expo/sign",
+    imageUrl: "",
+  };
 });
 </script>
 

@@ -168,7 +168,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
-
+import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import {
   getHotelDetail,
   getCoupons,
@@ -547,6 +547,24 @@ function cleanHtmlContent(html: string): string {
 
   return cleaned;
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: hotelData.value.name || "壹嫁婚选",
+    path: `/pages/merchant/planDetail?id=${hotelData.value.id}`,
+    imageUrl: hotelData.value.cover_image || "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: hotelData.value.name || "壹嫁婚选",
+    path: `/pages/merchant/planDetail?id=${hotelData.value.id}`,
+    imageUrl: hotelData.value.cover_image || "",
+  };
+});
 </script>
 
 <style lang="scss" scoped>

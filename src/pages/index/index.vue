@@ -369,7 +369,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { onShow } from "@dcloudio/uni-app";
+
+import {
+  onLoad,
+  onShow,
+  onShareAppMessage,
+  onShareTimeline,
+} from "@dcloudio/uni-app";
 import { getHomeInfo, weddingPlan, getWeddingPlan } from "@/api/index";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 
@@ -1214,6 +1220,24 @@ onShow(() => {
   if (checkLogin()) {
     loadWeddingPlan();
   }
+});
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "首页-壹嫁婚选",
+    path: "/pages/index/index",
+    imageUrl: banners.value[0].image_url,
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "首页-壹嫁婚选",
+    path: "/pages/index/index",
+    imageUrl: banners.value[0].image_url,
+  };
 });
 </script>
 

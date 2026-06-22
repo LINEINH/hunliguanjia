@@ -142,16 +142,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, reactive } from "vue";
-import { checkLogin, navigateToLogin } from "@/utils/auth";
-
+import { ref, reactive, computed, onMounted } from "vue";
 import {
-  getProductDetail,
-  favoriteProduct,
-  unfavoriteProduct,
-  bind,
-  unbind,
-} from "@/api/product";
+  onLoad,
+  onShow,
+  onShareAppMessage,
+  onShareTimeline,
+} from "@dcloudio/uni-app";
+import { getProductDetail } from "@/api/product";
+import { bind, unbind } from "@/api/product";
+import { checkLogin, navigateToLogin } from "@/utils/auth";
+import { useUserStore } from "@/store/modules/user";
+import { favoriteProduct, unfavoriteProduct } from "@/api/product";
 
 const activeTab = ref(0);
 // 创建响应式数据
@@ -417,6 +419,24 @@ async function toggleFavorite() {
     });
   }
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: productData.value.name || "壹嫁婚选",
+    path: `/pages/merchant/planDetail?id=${productData.value.id}`,
+    imageUrl: productData.value.cover_image || "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: productData.value.name || "壹嫁婚选",
+    path: `/pages/merchant/planDetail?id=${productData.value.id}`,
+    imageUrl: productData.value.cover_image || "",
+  };
+});
 </script>
 
 <style lang="scss" scoped>

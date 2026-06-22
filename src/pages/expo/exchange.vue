@@ -33,7 +33,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import {
+  onLoad,
+  onShow,
+  onShareAppMessage,
+  onShareTimeline,
+} from "@dcloudio/uni-app";
 import { getGift, checkinClaim } from "@/api/expo";
+import { useUserStore } from "@/store/modules/user";
 
 const momentsList = ref<any>([]);
 
@@ -106,6 +113,24 @@ async function exchange(moment: any) {
 // 页面加载时获取数据
 onMounted(() => {
   loadGiftList();
+});
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "积分兑换 - 壹嫁婚选",
+    path: "/pages/expo/exchange",
+    imageUrl: "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "积分兑换 - 壹嫁婚选",
+    path: "/pages/expo/exchange",
+    imageUrl: "",
+  };
 });
 </script>
 

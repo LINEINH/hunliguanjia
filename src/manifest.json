@@ -1,7 +1,7 @@
 {
-    "name" : "婚庆服务平台",
+    "name" : "壹嫁婚选",
     "appid" : "wx978acdd5bdaa60e5",
-    "description" : "婚庆服务平台C端小程序",
+    "description" : "壹嫁婚选C端小程序",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,

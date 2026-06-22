@@ -127,8 +127,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
+import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
-
 import {
   getProductDetail,
   favoriteProduct,
@@ -136,6 +136,7 @@ import {
   bind,
   unbind,
 } from "@/api/product";
+import { getMerchantList, getMerchantDetail } from "@/api/merchant";
 
 // 产品数据
 const productData = ref<any>({});
@@ -482,6 +483,24 @@ async function toggleFavorite() {
     });
   }
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: productData.value.name || "壹嫁婚选",
+    path: `/pages/merchant/planDetail?id=${productData.value.id}`,
+    imageUrl: productData.value.cover_image || "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: productData.value.name || "壹嫁婚选",
+    path: `/pages/merchant/planDetail?id=${productData.value.id}`,
+    imageUrl: productData.value.cover_image || "",
+  };
+});
 </script>
 
 <style lang="scss" scoped>

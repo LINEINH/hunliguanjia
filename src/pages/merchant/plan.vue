@@ -190,6 +190,7 @@
 import { ref, reactive, onMounted, watch } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getBanners, merchants, getDictionary } from "@/api/product";
+import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 
 // 页面标题
 const pageTitle = ref("婚礼策划");
@@ -744,6 +745,28 @@ onMounted(() => {
   loadGetDictionary();
   // 加载商家列表数据
   loadMerchants(1);
+});
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: `${pageTitle.value || "婚礼服务"} - 壹嫁婚选`,
+    path: `/pages/merchant/plan?title=${pageTitle.value || ""}&category=${
+      category.value || ""
+    }`,
+    imageUrl: banners.value[0].image_url || "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: `${route.query.title || "婚礼服务"} - 壹嫁婚选`,
+    path: `/pages/merchant/plan?title=${pageTitle.value || ""}&category=${
+      category.value || ""
+    }`,
+    imageUrl: banners.value[0].image_url || "",
+  };
 });
 </script>
 

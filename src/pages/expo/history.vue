@@ -24,7 +24,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
+import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import { getExpoDetail, registerExpo } from "@/api/expo";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 
@@ -71,26 +71,9 @@ async function fetchExpoDetail() {
   }
 }
 
-// 处理报名
-async function handleRegister() {
-  if (!checkLogin()) {
-    uni.showModal({
-      title: "提示",
-      content: "请先登录后再报名",
-      confirmText: "去登录",
-      cancelText: "取消",
-      success: (res) => {
-        if (res.confirm) {
-          navigateToLogin();
-        }
-      },
-    });
-    return;
-  }
-  if (!expoDetail.value) return;
-
-  // 表单验证
-  if (!formData.value.user_name || !formData.value.user_name.trim()) {
+// 注册报名
+const submitForm = async () => {
+  if (!formData.value.user_name.trim()) {
     uni.showToast({
       title: "请输入姓名",
       icon: "none",
@@ -98,19 +81,17 @@ async function handleRegister() {
     return;
   }
 
-  if (!formData.value.user_phone || !formData.value.user_phone.trim()) {
+  if (!formData.value.user_phone.trim()) {
     uni.showToast({
-      title: "请输入手机号",
+      title: "请输入联系电话",
       icon: "none",
     });
     return;
   }
 
-  // 手机号格式验证
-  const phoneRegex = /^1[3-9]\d{9}$/;
-  if (!phoneRegex.test(formData.value.user_phone)) {
+  if (!expoId.value) {
     uni.showToast({
-      title: "请输入正确的手机号",
+      title: "活动ID不能为空",
       icon: "none",
     });
     return;
@@ -118,29 +99,38 @@ async function handleRegister() {
 
   try {
     uni.showLoading({
-      title: "报名中...",
+      title: "提交中...",
+      mask: true,
     });
 
+    // 修正函数参数，根据API定义，registerExpo需要4个参数
+    // 修正函数参数，根据API定义，registerExpo需要4个参数
+    // registerExpo(activity_id: string, user_name: string, user_phone: string, merchant_id: string)
     const res = await registerExpo(
-      expoId.value.toString(),
-      formData.value.user_name,
-      formData.value.user_phone
+      expoId.value.toString(), // activity_id
+      formData.value.user_name, // user_name
+      formData.value.user_phone, // user_phone
+      "0" // merchant_id (对于普通报名，使用默认值)
     );
-    if (res.registration) {
-      // 报名成功后可以更新状态或跳转到其他页面
-      qrCode.value = res.registration.qrcode;
-      uni.hideLoading();
+
+    uni.hideLoading();
+
+    if (res) {
       uni.showToast({
         title: "报名成功",
         icon: "success",
       });
-    }
 
-    // 清空表单
-    formData.value = {
-      user_name: "",
-      user_phone: "",
-    };
+      // 清空表单
+      formData.value = {
+        user_name: "",
+        user_phone: "",
+      };
+
+      setTimeout(() => {
+        uni.navigateBack();
+      }, 1500);
+    }
   } catch (error) {
     uni.hideLoading();
     console.error("报名失败:", error);
@@ -149,7 +139,7 @@ async function handleRegister() {
       icon: "none",
     });
   }
-}
+};
 
 // 导航到商家列表
 function navigateToDetail() {
@@ -189,6 +179,24 @@ function openMap() {
     },
   });
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "精彩回顾 - 壹嫁婚选",
+    path: "/pages/expo/history",
+    imageUrl: expoDetail.value.history_media[0],
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "婚博会精彩回顾 - 壹嫁婚选",
+    path: "/pages/expo/history",
+    imageUrl: expoDetail.value.history_media[0],
+  };
+});
 </script>
 <style lang="scss" scoped>
 .expodetail-1container {

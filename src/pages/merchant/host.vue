@@ -159,8 +159,15 @@
 
 <script setup >
 import { ref, reactive, onMounted, watch } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
+import {
+  onLoad,
+  onShow,
+  onShareAppMessage,
+  onShareTimeline,
+} from "@dcloudio/uni-app";
 import { getBanners, getProducts, getDictionary } from "@/api/product";
+import { getMerchantList } from "@/api/merchant";
+import { checkLogin, navigateToLogin } from "@/utils/auth";
 
 // 页面标题
 const pageTitle = ref("婚礼策划");
@@ -522,6 +529,24 @@ onMounted(() => {
   loadGetDictionary();
   // 加载商家列表数据
   loadMerchants(1);
+});
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "婚礼主持 - 壹嫁婚选",
+    path: "/pages/merchant/host?title=婚礼主持",
+    imageUrl: "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "婚礼主持服务 - 壹嫁婚选",
+    path: "/pages/merchant/host?title=婚礼主持",
+    imageUrl: "",
+  };
 });
 </script>
 

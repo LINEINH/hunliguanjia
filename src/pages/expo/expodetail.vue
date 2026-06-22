@@ -210,10 +210,9 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
 import { getExpoDetail, registerExpo } from "@/api/expo";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
-
+import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 // 婚博会详情数据
 const expoDetail = ref<any>(null);
 const loading = ref(true);
@@ -462,6 +461,24 @@ function openMap() {
     },
   });
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "婚博会",
+    path: `/pages/expo/expodetail?id=${expoDetail.value.id}`,
+    imageUrl: expoDetail.value.cover_image || "",
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "婚博会",
+    path: `/pages/expo/expodetail?id=${expoDetail.value.id}`,
+    imageUrl: expoDetail.value.cover_image || "",
+  };
+});
 </script>
 <style lang="scss" scoped>
 .expodetail-container {
@@ -576,7 +593,7 @@ function openMap() {
         width: 200rpx;
         position: absolute;
         right: 70rpx;
-        top: 700rpx;
+        top: 70rpx;
       }
     }
     .intro {
