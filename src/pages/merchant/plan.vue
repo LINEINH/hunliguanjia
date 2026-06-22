@@ -2,7 +2,12 @@
 <template>
   <view class="page">
     <view class="fixedcon">
-      <up-navbar :title="pageTitle" @rightClick="rightClick" :autoBack="true">
+      <up-navbar
+        :title="pageTitle"
+        @rightClick="rightClick"
+        :autoBack="true"
+        placeholder
+      >
       </up-navbar>
       <view class="search-bar">
         <view class="search-box">
@@ -80,19 +85,6 @@
         </view>
       </view>
     </up-overlay>
-
-    <view class="category-grid" v-if="Number(category) >= 10">
-      <view
-        v-for="item in categories"
-        :key="item.id"
-        class="category-item"
-        :class="{ 'category-active': Number(category) === Number(item.id) }"
-        @click="handleCategoryClick(item)"
-      >
-        <image :src="item.icon" class="category-icon" lazy-load />
-        <text class="category-name">{{ item.name }}</text>
-      </view>
-    </view>
     <!-- 酒店列表 -->
     <scroll-view
       class="list"
@@ -113,12 +105,24 @@
           <swiper-item v-for="(item, index) in banners" :key="index">
             <image
               :src="item.image_url"
-              mode="aspectFill"
+              mode="widthFix"
               class="banner-image"
               lazy-load
             />
           </swiper-item>
         </swiper>
+      </view>
+      <view class="category-grid" v-if="Number(category) === 10">
+        <view
+          v-for="item in categories"
+          :key="item.id"
+          class="category-item"
+          :class="{ 'category-active': Number(category) === Number(item.id) }"
+          @click="handleCategoryClick(item)"
+        >
+          <image :src="item.icon" class="category-icon" lazy-load />
+          <text class="category-name">{{ item.name }}</text>
+        </view>
       </view>
       <view v-if="merchantList.length === 0" class="empty">暂无匹配的商家</view>
       <view
@@ -302,12 +306,13 @@ const tempSelectedValue = ref(null);
 // 处理预算区间筛选
 const handleBudgetFilter = (value, params) => {
   if (typeof value !== "string") return;
-
   // 解析预算区间字符串
-  if (value === "1000以下") {
-    params.budget_max = 1000;
-  } else if (value === "5000以上") {
-    params.budget_min = 5000;
+  // 当预算区间 含有 以上 时，获取前面的参数
+
+  if (value.includes("以下")) {
+    params.budget_max = Number(value.split("以下")[0]);
+  } else if (value.includes("以上")) {
+    params.budget_min = Number(value.split("以上")[0]);
   } else if (value.includes("-")) {
     // 去除非数字和横杠的字符后再转换数字
     const cleanValue = value.replace(/[^\d-]/g, "");
@@ -753,7 +758,7 @@ onMounted(() => {
   position: fixed;
   left: 0;
   right: 0;
-  top: 170rpx;
+  top: 0rpx;
   z-index: 99999;
 }
 
@@ -761,7 +766,7 @@ onMounted(() => {
   margin-bottom: $spacing-md;
   margin-top: 380rpx;
   .banner-swiper {
-    height: 460rpx;
+    height: 420rpx;
     border-radius: $radius-md;
     overflow: hidden;
   }
@@ -907,7 +912,7 @@ onMounted(() => {
       #e9cc90 100%
     );
     padding: 3rpx 10rpx;
-    color: #d43030;
+    color: #612500;
   }
 }
 .description {
@@ -938,8 +943,8 @@ onMounted(() => {
 .hotel-highlights {
   display: flex;
   gap: 6px;
-  flex-wrap: wrap;
   height: 48rpx;
+  overflow: hidden;
 }
 .highlight {
   font-size: 24rpx;

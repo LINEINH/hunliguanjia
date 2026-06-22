@@ -10,7 +10,12 @@
         indicator-active-color="#fff"
       >
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" lazy-load />
+          <image
+            :src="item.image_url"
+            mode="widthFix"
+            class="banner-image"
+            lazy-load
+          />
         </swiper-item>
       </swiper>
     </view>
@@ -151,7 +156,7 @@ onShow(() => {
   .banner {
     margin-bottom: $spacing-md;
     .banner-swiper {
-      height: 520rpx;
+      height: 420rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

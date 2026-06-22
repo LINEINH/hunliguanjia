@@ -79,11 +79,7 @@
           duration="500"
         >
           <swiper-item v-for="(item, index) in banners" :key="index">
-            <image
-              :src="item.image_url"
-              mode="aspectFill"
-              class="banner-image"
-            />
+            <image :src="item.image_url" mode="widthFix" class="banner-image" />
           </swiper-item>
         </swiper>
       </view>
@@ -550,7 +546,7 @@ function openDetail(hotel) {
     margin-bottom: $spacing-md;
     margin-top: 20rpx;
     .banner-swiper {
-      height: 460rpx;
+      height: 420rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

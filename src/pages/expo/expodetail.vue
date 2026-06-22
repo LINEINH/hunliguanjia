@@ -87,15 +87,22 @@
           <view class="code">婚博会礼品</view>
           <view class="gift_name">{{ expoDetail.gift.gift_name }}</view>
           <image
-            :src="expoDetail.gift.qr_code_image_url"
+            :src="expoDetail.gift.gift_image"
             mode="widthFix"
             class="codeimage"
-            lazy-load
+            style="width: 200rpx"
           />
           <view class="pickup_location"
             >{{ expoDetail.gift.merchant_name }}
             {{ expoDetail.gift.pickup_location }}</view
           >
+          <view
+            class="button"
+            @click="showQrcode()"
+            v-if="expoDetail.gift && expoDetail.gift.status === 0"
+          >
+            显示礼品二维码
+          </view>
         </view>
         <template v-else>
           <view class="register-form" v-if="!expoDetail.qr_code">
@@ -142,16 +149,6 @@
           </view>
         </template>
       </view>
-      <!-- 
-      <view class="ad">
-        <image
-          src="/static/images/post1.png"
-          mode="widthFix"
-          class="ad-image"
-          @click="navigateToDetail"
-        />
-      </view> -->
-
       <view class="step">
         <view class="steptitle">
           <image
@@ -191,6 +188,24 @@
     <view v-else class="error-state">
       <text>加载失败，请重试</text>
     </view>
+
+    <up-popup
+      :show="show"
+      mode="center"
+      :round="10"
+      @close="close"
+      @open="open"
+      closeable="true"
+    >
+      <view v-if="expoDetail.gift && expoDetail.gift.qr_code_image_url">
+        <image
+          :src="expoDetail.gift.qr_code_image_url"
+          mode="widthFix"
+          class="codeimage"
+          lazy-load
+        />
+      </view>
+    </up-popup>
   </view>
 </template>
 <script setup lang="ts">
@@ -211,6 +226,25 @@ const formData = ref({
   user_name: "",
   user_phone: "",
 });
+
+// 创建响应式数据
+const show = ref(false);
+
+const codeUrl = ref("");
+
+function open() {
+  // 打开逻辑，比如设置 show 为 true
+  show.value = true;
+  // console.log('open');
+}
+
+function showQrcode() {
+  open();
+}
+function close() {
+  show.value = false;
+  fetchExpoDetail();
+}
 
 // 页面加载时获取参数
 onLoad((options: any) => {
@@ -526,27 +560,23 @@ function openMap() {
       color: #000000;
       text-align: center;
       font-weight: bold;
-    }
-    .codeimage {
-      width: 400rpx;
-      height: 400rpx;
-      margin: 32rpx auto;
-      display: block;
+      margin-bottom: 20rpx;
     }
     .checked_in {
       position: relative;
       .pickup_location {
         text-align: center;
+        margin-bottom: 20rpx;
       }
       .gift_name {
         text-align: center;
+        margin-bottom: 20rpx;
       }
       .okImg {
         width: 200rpx;
         position: absolute;
-        right: 120rpx;
-        top: 120rpx;
-        background: #fff;
+        right: 70rpx;
+        top: 700rpx;
       }
     }
     .intro {
@@ -616,6 +646,12 @@ function openMap() {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .codeimage {
+    width: 400rpx;
+    height: 400rpx;
+    margin: 32rpx auto;
+    display: block;
   }
 }
 </style>

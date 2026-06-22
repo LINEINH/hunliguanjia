@@ -1,13 +1,26 @@
 
 <template>
   <view class="planItem">
-    <up-navbar title="案例详情" @rightClick="rightClick" :autoBack="true">
+    <up-navbar
+      title="案例详情"
+      @rightClick="rightClick"
+      :autoBack="true"
+      placeholder
+    >
     </up-navbar>
 
     <view class="banner">
-      <swiper class="banner-swiper" autoplay circular indicator-dots>
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        indicator-active-color="#fff"
+        interval="3000"
+        duration="500"
+      >
         <swiper-item v-for="(item, index) in productData.images" :key="index">
-          <image :src="item" mode="aspectFill" class="banner-image" />
+          <image :src="item" mode="widthFix" class="banner-image" />
         </swiper-item>
       </swiper>
     </view>
@@ -148,9 +161,9 @@ async function loadProductDetail() {
   }
 
   try {
-    uni.showLoading({
-      title: "加载中...",
-    });
+    // uni.showLoading({
+    //   title: "加载中...",
+    // });
 
     const response = await getCasesDetail(hotelId.value);
 
@@ -303,9 +316,8 @@ function toggleFavorite() {
   padding-bottom: 100rpx;
 
   .banner {
-    margin-top: 80rpx;
     .banner-swiper {
-      height: 1200rpx;
+      height: 1000rpx;
       overflow: hidden;
     }
     .banner-image {

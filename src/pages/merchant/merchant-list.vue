@@ -9,7 +9,12 @@
         indicator-active-color="#fff"
       >
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" lazy-load />
+          <image
+            :src="item.image_url"
+            mode="widthFix"
+            class="banner-image"
+            lazy-load
+          />
         </swiper-item>
       </swiper>
     </view>
@@ -168,6 +173,16 @@ const categoryNames: Record<number, string> = {
   8: "婚礼摄影",
   9: "婚礼摄像",
   10: "婚礼周边",
+  11: "婚礼车队",
+  12: "婚礼伴手礼",
+  13: "photobooth",
+  14: "茶歇甜品",
+  15: "宴会酒水",
+  16: "互动演绎",
+  17: "婚礼床品",
+  18: "婚礼用品",
+  19: "妇产医院",
+  20: "月子中心",
 };
 
 // 根据 category_id 获取分类名称
@@ -294,7 +309,7 @@ onShow(() => {
     margin-bottom: $spacing-md;
 
     .banner-swiper {
-      height: 540rpx;
+      height: 420rpx;
       overflow: hidden;
     }
 

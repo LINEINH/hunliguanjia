@@ -5,6 +5,7 @@
       :title="hotelData.name || '酒店详情'"
       @rightClick="rightClick"
       :autoBack="true"
+      placeholder
     >
     </up-navbar>
 
@@ -19,7 +20,7 @@
         duration="500"
       >
         <swiper-item v-for="(item, index) in hotelData.images" :key="index">
-          <image :src="item" mode="aspectFill" class="banner-image" lazy-load />
+          <image :src="item" mode="widthFix" class="banner-image" lazy-load />
         </swiper-item>
       </swiper>
     </view>
@@ -207,9 +208,9 @@ async function loadHotelDetail() {
   }
 
   try {
-    uni.showLoading({
-      title: "加载中...",
-    });
+    // uni.showLoading({
+    //   title: "加载中...",
+    // });
 
     const response = await getHotelDetail(hotelId.value);
 
@@ -556,10 +557,8 @@ function cleanHtmlContent(html: string): string {
   padding-bottom: 100rpx;
 
   .banner {
-    margin-top: 80rpx;
-    margin-bottom: 40rpx;
     .banner-swiper {
-      height: 1200rpx;
+      height: 1000rpx;
       overflow: hidden;
     }
     .banner-image {
@@ -603,7 +602,7 @@ function cleanHtmlContent(html: string): string {
           #e9cc90 100%
         );
         padding: 3rpx 10rpx;
-        color: #d43030;
+        color: #612500;
         margin-right: 10rpx;
       }
       .fen {
@@ -626,7 +625,7 @@ function cleanHtmlContent(html: string): string {
     }
     .hotel-address {
       font-size: 28rpx;
-      color: #808080;
+      color: #333;
       margin: 10rpx 0;
       display: flex;
       align-items: center;

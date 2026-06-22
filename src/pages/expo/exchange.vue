@@ -83,9 +83,9 @@ async function exchange(moment: any) {
   }
 
   try {
-    uni.showLoading({
-      title: "加载中...",
-    });
+    // uni.showLoading({
+    //   title: "加载中...",
+    // });
 
     const response = await checkinClaim(moment.id);
     if (response) {

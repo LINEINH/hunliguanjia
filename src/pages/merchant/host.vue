@@ -88,7 +88,15 @@
       :lower-threshold="100"
     >
       <view class="banner">
-        <swiper class="banner-swiper" autoplay circular indicator-dots>
+        <swiper
+          class="banner-swiper"
+          autoplay
+          circular
+          indicator-dots
+          indicator-active-color="#fff"
+          interval="3000"
+          duration="500"
+        >
           <swiper-item v-for="(item, index) in banners" :key="index">
             <image
               :src="item.image_url"

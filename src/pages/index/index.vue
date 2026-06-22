@@ -14,7 +14,7 @@
         <swiper-item v-for="(banner, index) in banners" :key="index">
           <image
             :src="banner.image_url"
-            mode="aspectFill"
+            mode="widthFix"
             class="banner-image"
             @click="navigateToLink(banner.link)"
           />
@@ -1224,7 +1224,7 @@ onShow(() => {
     margin-bottom: $spacing-md;
 
     .banner-swiper {
-      height: 1200rpx;
+      height: 1000rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

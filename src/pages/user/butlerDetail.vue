@@ -5,6 +5,7 @@
       :title="butlerDetail?.name || '管家详情'"
       @rightClick="rightClick"
       :autoBack="true"
+      placeholder
     >
     </up-navbar>
     <!-- 轮播图 -->
@@ -20,7 +21,7 @@
           v-for="(item, index) in butlerDetail.carousel_images"
           :key="index"
         >
-          <image :src="item" mode="aspectFill" class="banner-image" />
+          <image :src="item" mode="widthFix" class="banner-image" />
         </swiper-item>
       </swiper>
       <view v-else class="banner-placeholder">暂无图片</view>
@@ -254,7 +255,7 @@ function buyNow(index, id) {
     margin-bottom: $spacing-md;
     margin-top: 180rpx;
     .banner-swiper {
-      height: 520rpx;
+      height: 420rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

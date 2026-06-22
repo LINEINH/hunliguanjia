@@ -5,6 +5,7 @@
       :title="productData.name || '产品详情'"
       @rightClick="rightClick"
       :autoBack="true"
+      placeholder
     >
     </up-navbar>
 
@@ -21,7 +22,7 @@
         <swiper-item v-for="(item, index) in productData.images" :key="index">
           <image
             :src="item.image_url"
-            mode="aspectFill"
+            mode="widthFix"
             class="banner-image"
             lazy-load
           />
@@ -239,9 +240,9 @@ async function loadProductDetail() {
   }
 
   try {
-    uni.showLoading({
-      title: "加载中...",
-    });
+    // uni.showLoading({
+    //   title: "加载中...",
+    // });
 
     const response = await getProductDetail(hotelId.value);
 
@@ -491,9 +492,8 @@ async function toggleFavorite() {
   padding-bottom: 100rpx;
 
   .banner {
-    margin-top: 160rpx;
     .banner-swiper {
-      height: 1200rpx;
+      height: 1000rpx;
       overflow: hidden;
     }
     .banner-image {
@@ -519,6 +519,7 @@ async function toggleFavorite() {
       font-size: 32rpx;
       color: #bf974a;
       font-weight: bold;
+      margin-bottom: 20rpx;
       .small {
         font-size: $font-xs;
         font-weight: 400;
