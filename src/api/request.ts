@@ -75,9 +75,9 @@ export function request<T = any>(config: RequestConfig): Promise<T> {
   
   // 显示 loading
   if (finalConfig.showLoading !== false) {
-    uni.showLoading({
-      title: finalConfig.loadingText || '加载中...'
-    })
+    // uni.showLoading({
+    //   title: finalConfig.loadingText || '加载中...'
+    // })
   }
   
   return new Promise((resolve, reject) => {
