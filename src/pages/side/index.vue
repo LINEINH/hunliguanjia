@@ -298,7 +298,7 @@ function handleCouponScan(index: number) {
           console.error("参数为空！");
           uni.showModal({
             title: "提示",
-            content: `参数解析失败\ncode: ${code}\ntype: ${type}\n\n原始二维码: ${scanResult}`,
+            content: "扫码失败",
             showCancel: false,
           });
           return;

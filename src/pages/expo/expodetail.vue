@@ -298,7 +298,7 @@ onLoad((options: any) => {
     } catch (error) {
       console.error("解析 scene 参数失败:", error);
       uni.showToast({
-        title: "参数解析失败",
+        title: "扫码失败",
         icon: "none",
       });
       loading.value = false;

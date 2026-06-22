@@ -59,7 +59,7 @@
       </view>
     </view>
 
-    <up-overlay :show="show" @click="show = false">
+    <up-overlay :show="show" @click="closeOverlay">
       <view class="filter-dialog" @tap.stop>
         <view class="filter-content">
           <view
@@ -746,6 +746,11 @@ onMounted(() => {
   // 加载商家列表数据
   loadMerchants(1);
 });
+
+function closeOverlay() {
+  activeFilterId.value = null;
+  show.value = false;
+}
 
 // 页面分享
 onShareAppMessage(() => {

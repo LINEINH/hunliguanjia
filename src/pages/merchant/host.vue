@@ -54,7 +54,7 @@
       </view>
     </view>
 
-    <up-overlay :show="show" @click="show = false">
+    <up-overlay :show="show" @click="closeOverlay">
       <view class="filter-dialog" @tap.stop>
         <view class="filter-content">
           <view
@@ -522,6 +522,11 @@ function onSearchClick() {
   uni.navigateTo({
     url: "/pages/merchant/search",
   });
+}
+
+function closeOverlay() {
+  activeFilterId.value = null;
+  show.value = false;
 }
 
 onMounted(() => {

@@ -42,7 +42,7 @@
       </view>
     </view>
 
-    <up-overlay :show="show" @click="show = false">
+    <up-overlay :show="show" @click="closeOverlay">
       <view class="filter-dialog" @tap.stop>
         <view class="filter-content">
           <view
@@ -523,6 +523,11 @@ function onSearch() {
   // 搜索逻辑可以通过重新调用 loadMerchants 并传递关键字来实现
   console.log("搜索触发", searchKeyword.value);
   loadMerchants(getCurrentParams(), true);
+}
+
+function closeOverlay() {
+  tempSelectedfilters.value = null;
+  show.value = false;
 }
 
 function openDetail(hotel) {
