@@ -314,7 +314,7 @@ onShow(() => {
                 #e9cc90 100%
               );
               padding: 6rpx 20rpx;
-              color: #d43030;
+              color: #ab7e2b;
             }
             .year {
               font-size: 24rpx;

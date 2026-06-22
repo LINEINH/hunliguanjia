@@ -87,7 +87,7 @@
       </view>
       <view class="right-button">
         <view class="hotel-footer-tel button" @click="makePhoneCall">
-          电话咨询
+          商家咨询
         </view>
         <button class="hotel-footer-online button" open-type="contact">
           在线管家
@@ -204,9 +204,9 @@ function rightClick() {
 }
 
 function makePhoneCall() {
-  // 这里可以添加电话咨询的功能
+  // 这里可以添加商家咨询的功能
   uni.showModal({
-    title: "电话咨询",
+    title: "商家咨询",
     content: "是否拨打商家电话？\n请使用授权手机号拨出，以免拨打失败！",
     success: function (res) {
       if (res.confirm) {

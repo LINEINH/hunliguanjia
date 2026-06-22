@@ -494,7 +494,7 @@ onMounted(() => {
               #e9cc90 100%
             );
             padding: 3rpx 10rpx;
-            color: #d43030;
+            color: #ab7e2b;
           }
           .year {
             font-size: 24rpx;
@@ -630,7 +630,7 @@ onMounted(() => {
                   #e9cc90 100%
                 );
                 padding: 3rpx 10rpx;
-                color: #d43030;
+                color: #ab7e2b;
               }
               .year {
                 font-size: 24rpx;

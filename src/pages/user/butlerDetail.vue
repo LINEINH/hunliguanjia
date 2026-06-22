@@ -118,7 +118,7 @@
         }}</text>
       </view>
       <view class="hotel-footer-tel button" @click="openDetail()">
-        电话咨询
+        商家咨询
       </view>
       <button class="hotel-footer-online button" open-type="contact">
         在线管家
@@ -312,7 +312,7 @@ function buyNow(index, id) {
                 #e9cc90 100%
               );
               padding: 3rpx 10rpx;
-              color: #d43030;
+              color: #ab7e2b;
             }
             .year {
               font-size: 24rpx;
