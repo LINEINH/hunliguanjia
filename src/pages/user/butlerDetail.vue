@@ -129,7 +129,7 @@
 
 <script setup>
 import { ref, reactive, computed } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
+import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 const show = ref(false);
 import { getGoldDetail, setOrders } from "@/api/user";
 import { favoriteProduct, unfavoriteProduct } from "@/api/product";
@@ -242,6 +242,24 @@ function buyNow(index, id) {
     }
   });
 }
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: butlerDetail.value.name,
+    path: `/pages/user/butlerDetail?id=${butlerDetail.value.id}`,
+    imageUrl: butlerDetail.value.carousel_images[0],
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: butlerDetail.value.name,
+    path: `/pages/user/butlerDetail?id=${butlerDetail.value.id}`,
+    imageUrl: butlerDetail.value.carousel_images[0],
+  };
+});
 </script>
 
 <style lang="scss" scoped>
@@ -253,9 +271,8 @@ function buyNow(index, id) {
 
   .banner {
     margin-bottom: $spacing-md;
-    margin-top: 180rpx;
     .banner-swiper {
-      height: 420rpx;
+      height: 1000rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

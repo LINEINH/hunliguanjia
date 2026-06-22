@@ -20,7 +20,7 @@
         duration="500"
       >
         <swiper-item v-for="(item, index) in banners" :key="index">
-          <image :src="item.image_url" mode="aspectFill" class="banner-image" />
+          <image :src="item.image_url" mode="widthFix" class="banner-image" />
         </swiper-item>
       </swiper>
     </view>
@@ -148,7 +148,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { onReachBottom, onPullDownRefresh } from "@dcloudio/uni-app";
+import {
+  onReachBottom,
+  onPullDownRefresh,
+  onShareAppMessage,
+  onShareTimeline,
+} from "@dcloudio/uni-app";
 
 import {
   getGoldServiceBanner,
@@ -394,6 +399,24 @@ onMounted(() => {
   fetchServiceProviders(false); // 获取金牌服务人列表（分页）
   console.log("首页加载");
 });
+
+// 页面分享
+onShareAppMessage(() => {
+  return {
+    title: "婚礼管家 - 壹嫁婚选",
+    path: "/pages/user/butler",
+    imageUrl: banners.value[0].image_url,
+  };
+});
+
+// 分享到朋友圈
+onShareTimeline(() => {
+  return {
+    title: "婚礼管家 - 壹嫁婚选",
+    path: "/pages/user/butler",
+    imageUrl: banners.value[0].image_url,
+  };
+});
 </script>
 
 <style lang="scss" scoped>
@@ -407,7 +430,7 @@ onMounted(() => {
   .banner {
     margin-bottom: $spacing-md;
     .banner-swiper {
-      height: 540rpx;
+      height: 570rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

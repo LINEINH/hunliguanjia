@@ -319,7 +319,7 @@ onShareAppMessage(() => {
 // 分享到朋友圈
 onShareTimeline(() => {
   return {
-    title: "美好瞬间 - 婚庆服务案例",
+    title: "美好瞬间 - 壹嫁婚选",
     path: "/pages/index/case",
     imageUrl: productData.value.images[0],
   };
