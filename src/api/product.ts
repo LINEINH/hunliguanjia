@@ -206,3 +206,12 @@ export function unbind(merchant_id: string) {
     }
   })
 }
+
+
+// 推荐产品列表
+export function getMRecommend() {
+  return request<any>({
+    url: '/wechat/merchants/recommend',
+    method: 'GET'
+  })
+}

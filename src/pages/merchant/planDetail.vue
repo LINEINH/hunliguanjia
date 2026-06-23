@@ -465,7 +465,6 @@ onShareTimeline(() => {
     .hotel-name {
       font-size: 32rpx;
       font-weight: bold;
-      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;

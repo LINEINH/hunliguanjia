@@ -182,6 +182,66 @@
       <view v-if="!hasMore && merchantList.length > 0" class="no-more"
         >没有更多数据了</view
       >
+      <view
+        class="recommond"
+        v-if="recommendMerchants && recommendMerchants.length"
+      >
+        <view class="title"> 推荐商户 </view>
+
+        <view
+          v-for="merchant in recommendMerchants"
+          :key="merchant.id"
+          class="hotel-card"
+          @click="openDetail(merchant)"
+        >
+          <image
+            class="hotel-img"
+            :src="
+              merchant.cover_image ||
+              (merchant.images && merchant.images.length > 0
+                ? merchant.images[0]
+                : '')
+            "
+            mode="aspectFill"
+            lazy-load
+          />
+          <view class="hotel-info">
+            <view class="hotel-row">
+              <text class="hotel-name">{{
+                merchant.name || merchant.title
+              }}</text>
+            </view>
+            <view class="hotel-time">
+              <text class="rate">{{ merchant.rating }}分</text>
+            </view>
+            <view class="description">{{
+              merchant.short_description || "暂无描述"
+            }}</view>
+            <view class="hotel-desc">
+              <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
+              <text class="text">{{ merchant.address || "暂无地址" }}</text>
+            </view>
+            <view class="hotel-highlights">
+              <text
+                v-for="(h, idx) in merchant.personnel_tags"
+                :key="idx"
+                class="highlight"
+                >{{ h }}</text
+              >
+            </view>
+
+            <view class="hotel-intro">
+              <image
+                :src="merchant.logo"
+                mode="aspectFill"
+                class="user-icon"
+                lazy-load
+              ></image>
+              <text class="user-name">{{ merchant.name }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
     </scroll-view>
   </view>
 </template>
@@ -189,7 +249,12 @@
 <script setup >
 import { ref, reactive, onMounted, watch } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
-import { getBanners, merchants, getDictionary } from "@/api/product";
+import {
+  getBanners,
+  merchants,
+  getDictionary,
+  getMRecommend,
+} from "@/api/product";
 import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 
 // 页面标题
@@ -219,6 +284,8 @@ const currentPage = ref(1);
 const totalPage = ref(1);
 const loading = ref(false);
 const hasMore = ref(true);
+// 推荐商户
+const recommendMerchants = ref([]);
 
 // 存储用户选择的筛选结果: { filterId: value }
 // value 可以是 id (如果是对象数组) 或 name/string (如果是字符串数组)
@@ -740,11 +807,20 @@ function handleCategoryClick(item) {
   loadMerchants(1);
 }
 
+function loadGetMRecommend() {
+  getMRecommend().then((res) => {
+    if (res) {
+      recommendMerchants.value = res;
+    }
+  });
+}
+
 onMounted(() => {
   loadGetBanner();
   loadGetDictionary();
   // 加载商家列表数据
   loadMerchants(1);
+  loadGetMRecommend();
 });
 
 function closeOverlay() {
@@ -1124,6 +1200,14 @@ onShareTimeline(() => {
 .category-active {
   .category-name {
     color: #ab7e2b !important;
+  }
+}
+.recommond {
+  .title {
+    margin: 20rpx;
+    color: #ab7e2b;
+    font-size: 32rpx;
+    font-weight: bold;
   }
 }
 </style>

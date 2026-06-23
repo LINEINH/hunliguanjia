@@ -112,7 +112,7 @@
           </view>
           <view class="hotel-address">
             <up-icon name="map" size="14" color="# AB7E2B"> </up-icon>
-            {{ hotel.address }}</view
+            <text class="text"> {{ hotel.address }}</text></view
           >
         </view>
       </view>
@@ -124,6 +124,43 @@
       <view class="no-more" v-else-if="noMore">
         <text>没有更多数据了</text>
       </view>
+
+      <view
+        class="recommond"
+        v-if="recommendMerchants && recommendMerchants.length"
+      >
+        <view class="title"> 推荐商户 </view>
+        <view
+          v-for="hotel in recommendMerchants"
+          :key="hotel.id"
+          class="hotel-card"
+          @click="openDetail(hotel)"
+        >
+          <image class="hotel-img" :src="hotel.logo" mode="aspectFill" />
+          <view class="hotel-info">
+            <view class="hotel-row">
+              <text class="hotel-name">{{ hotel.name }}</text>
+            </view>
+            <view class="hotel-time"
+              ><text class="rate">{{ hotel.rating }}分</text>
+              {{ hotel.business_status }} {{ hotel.business_hours }}
+            </view>
+            <view class="hotel-desc"> {{ hotel.short_description }} </view>
+            <view class="hotel-highlights">
+              <text
+                v-for="(h, idx) in hotel.personnel_tags"
+                :key="idx"
+                class="highlight"
+                >{{ h }}</text
+              >
+            </view>
+            <view class="hotel-address">
+              <up-icon name="map" size="14" color="# AB7E2B"> </up-icon>
+              <text class="text"> {{ hotel.address }}</text></view
+            >
+          </view>
+        </view>
+      </view>
     </scroll-view>
   </view>
 </template>
@@ -131,7 +168,12 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
 import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
-import { getHotelFilter, getBanners, merchants } from "@/api/product";
+import {
+  getHotelFilter,
+  getBanners,
+  merchants,
+  getMRecommend,
+} from "@/api/product";
 
 // 搜索关键词
 const searchKeyword = ref("");
@@ -169,6 +211,8 @@ const tempSelectedTableCapacity = ref(-1); // 临时选中的桌数范围
 const tempSelectedMealStandard = ref(-1); // 临时选中的餐标范围
 const tempSelectedVenueType = ref(-1); // 临时选中的场地类型索引
 
+// 推荐商户
+const recommendMerchants = ref([]);
 // 获取筛选条件
 async function loadFilterConditions() {
   try {
@@ -499,6 +543,15 @@ function confirmAreaSelection() {
   // 重新加载数据（重置分页）
   loadMerchants(params, true);
 }
+function loadGetMRecommend() {
+  getMRecommend().then((res) => {
+    if (res) {
+      recommendMerchants.value = res;
+      console.log(res, "lkdjflsd");
+      // recommend.value = res.data.data;
+    }
+  });
+}
 
 // 加载筛选条件数据
 
@@ -506,6 +559,7 @@ onMounted(() => {
   loadFilterConditions();
   loadMerchants({}, true);
   loadGetBanner();
+  loadGetMRecommend();
 });
 
 const filteredHotels = computed(() => {
@@ -693,9 +747,11 @@ onShareTimeline(() => {
     height: 360rpx;
     border-radius: 6px;
     margin-right: 10px;
+    flex-shrink: 0;
   }
   .hotel-info {
     flex: 1;
+    width: 430rpx;
   }
   .hotel-row {
     display: flex;
@@ -739,13 +795,18 @@ onShareTimeline(() => {
     color: #ff6b00;
   }
   .hotel-address {
-    font-size: 24rpx;
-    color: #808080;
     margin-top: 20rpx;
     padding-top: 20rpx;
     border-top: 1px solid #bcbcbc;
     display: flex;
     align-items: center;
+    color: #808080;
+    .text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 24rpx;
+    }
   }
   .hotel-highlights {
     display: flex;
@@ -842,6 +903,15 @@ onShareTimeline(() => {
         width: 50%;
         text-align: center;
       }
+    }
+  }
+  .recommond {
+    padding-bottom: 100rpx;
+    .title {
+      margin: 20rpx;
+      color: #ab7e2b;
+      font-size: 32rpx;
+      font-weight: bold;
     }
   }
 }
