@@ -430,7 +430,7 @@ onShareTimeline(() => {
   .banner {
     margin-bottom: $spacing-md;
     .banner-swiper {
-      height: 570rpx;
+      height: 1000rpx;
       border-radius: $radius-md;
       overflow: hidden;
     }

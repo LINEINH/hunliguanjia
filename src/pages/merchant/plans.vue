@@ -2,8 +2,13 @@
 <template>
   <view class="page">
     <view class="fixedcon">
-      <!-- <up-navbar :title="pageTitle" @rightClick="rightClick" :autoBack="true">
-      </up-navbar> -->
+      <up-navbar
+        :title="pageTitle"
+        @rightClick="rightClick"
+        :autoBack="true"
+        placeholder
+      >
+      </up-navbar>
       <view class="search-bar">
         <view class="search-box">
           <view class="search-box-left">
@@ -100,16 +105,26 @@
           <swiper-item v-for="(item, index) in banners" :key="index">
             <image
               :src="item.image_url"
-              mode="aspectFill"
+              mode="widthFix"
               class="banner-image"
               lazy-load
             />
           </swiper-item>
         </swiper>
       </view>
-      <view v-if="merchantList.length === 0" class="empty"
-        >暂无匹配的主持人</view
-      >
+      <view class="category-grid">
+        <view
+          v-for="item in categories"
+          :key="item.id"
+          class="category-item"
+          :class="{ 'category-active': Number(category) === Number(item.id) }"
+          @click="handleCategoryClick(item)"
+        >
+          <image :src="item.icon" class="category-icon" lazy-load />
+          <text class="category-name">{{ item.name }}</text>
+        </view>
+      </view>
+      <view v-if="merchantList.length === 0" class="empty">暂无匹配的商家</view>
       <view
         v-for="merchant in merchantList"
         :key="merchant.id"
@@ -137,17 +152,29 @@
             <text class="rate">{{ merchant.rating }}分</text>
           </view>
           <view class="description">{{
-            merchant.description || "暂无描述"
+            merchant.short_description || "暂无描述"
           }}</view>
+          <view class="hotel-desc">
+            <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
+            <text class="text">{{ merchant.address || "暂无地址" }}</text>
+          </view>
+          <view class="hotel-highlights">
+            <text
+              v-for="(h, idx) in merchant.personnel_tags"
+              :key="idx"
+              class="highlight"
+              >{{ h }}</text
+            >
+          </view>
 
           <view class="hotel-intro">
             <image
-              :src="merchant.merchant.logo"
+              :src="merchant.logo"
               mode="aspectFill"
               class="user-icon"
               lazy-load
             ></image>
-            <text class="user-name">{{ merchant.merchant.name }}</text>
+            <text class="user-name">{{ merchant.name }}</text>
           </view>
         </view>
       </view>
@@ -161,24 +188,20 @@
 
 <script setup >
 import { ref, reactive, onMounted, watch } from "vue";
-import {
-  onLoad,
-  onShow,
-  onShareAppMessage,
-  onShareTimeline,
-} from "@dcloudio/uni-app";
-import { getBanners, getProducts, getDictionary } from "@/api/product";
-import { getMerchantList } from "@/api/merchant";
-import { checkLogin, navigateToLogin } from "@/utils/auth";
+import { onLoad } from "@dcloudio/uni-app";
+import { getBanners, merchants, getDictionary } from "@/api/product";
+import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 
 // 页面标题
 const pageTitle = ref("婚礼策划");
+const category = ref(null);
 
 // 接收页面参数
 onLoad((options) => {
   console.log("页面参数:", options);
   if (options && options.title) {
     pageTitle.value = options.title;
+    category.value = options.category || "1";
   }
 });
 
@@ -201,6 +224,58 @@ const hasMore = ref(true);
 // value 可以是 id (如果是对象数组) 或 name/string (如果是字符串数组)
 const activeFilters = reactive({});
 
+const categories = ref([
+  {
+    id: 11,
+    name: "婚礼车队",
+    icon: "/static/images/30.png",
+  },
+  {
+    id: 12,
+    name: "婚礼伴手礼",
+    icon: "/static/images/31.png",
+  },
+  {
+    id: 13,
+    name: "photobooth",
+    icon: "/static/images/32.png",
+  },
+  {
+    id: 14,
+    name: "茶歇甜品",
+    icon: "/static/images/33.png",
+  },
+  {
+    id: 15,
+    name: "宴会酒水",
+    icon: "/static/images/34.png",
+  },
+  {
+    id: 16,
+    name: "互动演绎",
+    icon: "/static/images/35.png",
+  },
+  {
+    id: 17,
+    name: "婚礼床品",
+    icon: "/static/images/36.png",
+  },
+  {
+    id: 18,
+    name: "婚礼用品",
+    icon: "/static/images/37.png",
+  },
+  {
+    id: 19,
+    name: "妇产医院",
+    icon: "/static/images/38.png",
+  },
+  {
+    id: 20,
+    name: "月子中心",
+    icon: "/static/images/39.png",
+  },
+]);
 const showOptions = (filter) => {
   console.log("显示选项：", filter);
   currentFilterType.value = filter.type;
@@ -232,18 +307,19 @@ const tempSelectedValue = ref(null);
 // 处理预算区间筛选
 const handleBudgetFilter = (value, params) => {
   if (typeof value !== "string") return;
-
   // 解析预算区间字符串
-  if (value === "2000以下") {
-    params.max_price = 2000;
-  } else if (value === "8000以上") {
-    params.min_price = 8000;
+  // 当预算区间 含有 以上 时，获取前面的参数
+
+  if (value.includes("以下")) {
+    params.budget_max = Number(value.split("以下")[0]);
+  } else if (value.includes("以上")) {
+    params.budget_min = Number(value.split("以上")[0]);
   } else if (value.includes("-")) {
     // 去除非数字和横杠的字符后再转换数字
     const cleanValue = value.replace(/[^\d-]/g, "");
     const [min, max] = cleanValue.split("-").map(Number);
-    params.min_price = min;
-    params.max_price = max;
+    params.budget_min = min;
+    params.budget_max = max;
   }
 };
 
@@ -287,10 +363,10 @@ function resetAreaSelection() {
   if (activeFilterId.value !== null) {
     delete activeFilters[activeFilterId.value];
   }
-  // 清除高亮状态
-  activeFilterId.value = null;
   // 关闭弹窗
   show.value = false;
+  // 清除高亮状态
+  activeFilterId.value = null;
   // 重置页码并重新加载数据
   currentPage.value = 1;
   loadMerchants(1);
@@ -318,6 +394,17 @@ function confirmAreaSelection() {
 // 搜索关键词状态
 const searchKeyword = ref("");
 
+function shuffle(arr) {
+  const result = [...arr];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
 // 从接口获取商家列表
 const loadMerchants = async (page = 1) => {
   if (loading.value || (!hasMore.value && page > 1)) return;
@@ -333,6 +420,9 @@ const loadMerchants = async (page = 1) => {
     // 添加关键词搜索
     if (searchKeyword.value) {
       params.keyword = searchKeyword.value;
+    }
+    if (category.value) {
+      params.service_category_id = category.value;
     }
 
     // 处理筛选条件
@@ -354,27 +444,27 @@ const loadMerchants = async (page = 1) => {
         // 综合排序处理
         handleSortFilter(selectedValue, params);
       } else if (
-        filterDef.type === "gender" &&
+        filterDef.type === "district" &&
         typeof selectedValue === "object"
       ) {
         // 区域筛选(对象类型，取id)
-        params.gender = selectedValue.value;
+        params.district = selectedValue.name;
       } else if (typeof selectedValue === "string") {
         // 其他字符串类型直接传值
         params[filterDef.type] = selectedValue;
       }
     }
-    params.category_id = 6;
-    const response = await getProducts(page, 10, params);
+
+    const response = await merchants(page, 10, params);
 
     // 根据API实际返回的数据结构进行处理
     // API返回格式: {"code":200,"message":"success","data":[...]}
     let merchantsData = [];
     let paginationInfo = {};
 
-    if (response && response.list) {
+    if (response) {
       // 正确提取商家数据
-      merchantsData = response.list || [];
+      merchantsData = shuffle(response.list) || [];
       // 提取分页信息
       paginationInfo = response.pagination || {}; // 如果response.data不是数组而是包含分页信息的对象
     } else {
@@ -448,14 +538,14 @@ function openDetail(hotel) {
   console.log("打开详情：", hotel);
   if (hotel && hotel.id) {
     uni.navigateTo({
-      url: `/pages/merchant/planDetail?id=${hotel.id}`,
+      url: `/pages/merchant/hotelDetail?id=${hotel.id}`,
     });
   }
 }
 // 获取banner
 const loadGetBanner = async () => {
   try {
-    const response = await getBanners(6);
+    const response = await getBanners(category.value || 1);
     banners.value = response || [];
     console.log("banner:", response);
   } catch (error) {
@@ -468,34 +558,95 @@ const loadGetDictionary = async () => {
   try {
     const response = await getDictionary();
     // 处理接口返回的数据，构建筛选列表
-    const { district } = response;
+    const { district, venue_type, feature, service_category } = response;
     // 构建筛选项列表
     const newFiltersList = [];
 
-    newFiltersList.push({
-      id: 1,
-      name: "性别",
-      options: [
-        {
-          id: 1,
-          name: "男",
-          value: "male",
-        },
-        {
-          id: 2,
-          name: "女",
-          value: "female",
-        },
-      ], // 直接使用API返回的district数组，不再添加"全部"
-      type: "gender",
-    });
-
-    newFiltersList.push({
-      id: 2,
-      name: "预算区间",
-      type: "meal_standard",
-      options: ["2000以下", "2000-3500", "3500-5000", "5000-8000", "8000以上"], // 直接使用API返回的venue_type数组
-    });
+    if (district && district.length > 0) {
+      newFiltersList.push({
+        id: 1,
+        name: "区域",
+        type: "district",
+        options: district, // 直接使用API返回的district数组，不再添加"全部"
+      });
+    }
+    console.log("获取筛选条件成功:", category.value, "ssssss");
+    // 根据 category.value 的值 显示不同的 预算区间
+    if (Number(category.value) === 7) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "1680以下",
+          "1680-2980",
+          "2980-3980",
+          "3980-4980",
+          "4980-6980",
+          "6980-12800",
+          "12800以上",
+        ],
+      });
+    } else if (Number(category.value) === 8 || Number(category.value) === 9) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "3500以下",
+          "3500-4500",
+          "4500-6000",
+          "6000-7000",
+          "7000-9000",
+          "9000-12000",
+          "12000以上",
+        ],
+      });
+    } else if (Number(category.value) === 4) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "2000以下",
+          "2000-4000",
+          "4000-6000",
+          "6000-8000",
+          "8000-10000",
+          "10000-120000",
+          "120000以上",
+        ],
+      });
+    } else if (Number(category.value) === 3) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "10000以下",
+          "10000-20000",
+          "20000-30000",
+          "30000-50000",
+          "50000-80000",
+          "80000-100000",
+          "100000以上",
+        ],
+      });
+    } else {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "1000以下",
+          "1000-2000",
+          "2000-3000",
+          "3000-4000",
+          "4000-5000",
+          "5000以上",
+        ], // 直接使用API返回的venue_type数组
+      });
+    }
 
     newFiltersList.push({
       id: 3,
@@ -516,6 +667,57 @@ const loadGetDictionary = async () => {
     console.log("筛选条件:", response);
   } catch (error) {
     console.error("请求筛选条件数据出错:", error);
+    // 如果接口失败，使用默认数据
+    filtersList.value = [
+      {
+        id: 1,
+        name: "区域",
+        type: "district",
+        options: [
+          { id: 1, name: "新城區" },
+          { id: 2, name: "碑林區" },
+          { id: 3, name: "蓮湖區" },
+        ],
+      },
+      {
+        id: 2,
+        name: "场地类型",
+        type: "venue_type",
+        options: [
+          "宴会厅",
+          "户外草坪",
+          "中式园林",
+          "西式教堂",
+          "酒店宴会厅",
+          "特色场地",
+        ],
+      },
+      {
+        id: 3,
+        name: "特色服务",
+        type: "feature",
+        options: [
+          "可停车",
+          "可住宿",
+          "有化妆间",
+          "可布置现场",
+          "可带酒水",
+          "有投影仪",
+          "有音响设备",
+          "有灯光设备",
+        ],
+      },
+      {
+        id: 4,
+        name: "服务分类",
+        type: "service_category",
+        options: [
+          { id: 1, name: "婚宴酒店" },
+          { id: 2, name: "婚礼策划" },
+          { id: 3, name: "婚礼主持" },
+        ],
+      },
+    ];
   }
 };
 
@@ -526,9 +728,16 @@ function onSearchClick() {
   });
 }
 
-function closeOverlay() {
-  activeFilterId.value = null;
-  show.value = false;
+// 处理分类点击
+function handleCategoryClick(item) {
+  console.log("点击分类:", item);
+  // 设置当前选中的分类ID
+  category.value = String(item.id);
+  // 重置页码并重新加载数据
+  currentPage.value = 1;
+  merchantList.value = [];
+  hasMore.value = true;
+  loadMerchants(1);
 }
 
 onMounted(() => {
@@ -538,21 +747,30 @@ onMounted(() => {
   loadMerchants(1);
 });
 
+function closeOverlay() {
+  activeFilterId.value = null;
+  show.value = false;
+}
+
 // 页面分享
 onShareAppMessage(() => {
   return {
-    title: "婚礼主持 - 壹嫁婚选",
-    path: "/pages/merchant/host?title=婚礼主持",
-    imageUrl: "",
+    title: `${pageTitle.value || "婚礼服务"} - 壹嫁婚选`,
+    path: `/pages/merchant/plan?title=${pageTitle.value || ""}&category=${
+      category.value || ""
+    }`,
+    imageUrl: banners.value[0].image_url || "",
   };
 });
 
 // 分享到朋友圈
 onShareTimeline(() => {
   return {
-    title: "婚礼主持服务 - 壹嫁婚选",
-    path: "/pages/merchant/host?title=婚礼主持",
-    imageUrl: "",
+    title: `${route.query.title || "婚礼服务"} - 壹嫁婚选`,
+    path: `/pages/merchant/plan?title=${pageTitle.value || ""}&category=${
+      category.value || ""
+    }`,
+    imageUrl: banners.value[0].image_url || "",
   };
 });
 </script>
@@ -561,23 +779,22 @@ onShareTimeline(() => {
 @import "@/styles/variables.scss";
 .page {
   background: #f0f0f0;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 .fixedcon {
   position: fixed;
   left: 0;
   right: 0;
-  top: 0;
+  top: 0rpx;
   z-index: 99999;
-  height: 190rpx;
 }
 
 .banner {
   margin-bottom: $spacing-md;
+  margin-top: 380rpx;
   .banner-swiper {
-    height: 460rpx;
+    height: 420rpx;
     border-radius: $radius-md;
     overflow: hidden;
   }
@@ -670,10 +887,9 @@ onShareTimeline(() => {
   min-width: 80px;
 }
 .list {
-  height: calc(100vh - 100rpx);
+  height: calc(100vh - 50rpx);
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
-  margin-top: 200rpx;
 }
 .hotel-card {
   display: flex;
@@ -688,6 +904,7 @@ onShareTimeline(() => {
   height: 360rpx;
   border-radius: 6px;
   margin-right: 10px;
+  flex-shrink: 0;
 }
 .hotel-info {
   flex: 1;
@@ -696,7 +913,7 @@ onShareTimeline(() => {
   display: flex;
   justify-content: space-between;
   margin-bottom: 6px;
-  height: 80rpx;
+  height: 40rpx;
   margin-top: 20rpx;
 }
 .hotel-name {
@@ -704,7 +921,7 @@ onShareTimeline(() => {
   font-weight: 600;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   overflow: hidden;
 }
 .hotel-time {
@@ -733,9 +950,9 @@ onShareTimeline(() => {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   overflow: hidden;
-  margin-top: 10rpx;
   font-size: 24rpx;
   color: #808080;
+  margin-top: 15rpx;
 }
 .hotel-desc {
   font-size: 24rpx;
@@ -747,9 +964,23 @@ onShareTimeline(() => {
   .text {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     overflow: hidden;
   }
+}
+.hotel-highlights {
+  display: flex;
+  gap: 6px;
+  height: 48rpx;
+  overflow: hidden;
+}
+.highlight {
+  font-size: 24rpx;
+  color: #ab7e2b;
+  border: 1px solid #ab7e2b;
+  padding: 4rpx 12rpx;
+  border-radius: 24rpx;
+  height: 32rpx;
 }
 .hotel-price {
   font-size: 26rpx;
@@ -811,7 +1042,7 @@ onShareTimeline(() => {
   padding-right: 0;
   border-radius: 0 0 20rpx 20rpx;
   position: fixed;
-  top: 190rpx;
+  top: 346rpx;
   width: 100%;
   .filter-content {
     border-top: 1px solid #e5e5e5;
@@ -867,12 +1098,32 @@ onShareTimeline(() => {
   margin-top: 40rpx;
 }
 
-.recommend {
-  margin-top: 20rpx;
-  .title {
-    font-size: $font-lg;
-    font-weight: bold;
-    color: #ab7e2b;
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: $spacing-md;
+  padding: $spacing-md;
+
+  .category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .category-icon {
+      width: 60rpx;
+      height: 60rpx;
+      margin-bottom: $spacing-sm;
+    }
+
+    .category-name {
+      font-size: $font-xs;
+      color: $text-primary;
+    }
+  }
+}
+.category-active {
+  .category-name {
+    color: #ab7e2b !important;
   }
 }
 </style>

@@ -26,17 +26,14 @@
     </view>
     <view class="hotel-info">
       <view class="hotel-name">
-        {{ hotelData.name }}
-        <text class="price">¥{{ hotelData.starting_price }}起</text>
-      </view>
-      <view class="hotel-time">
-        <view class="ratezu"
-          ><text class="rate">{{ hotelData.rating }}</text
-          ><text class="fen">分</text></view
+        <view class="ratezu">
+          {{ hotelData.name
+          }}<text class="rate"
+            >{{ hotelData.rating }}<text class="fen">分</text></text
+          ></view
         >
-        {{ hotelData.business_status }} {{ hotelData.business_hours }}
+        <view class="price">¥{{ hotelData.starting_price }}起</view>
       </view>
-
       <view
         class="hotel-highlights"
         v-if="hotelData.personnel_tags && hotelData.personnel_tags.length > 0"
@@ -50,7 +47,7 @@
         </text>
       </view>
       <view class="hotel-address" @click="openMap">
-        <up-icon name="map" size="14" color="#AB7E2B"> </up-icon>
+        <up-icon name="map" size="20" color="#AB7E2B"> </up-icon>
         {{ hotelData.address }}</view
       >
       <!-- <view class="hotel-rate">
@@ -594,22 +591,17 @@ onShareTimeline(() => {
     .hotel-name {
       font-size: 32rpx;
       font-weight: bold;
-      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      .ratezu {
+        line-height: 50rpx;
+      }
       .price {
         font-size: 32rpx;
         color: #bf974a;
         margin-left: auto;
-      }
-    }
-    .hotel-time {
-      color: #808080;
-      font-size: 28rpx;
-      margin: 10rpx 0;
-      .ratezu {
-        margin-bottom: 10rpx;
+        width: 230rpx;
+        text-align: right;
       }
       .rate {
         border-radius: 20rpx;
@@ -622,10 +614,12 @@ onShareTimeline(() => {
         padding: 3rpx 10rpx;
         color: #ab7e2b;
         margin-right: 10rpx;
+        font-weight: 400;
+        margin-left: 10rpx;
       }
       .fen {
         font-size: 24rpx;
-        color: #333;
+        color: #ab7e2b;
       }
     }
     .hotel-highlights {
@@ -642,12 +636,11 @@ onShareTimeline(() => {
       margin: 20rpx 0;
     }
     .hotel-address {
-      font-size: 28rpx;
+      font-size: 30rpx;
       color: #333;
       margin: 10rpx 0;
       display: flex;
-      align-items: center;
-      gap: 10rpx;
+      align-items: baseline;
     }
     .hotel-intro {
       font-size: 26rpx;

@@ -1619,7 +1619,7 @@ const categories = ref([
     id: 10,
     name: "婚礼周边",
     icon: "/static/images/28.png",
-    path: "/pages/merchant/plan?title=婚礼周边&category=10",
+    path: "/pages/merchant/plans?title=婚礼周边&category=10",
   },
 ]);
 //  创建handleTaskClick方法跳转到商家页面

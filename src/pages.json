@@ -49,6 +49,13 @@
 			}
 		},
 		{
+			"path": "pages/merchant/plans",
+			"style": {
+				"navigationBarTitleText": "婚礼周边",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/merchant/planDetail",
 			"style": {
 				"navigationBarTitleText": "婚礼策划详情",

@@ -2,11 +2,19 @@
 <template>
   <view class="tasting">
     <view class="banner">
-      <swiper class="banner-swiper" autoplay circular indicator-dots>
+      <swiper
+        class="banner-swiper"
+        autoplay
+        circular
+        indicator-dots
+        indicator-active-color="#fff"
+        interval="3000"
+        duration="500"
+      >
         <swiper-item v-for="(item, index) in banners" :key="index">
           <image
             :src="item.image_url"
-            mode="aspectFill"
+            mode="widthFix"
             class="banner-image"
             @click="handleBannerClick()"
           />
@@ -230,7 +238,7 @@ onMounted(() => {
 
   .banner {
     .banner-swiper {
-      height: 500rpx;
+      height: 1000rpx;
       overflow: hidden;
     }
     .banner-image {
