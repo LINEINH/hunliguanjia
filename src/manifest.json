@@ -56,6 +56,12 @@
             "scope.userLocation" : {
                 "desc" : "用于获取您的位置信息，推荐附近的婚庆服务"
             }
+        },
+        "privacy": {
+            "uniPrivacy": {
+                "prompt": "为了更好的用户体验，需要申请头像选择权限",
+                "privacyContractName": "壹嫁婚选隐私保护指引"
+            }
         }
     },
     "mp-alipay" : {

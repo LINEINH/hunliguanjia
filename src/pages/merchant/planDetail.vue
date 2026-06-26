@@ -7,14 +7,21 @@
       :autoBack="true"
       placeholder
     >
+      <template #left>
+        <view class="u-nav-slot">
+          <up-icon name="arrow-left" size="20"></up-icon>
+          <up-line
+            direction="column"
+            :hairline="false"
+            length="16"
+            margin="0 8px"
+            v-if="share"
+          ></up-line>
+          <up-icon name="home" size="24" v-if="share"></up-icon>
+        </view>
+      </template>
     </up-navbar>
-    <up-navbar-mini
-      @leftClick="leftClick"
-      :autoBack="true"
-      homeUrl="/pages/index/index"
-      v-if="share"
-    >
-    </up-navbar-mini>
+
     <view class="banner">
       <swiper
         class="banner-swiper"

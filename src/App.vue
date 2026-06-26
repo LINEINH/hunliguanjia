@@ -23,5 +23,9 @@ page {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
     sans-serif;
+  .u-nav-slot {
+    display: flex;
+    align-items: center;
+  }
 }
 </style>
