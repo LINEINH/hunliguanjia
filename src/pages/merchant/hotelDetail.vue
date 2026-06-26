@@ -8,6 +8,13 @@
       placeholder
     >
     </up-navbar>
+    <up-navbar-mini
+      @leftClick="leftClick"
+      :autoBack="true"
+      homeUrl="/pages/index/index"
+      v-if="share"
+    >
+    </up-navbar-mini>
 
     <view class="banner">
       <swiper
@@ -113,9 +120,14 @@
             <view class="hotel-list-item-price">
               <view class="price-wrap">
                 <text class="price">
-                  <text class="danwei">参考价</text>
-                  {{ caseItem.price }}<text class="danwei">起</text></text
-                >
+                  <template v-if="caseItem.is_negotiable">
+                    <text class="danwei">参考价</text> 面议
+                  </template>
+                  <template v-else>
+                    <text class="danwei">参考价</text>
+                    {{ caseItem.price }}<text class="danwei">起</text>
+                  </template>
+                </text>
               </view>
               <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
             </view>
@@ -192,6 +204,7 @@ const hotelId = ref<number | null>(null);
 // onLoad 参数接收器
 const props = defineProps<{
   id?: string;
+  share?: boolean;
 }>();
 
 // 加载酒店详情
@@ -549,7 +562,7 @@ function cleanHtmlContent(html: string): string {
 onShareAppMessage(() => {
   return {
     title: hotelData.value.name || "壹嫁婚选",
-    path: `/pages/merchant/planDetail?id=${hotelData.value.id}`,
+    path: `/pages/merchant/hotelDetail?id=${hotelData.value.id}&share=true`,
     imageUrl: hotelData.value.cover_image || "",
   };
 });
@@ -558,10 +571,16 @@ onShareAppMessage(() => {
 onShareTimeline(() => {
   return {
     title: hotelData.value.name || "壹嫁婚选",
-    path: `/pages/merchant/planDetail?id=${hotelData.value.id}`,
+    path: `/pages/merchant/hotelDetail?id=${hotelData.value.id}&share=true`,
     imageUrl: hotelData.value.cover_image || "",
   };
 });
+// 定义方法
+const leftClick = () => {
+  console.log("leftClick");
+  // 跳转回首页
+  uni.switchTab({ url: "/pages/index/index" });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -616,6 +635,7 @@ onShareTimeline(() => {
         margin-right: 10rpx;
         font-weight: 400;
         margin-left: 10rpx;
+        font-size: 24rpx;
       }
       .fen {
         font-size: 24rpx;

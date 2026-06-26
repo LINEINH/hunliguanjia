@@ -188,7 +188,7 @@ const loading = ref(false);
 // 定义响应式数据
 const merchantList = ref([]);
 const currentPage = ref(1); // 当前页码
-const pageSize = ref(10); // 每页数量
+const pageSize = ref(999); // 每页数量
 const total = ref(0); // 总数据量
 const loadingMore = ref(false); // 是否正在加载更多
 const noMore = ref(false); // 是否还有更多数据

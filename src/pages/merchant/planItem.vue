@@ -8,6 +8,13 @@
       placeholder
     >
     </up-navbar>
+    <up-navbar-mini
+      @leftClick="leftClick"
+      :autoBack="true"
+      homeUrl="/pages/index/index"
+      v-if="share"
+    >
+    </up-navbar-mini>
 
     <view class="banner">
       <swiper
@@ -45,11 +52,14 @@
         </view>
       </view>
       <view class="hotel-name">{{ productData.name }} </view>
-      <view class="hotel-price"
-        ><text class="small">¥</text
-        >{{ productData.min_price || productData.price
-        }}<text class="small">起</text></view
-      >
+      <view class="hotel-price">
+        <template v-if="productData.is_negotiable">面议</template>
+        <template v-else>
+          <text class="small">¥</text
+          >{{ productData.min_price || productData.price
+          }}<text class="small">起</text>
+        </template>
+      </view>
       <view class="hotel-address">
         {{ productData.description }}
       </view>
@@ -64,18 +74,7 @@
           >{{ tag }}</text
         >
       </view>
-      <view
-        class="viedoList"
-        v-if="productData.videos && productData.videos.length"
-      >
-        <view
-          class="video-item"
-          v-for="(item, index) in productData.videos"
-          :key="index"
-        >
-          <video :src="item" controls="true" width="100%"></video>
-        </view>
-      </view>
+
       <!-- <view class="content" v-if="cleanedContent">
         <rich-text :nodes="cleanedContent"></rich-text>
       </view> -->
@@ -95,6 +94,18 @@
             show-center-play-btn
             class="video-player"
           ></video>
+        </view>
+      </view>
+      <view
+        class="viedoList"
+        v-if="productData.videos && productData.videos.length"
+      >
+        <view
+          class="video-item"
+          v-for="(item, index) in productData.videos"
+          :key="index"
+        >
+          <video :src="item" controls="true" width="100%"></video>
         </view>
       </view>
     </view>
@@ -150,7 +161,15 @@ const isFavorited = ref<boolean>(false);
 // onLoad 参数接收器
 const props = defineProps<{
   id?: string;
+  share?: boolean;
 }>();
+
+// 定义方法
+const leftClick = () => {
+  console.log("leftClick");
+  // 跳转回首页
+  uni.switchTab({ url: "/pages/index/index" });
+};
 
 // 从富文本中提取视频列表
 const videoList = computed(() => {
@@ -488,7 +507,7 @@ async function toggleFavorite() {
 onShareAppMessage(() => {
   return {
     title: productData.value.name || "壹嫁婚选",
-    path: `/pages/merchant/planDetail?id=${productData.value.id}`,
+    path: `/pages/merchant/planItem?id=${productData.value.id}&share=true`,
     imageUrl: productData.value.cover_image || "",
   };
 });
@@ -497,7 +516,7 @@ onShareAppMessage(() => {
 onShareTimeline(() => {
   return {
     title: productData.value.name || "壹嫁婚选",
-    path: `/pages/merchant/planDetail?id=${productData.value.id}`,
+    path: `/pages/merchant/planItem?id=${productData.value.id}&share=true`,
     imageUrl: productData.value.cover_image || "",
   };
 });
@@ -532,6 +551,7 @@ onShareTimeline(() => {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 10rpx;
     }
     .hotel-price {
       font-size: 32rpx;

@@ -51,7 +51,7 @@
           mode="aspectFill"
           class="menu-image"
         />
-        <text class="menu-text">核销商品</text>
+        <text class="menu-text">婚博会核销</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
       <view class="menu-item" @click="showCode()">

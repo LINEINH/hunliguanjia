@@ -8,7 +8,13 @@
       placeholder
     >
     </up-navbar>
-
+    <up-navbar-mini
+      @leftClick="leftClick"
+      :autoBack="true"
+      homeUrl="/pages/index/index"
+      v-if="share"
+    >
+    </up-navbar-mini>
     <view class="banner">
       <swiper
         class="banner-swiper"
@@ -177,6 +183,7 @@ const isFavorited = ref<boolean>(false);
 // onLoad 参数接收器
 const props = defineProps<{
   id?: string;
+  share?: boolean;
 }>();
 
 // 清理HTML中的图片内联样式并添加宽度控制
@@ -239,6 +246,13 @@ async function loadProductDetail() {
     uni.hideLoading();
   }
 }
+
+// 定义方法
+const leftClick = () => {
+  console.log("leftClick");
+  // 跳转回首页
+  uni.switchTab({ url: "/pages/index/index" });
+};
 
 // 页面加载时获取产品详情
 onMounted(() => {
@@ -424,7 +438,7 @@ async function toggleFavorite() {
 onShareAppMessage(() => {
   return {
     title: productData.value.name || "壹嫁婚选",
-    path: `/pages/merchant/planDetail?id=${productData.value.id}`,
+    path: `/pages/merchant/planDetail?id=${productData.value.id}&share=true`,
     imageUrl: productData.value.cover_image || "",
   };
 });
@@ -433,7 +447,7 @@ onShareAppMessage(() => {
 onShareTimeline(() => {
   return {
     title: productData.value.name || "壹嫁婚选",
-    path: `/pages/merchant/planDetail?id=${productData.value.id}`,
+    path: `/pages/merchant/planDetail?id=${productData.value.id}&share=true`,
     imageUrl: productData.value.cover_image || "",
   };
 });

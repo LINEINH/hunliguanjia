@@ -482,7 +482,7 @@ const loadMerchants = async (page = 1) => {
     // 构建筛选参数
     const params = {
       page: page,
-      per_page: 10,
+      per_page: 999,
     };
     // 添加关键词搜索
     if (searchKeyword.value) {

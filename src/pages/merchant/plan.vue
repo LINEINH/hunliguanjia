@@ -482,7 +482,7 @@ const loadMerchants = async (page = 1) => {
     // 构建筛选参数
     const params = {
       page: page,
-      per_page: 10,
+      per_page: 999,
     };
     // 添加关键词搜索
     if (searchKeyword.value) {
@@ -1048,6 +1048,7 @@ onShareTimeline(() => {
   gap: 6px;
   height: 48rpx;
   overflow: hidden;
+  flex-wrap: wrap;
 }
 .highlight {
   font-size: 24rpx;
@@ -1056,6 +1057,8 @@ onShareTimeline(() => {
   padding: 4rpx 12rpx;
   border-radius: 24rpx;
   height: 32rpx;
+  flex-shrink: 0;
+  display: block;
 }
 .hotel-price {
   font-size: 26rpx;
