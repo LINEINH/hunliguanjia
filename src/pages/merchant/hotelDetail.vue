@@ -17,7 +17,12 @@
             margin="0 8px"
             v-if="share"
           ></up-line>
-          <up-icon name="home" size="24" v-if="share"></up-icon>
+          <up-icon
+            name="home"
+            size="24"
+            v-if="share"
+            homeUrl="/pages/index/index"
+          ></up-icon>
         </view>
       </template>
     </up-navbar>

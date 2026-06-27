@@ -832,23 +832,23 @@ async function onChooseAvatar(e: any) {
     });
     return;
   }
-  // 用户取消选择
-  if (e.detail.errMsg === "chooseAvatar:fail user deny") {
-    uni.showToast({
-      title: "您取消了选择",
-      icon: "none",
-    });
-    return;
-  }
+  // // 用户取消选择
+  // if (e.detail.errMsg === "chooseAvatar:fail user deny") {
+  //   uni.showToast({
+  //     title: "您取消了选择",
+  //     icon: "none",
+  //   });
+  //   return;
+  // }
 
-  // 获取失败
-  if (e.detail.errMsg !== "chooseAvatar:ok") {
-    uni.showToast({
-      title: "选择头像失败",
-      icon: "none",
-    });
-    return;
-  }
+  // // 获取失败
+  // if (e.detail.errMsg !== "chooseAvatar:ok") {
+  //   uni.showToast({
+  //     title: "选择头像失败",
+  //     icon: "none",
+  //   });
+  //   return;
+  // }
   console.log("选择头像回调:", e.detail.avatarUrl);
 
   try {

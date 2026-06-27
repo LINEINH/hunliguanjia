@@ -17,7 +17,12 @@
             margin="0 8px"
             v-if="share"
           ></up-line>
-          <up-icon name="home" size="24" v-if="share"></up-icon>
+          <up-icon
+            name="home"
+            size="24"
+            v-if="share"
+            homeUrl="/pages/index/index"
+          ></up-icon>
         </view>
       </template>
     </up-navbar>
@@ -311,7 +316,7 @@ function makePhoneCall() {
     success: function (res) {
       if (res.confirm) {
         // 调用bind获取绑定的手机号
-        bind(productData.value.id)
+        bind(productData.value.merchant_id, "product", productData.value.id)
           .then((bindRes) => {
             if (bindRes && bindRes.middle_number) {
               // 获取成功
@@ -341,7 +346,11 @@ function makePhoneCall() {
                   // 如果是因为用户取消拨打，也需要解绑
                   if (err.errMsg && err.errMsg.includes("cancel")) {
                     console.log("用户取消拨打，执行解绑");
-                    unbind(productData.value.id)
+                    unbind(
+                      productData.value.merchant_id,
+                      "product",
+                      productData.value.id
+                    )
                       .then((unbindRes) => {
                         if (unbindRes) {
                           console.log("解绑成功:", unbindRes);

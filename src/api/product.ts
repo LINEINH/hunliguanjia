@@ -184,12 +184,14 @@ export function unfavoriteProduct(target_id: number,type:string) {
 
 
 // 绑定手机号
-export function bind(merchant_id: string) {
+export function bind(merchant_id: string,source_type?:string,product_id?:string) {
   return request<any>({
     url: `/wechat/bind-privacy-number`,
     method: 'POST',
     data: {
-      merchant_id: merchant_id
+      merchant_id: merchant_id,
+      source_type: source_type,
+      product_id: product_id
     }
   })
 }
@@ -197,12 +199,14 @@ export function bind(merchant_id: string) {
 
 
 // 解绑手机号
-export function unbind(merchant_id: string) {
+export function unbind(merchant_id: string,source_type?:string,product_id?:string) {
   return request<any>({
     url: `/wechat/unbind-privacy-number`,
     method: 'POST',
     data: {
-      merchant_id: merchant_id
+      merchant_id: merchant_id,
+      source_type: source_type,
+      product_id: product_id
     }
   })
 }
