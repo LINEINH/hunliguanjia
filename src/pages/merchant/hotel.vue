@@ -92,7 +92,7 @@
         class="hotel-card"
         @click="openDetail(hotel)"
       >
-        <image class="hotel-img" :src="hotel.logo" mode="aspectFill" />
+        <image class="hotel-img" :src="hotel.cover_image" mode="aspectFill" />
         <view class="hotel-info">
           <view class="hotel-row">
             <text class="hotel-name">{{ hotel.name }}</text>
@@ -136,7 +136,7 @@
           class="hotel-card"
           @click="openDetail(hotel)"
         >
-          <image class="hotel-img" :src="hotel.logo" mode="aspectFill" />
+          <image class="hotel-img" :src="hotel.cover_image" mode="aspectFill" />
           <view class="hotel-info">
             <view class="hotel-row">
               <text class="hotel-name">{{ hotel.name }}</text>
@@ -668,7 +668,7 @@ onShareTimeline(() => {
         color: #fff;
         height: 60rpx;
         color: #612500;
-        padding: 0 28rpx;
+        padding: 0 50rpx;
         font-size: 26rpx;
         line-height: 60rpx;
       }

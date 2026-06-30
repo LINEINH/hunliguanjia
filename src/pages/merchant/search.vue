@@ -340,7 +340,7 @@ onShareTimeline(() => {
       color: #fff;
       height: 60rpx;
       color: #612500;
-      padding: 0 28rpx;
+      padding: 0 50rpx;
       font-size: 26rpx;
       line-height: 60rpx;
     }

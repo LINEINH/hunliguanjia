@@ -1,12 +1,33 @@
 
 <template>
   <view class="planItem">
+    <!-- <up-navbar
+      title="案例详情"
+      @rightClick="rightClick"
+      :autoBack="true"
+      placeholder
+    >
+    </up-navbar> -->
+
     <up-navbar
       title="案例详情"
       @rightClick="rightClick"
       :autoBack="true"
       placeholder
     >
+      <template #left>
+        <view class="u-nav-slot">
+          <up-icon name="arrow-left" size="20" v-if="!share"></up-icon>
+          <up-line
+            direction="column"
+            :hairline="false"
+            length="16"
+            margin="0 8px"
+            v-if="share"
+          ></up-line>
+          <up-icon name="home" size="24" v-if="share" @click="goHome"></up-icon>
+        </view>
+      </template>
     </up-navbar>
 
     <view class="banner">
@@ -118,6 +139,7 @@ const isFavorited = ref<boolean>(false);
 // onLoad 参数接收器
 const props = defineProps<{
   id?: string;
+  share?: boolean;
 }>();
 
 // 清理HTML中的图片内联样式并添加宽度控制
@@ -315,11 +337,17 @@ function toggleFavorite() {
   }
 }
 
+// 定义方法
+const goHome = () => {
+  console.log("leftClick");
+  // 跳转回首页
+  uni.switchTab({ url: "/pages/index/index" });
+};
 // 页面分享
 onShareAppMessage(() => {
   return {
     title: "美好瞬间 - 壹嫁婚选",
-    path: "/pages/index/case",
+    path: `/pages/index/case?id=${productData.value.id}&share=true`,
     imageUrl: productData.value.images[0],
   };
 });
@@ -328,7 +356,7 @@ onShareAppMessage(() => {
 onShareTimeline(() => {
   return {
     title: "美好瞬间 - 壹嫁婚选",
-    path: "/pages/index/case",
+    path: `/pages/index/case?id=${productData.value.id}&share=true`,
     imageUrl: productData.value.images[0],
   };
 });

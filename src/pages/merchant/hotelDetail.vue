@@ -9,20 +9,15 @@
     >
       <template #left>
         <view class="u-nav-slot">
-          <up-icon name="arrow-left" size="20"></up-icon>
-          <up-line
+          <up-icon name="arrow-left" size="20" v-if="!share"></up-icon>
+          <!-- <up-line
             direction="column"
             :hairline="false"
             length="16"
             margin="0 8px"
             v-if="share"
-          ></up-line>
-          <up-icon
-            name="home"
-            size="24"
-            v-if="share"
-            homeUrl="/pages/index/index"
-          ></up-icon>
+          ></up-line> -->
+          <up-icon name="home" size="24" v-if="share" @click="goHome"></up-icon>
         </view>
       </template>
     </up-navbar>
@@ -587,9 +582,7 @@ onShareTimeline(() => {
   };
 });
 // 定义方法
-const leftClick = () => {
-  console.log("leftClick");
-  // 跳转回首页
+const goHome = () => {
   uni.switchTab({ url: "/pages/index/index" });
 };
 </script>
@@ -624,13 +617,15 @@ const leftClick = () => {
       display: flex;
       justify-content: space-between;
       .ratezu {
-        line-height: 50rpx;
+        margin-bottom: 10rpx;
+        display: flex;
+        flex-wrap: wrap;
       }
       .price {
         font-size: 32rpx;
         color: #bf974a;
         margin-left: auto;
-        width: 230rpx;
+        width: 250rpx;
         text-align: right;
       }
       .rate {
@@ -641,12 +636,14 @@ const leftClick = () => {
           #f9eccc 33.03%,
           #e9cc90 100%
         );
-        padding: 3rpx 10rpx;
+        padding: 0 10rpx;
         color: #ab7e2b;
         margin-right: 10rpx;
         font-weight: 400;
         margin-left: 10rpx;
         font-size: 24rpx;
+        margin-top: 10rpx;
+        height: 38rpx;
       }
       .fen {
         font-size: 24rpx;

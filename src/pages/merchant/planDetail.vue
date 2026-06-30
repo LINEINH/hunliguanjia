@@ -9,20 +9,8 @@
     >
       <template #left>
         <view class="u-nav-slot">
-          <up-icon name="arrow-left" size="20"></up-icon>
-          <up-line
-            direction="column"
-            :hairline="false"
-            length="16"
-            margin="0 8px"
-            v-if="share"
-          ></up-line>
-          <up-icon
-            name="home"
-            size="24"
-            v-if="share"
-            homeUrl="/pages/index/index"
-          ></up-icon>
+          <up-icon name="arrow-left" size="20" v-if="!share"></up-icon>
+          <up-icon name="home" size="24" v-if="share" @click="goHome"></up-icon>
         </view>
       </template>
     </up-navbar>
@@ -260,7 +248,7 @@ async function loadProductDetail() {
 }
 
 // 定义方法
-const leftClick = () => {
+const goHome = () => {
   console.log("leftClick");
   // 跳转回首页
   uni.switchTab({ url: "/pages/index/index" });

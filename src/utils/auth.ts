@@ -74,10 +74,12 @@ export async function checkLoginAsync(): Promise<boolean> {
  * 跳转登录页(携带回退路径)
  */
 export function navigateToLogin(): void {
+  // 检查是否携带回退路径
+
   const pages = getCurrentPages()
   const currentPage = pages[pages.length - 1]
   const redirectUrl = `/${currentPage.route}`
-  
+  console.log(redirectUrl,'redirectUrl')
   uni.navigateTo({
     url: `/pages/login/login?redirect=${encodeURIComponent(redirectUrl)}`
   })

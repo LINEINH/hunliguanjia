@@ -84,25 +84,27 @@
             v-if="expoDetail.gift && expoDetail.gift.status === 1"
             lazy-load
           />
-          <view class="code">婚博会礼品</view>
-          <view class="gift_name">{{ expoDetail.gift.gift_name }}</view>
-          <image
-            :src="expoDetail.gift.gift_image"
-            mode="widthFix"
-            class="codeimage"
-            style="width: 200rpx"
-          />
-          <view class="pickup_location"
-            >{{ expoDetail.gift.merchant_name }}
-            {{ expoDetail.gift.pickup_location }}</view
-          >
-          <view
-            class="button"
-            @click="showQrcode()"
-            v-if="expoDetail.gift && expoDetail.gift.status === 0"
-          >
-            显示礼品二维码
-          </view>
+          <template v-if="expoDetail && expoDetail.gift">
+            <view class="code">婚博会礼品</view>
+            <view class="gift_name">{{ expoDetail.gift.gift_name }}</view>
+            <image
+              :src="expoDetail.gift.gift_image"
+              mode="widthFix"
+              class="codeimage"
+              style="width: 200rpx"
+            />
+            <view class="pickup_location"
+              >{{ expoDetail.gift.merchant_name }}
+              {{ expoDetail.gift.pickup_location }}</view
+            >
+            <view
+              class="button"
+              @click="showQrcode()"
+              v-if="expoDetail.gift && expoDetail.gift.status === 0"
+            >
+              显示礼品二维码
+            </view>
+          </template>
         </view>
         <template v-else>
           <view class="register-form" v-if="!expoDetail.qr_code">
@@ -197,7 +199,11 @@
       @open="open"
       closeable="true"
     >
-      <view v-if="expoDetail.gift && expoDetail.gift.qr_code_image_url">
+      <view
+        v-if="
+          expoDetail && expoDetail.gift && expoDetail.gift.qr_code_image_url
+        "
+      >
         <image
           :src="expoDetail.gift.qr_code_image_url"
           mode="widthFix"
