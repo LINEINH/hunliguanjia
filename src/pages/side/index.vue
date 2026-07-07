@@ -9,7 +9,11 @@
     <!-- 用户信息 -->
     <view class="user-header">
       <view class="user-info">
-        <image :src="userProfile.logo" mode="aspectFill" class="user-avatar" />
+        <image
+          :src="userProfile.logo || 'https://web.1love.com.cn/logo.png'"
+          mode="aspectFill"
+          class="user-avatar"
+        />
         <view class="user-detail">
           <view class="user-top">
             <text class="user-nickname">{{ userProfile.name }}</text>

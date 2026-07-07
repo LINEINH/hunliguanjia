@@ -105,6 +105,12 @@
               显示礼品二维码
             </view>
           </template>
+          <template v-else>
+            <view class="code">婚博会礼品</view>
+            <view class="pickup_location"
+              >婚博会礼品已发完 请联系现场工作人员</view
+            >
+          </template>
         </view>
         <template v-else>
           <view class="register-form" v-if="!expoDetail.qr_code">

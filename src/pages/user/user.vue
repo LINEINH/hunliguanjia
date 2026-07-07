@@ -12,7 +12,7 @@
         <!-- 未登录时显示默认头像 -->
         <image
           v-if="!userStore.isLoggedIn"
-          :src="'/static/images/user.png'"
+          src="https://web.1love.com.cn/logo.png"
           class="user-avatar"
           @click="handleLogin"
         />
