@@ -31,7 +31,7 @@
         <view class="stepcon">
           <image
             :src="expoDetail.gift_exchange_image"
-            mode="aspectFill"
+            mode="widthFix"
             style="width: 100%"
             lazy-load
           />

@@ -15,7 +15,10 @@
         autoplay
         circular
         indicator-dots
-        v-if="butlerDetail.carousel_images.length > 0"
+        v-if="
+          butlerDetail.carousel_images &&
+          butlerDetail.carousel_images.length > 0
+        "
       >
         <swiper-item
           v-for="(item, index) in butlerDetail.carousel_images"
@@ -79,10 +82,9 @@
             <text class="point"></text>
             {{ service.name }}</view
           >
-          <view class="listItem-price">¥{{ service.price }}</view>
-          <view class="listItem-button" @click="buyNow(index, butlerDetail.id)"
-            >立即预订</view
-          >
+          <view class="listItem-price">敬请期待</view>
+          <view class="listItem-button">立即预订</view>
+          <!-- @click="buyNow(index, butlerDetail.id)" -->
         </view>
       </view>
       <view v-else class="empty-services">暂无服务内容</view>
@@ -434,6 +436,7 @@ onShareTimeline(() => {
           color: #383838;
           display: flex;
           align-items: center;
+          width: 33.3%;
           .point {
             background: linear-gradient(
               135.57deg,
@@ -449,7 +452,7 @@ onShareTimeline(() => {
           }
         }
         .listItem-price {
-          font-size: 36rpx;
+          font-size: 30rpx;
           color: #bf974a;
         }
         .listItem-button {

@@ -284,6 +284,7 @@
               class="budget-input"
               placeholder="桌数"
               v-model="tableCount"
+              cursor-spacing="80"
             />
           </view>
           <view class="budget-input-section">
@@ -293,6 +294,7 @@
               class="budget-input"
               placeholder="总预算（单位：元）"
               v-model="totalBudget"
+              cursor-spacing="80"
             />
           </view>
         </view>

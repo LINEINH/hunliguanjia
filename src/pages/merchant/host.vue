@@ -603,10 +603,12 @@ onShareTimeline(() => {
     .search-box-left {
       display: flex;
       align-items: center;
+      flex: 1;
     }
     .uni-input {
       font-size: 28rpx;
       margin-left: 10rpx;
+      flex: 1;
     }
     .search-box-btn {
       border-radius: 40rpx;

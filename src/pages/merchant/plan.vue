@@ -132,6 +132,13 @@
         @click="openDetail(merchant)"
       >
         <image
+          src="https://web.1love.com.cn/coupon.png"
+          class="couponImg"
+          mode="widthFix"
+          v-if="merchant.has_available_coupon"
+        />
+
+        <image
           class="hotel-img"
           :src="
             merchant.cover_image ||
@@ -699,6 +706,52 @@ const loadGetDictionary = async () => {
           "100000以上",
         ],
       });
+    } else if (Number(category.value) === 1) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "3500以下",
+          "3500-4500",
+          "4500-5500",
+          "5500-6500",
+          "6500-7500",
+          "7500-8500",
+          "8500-9500",
+          "9500以上",
+        ],
+      });
+    } else if (Number(category.value) === 4) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "3000以下",
+          "3000-4000",
+          "4000-6000",
+          "6000-8000",
+          "8000-10000",
+          "10000-12000",
+          "12000以上",
+        ],
+      });
+    } else if (Number(category.value) === 5) {
+      newFiltersList.push({
+        id: 2,
+        name: "预算区间",
+        type: "meal_standard",
+        options: [
+          "10000以下",
+          "10000-20000",
+          "20000-30000",
+          "30000-50000",
+          "50000-80000",
+          "80000-100000",
+          "100000以上",
+        ],
+      });
     } else {
       newFiltersList.push({
         id: 2,
@@ -895,10 +948,12 @@ onShareTimeline(() => {
     .search-box-left {
       display: flex;
       align-items: center;
+      flex: 1;
     }
     .uni-input {
       font-size: 28rpx;
       margin-left: 10rpx;
+      flex: 1;
     }
     .search-box-btn {
       border-radius: 40rpx;
@@ -971,8 +1026,15 @@ onShareTimeline(() => {
   background: #fff;
   border-radius: 20rpx 0 0 20rpx;
   margin: 20rpx;
-
   padding-right: 20rpx;
+  position: relative;
+  .couponImg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200rpx;
+    z-index: 1;
+  }
 }
 .hotel-img {
   width: 240rpx;

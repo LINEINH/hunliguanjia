@@ -92,6 +92,12 @@
         class="hotel-card"
         @click="openDetail(hotel)"
       >
+        <image
+          src="https://web.1love.com.cn/coupon.png"
+          class="couponImg"
+          mode="widthFix"
+          v-if="hotel.has_available_coupon"
+        />
         <image class="hotel-img" :src="hotel.cover_image" mode="aspectFill" />
         <view class="hotel-info">
           <view class="hotel-row">
@@ -657,10 +663,12 @@ onShareTimeline(() => {
       .search-box-left {
         display: flex;
         align-items: center;
+        flex: 1;
       }
       .uni-input {
         font-size: 28rpx;
         margin-left: 10rpx;
+        flex: 1;
       }
       .search-box-btn {
         border-radius: 40rpx;
@@ -741,6 +749,14 @@ onShareTimeline(() => {
     margin: 20rpx;
     padding-right: 20rpx;
     margin-top: 10rpx;
+    position: relative;
+    .couponImg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 200rpx;
+      z-index: 1;
+    }
   }
   .hotel-img {
     width: 240rpx;
