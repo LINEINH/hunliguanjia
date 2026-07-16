@@ -151,7 +151,7 @@
 import { ref, reactive, computed, onMounted } from "vue";
 import {
   onLoad,
-  onShow,
+  onUnload,
   onShareAppMessage,
   onShareTimeline,
 } from "@dcloudio/uni-app";
@@ -454,6 +454,12 @@ onShareTimeline(() => {
     path: `/pages/merchant/planDetail?id=${productData.value.id}&share=true`,
     imageUrl: productData.value.cover_image || "",
   };
+});
+// 离开页面清空当前页面数据
+onUnload(() => {
+  productData.value = {};
+  isFavorited.value = false;
+  hotelId.value = null;
 });
 </script>
 

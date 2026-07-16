@@ -188,7 +188,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
-import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+import {
+  onShareAppMessage,
+  onShareTimeline,
+  onUnload,
+} from "@dcloudio/uni-app";
 import {
   getHotelDetail,
   getCoupons,
@@ -204,7 +208,7 @@ const baseUrl = ref<string>("");
 
 // 酒店数据
 const hotelData = ref<any>({});
-const CouponsData = ref<any>({});
+const CouponsData = ref<any>([]);
 
 // 收藏状态
 const isFavorited = ref<boolean>(false);
@@ -271,6 +275,13 @@ function openDetail(caseItem: any) {
   }
 }
 
+// 离开页面清除掉当前页面数据
+onUnload(() => {
+  hotelData.value = {};
+  CouponsData.value = [];
+  isFavorited.value = false;
+  hotelId.value = null;
+});
 // 切换收藏状态
 async function toggleFavoriteProduct(item: any) {
   if (!checkLogin()) {
@@ -318,14 +329,6 @@ async function toggleFavoriteProduct(item: any) {
     });
   }
 }
-
-onUnload(() => {
-  // 清空酒店数据和优惠券数据
-  hotelData.value = {};
-  CouponsData.value = {};
-  isFavorited.value = false;
-  hotelId.value = null;
-});
 
 // 页面加载时获取酒店详情
 onMounted(() => {

@@ -144,7 +144,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+import {
+  onUnload,
+  onShareAppMessage,
+  onShareTimeline,
+} from "@dcloudio/uni-app";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 import {
   getProductDetail,
@@ -529,6 +533,13 @@ onShareTimeline(() => {
     path: `/pages/merchant/planItem?id=${productData.value.id}&share=true`,
     imageUrl: productData.value.cover_image || "",
   };
+});
+
+// 离开页面清空当前页面数据
+onUnload(() => {
+  productData.value = {};
+  isFavorited.value = false;
+  hotelId.value = null;
 });
 </script>
 

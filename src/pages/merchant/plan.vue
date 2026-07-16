@@ -254,7 +254,7 @@
 </template>
 
 <script setup >
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, onMounted, onUnload, watch } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import {
   getBanners,
@@ -626,6 +626,14 @@ const loadGetBanner = async () => {
     console.error("请求推荐商家数据出错:", error);
   }
 };
+
+// 离开页面清空当前页面数据
+onUnload(() => {
+  // 清空筛选条件和商家列表
+  filtersList.value = [];
+  merchantList.value = [];
+  recommendMerchants.value = [];
+});
 
 // 获取筛选条件
 const loadGetDictionary = async () => {

@@ -253,7 +253,7 @@
 </template>
 
 <script setup >
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, onMounted, onUnload, watch } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import {
   getBanners,
@@ -854,6 +854,16 @@ onShareTimeline(() => {
     }`,
     imageUrl: banners.value[0].image_url || "",
   };
+});
+
+// 离开页面清空当前页面数据
+onUnload(() => {
+  merchantList.value = [];
+  currentPage.value = 1;
+  totalPage.value = 1;
+  hasMore.value = true;
+  searchKeyword.value = "";
+  activeFilters.value = {};
 });
 </script>
 

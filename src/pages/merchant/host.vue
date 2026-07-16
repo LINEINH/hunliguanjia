@@ -160,7 +160,7 @@
 </template>
 
 <script setup >
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, onMounted, onUnload, watch } from "vue";
 import {
   onLoad,
   onShow,
@@ -554,6 +554,16 @@ onShareTimeline(() => {
     path: "/pages/merchant/host?title=婚礼主持",
     imageUrl: "",
   };
+});
+
+// 离开页面清空当前页面数据
+onUnload(() => {
+  merchantList.value = [];
+  currentPage.value = 1;
+  totalPage.value = 1;
+  hasMore.value = true;
+  searchKeyword.value = "";
+  activeFilters.value = {};
 });
 </script>
 
