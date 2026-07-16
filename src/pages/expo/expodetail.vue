@@ -151,7 +151,7 @@
                 size="38"
                 color="#EAC47B"
                 class="icon"
-                @click="fetchExpoDetail()"
+                @click="reload()"
               ></up-icon
             ></view>
           </view>
@@ -221,10 +221,11 @@
   </view>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import { getExpoDetail, registerExpo } from "@/api/expo";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+
 // 婚博会详情数据
 const expoDetail = ref<any>(null);
 const loading = ref(true);
@@ -243,6 +244,35 @@ const show = ref(false);
 
 const codeUrl = ref("");
 
+// 添加滚动位置变量
+const scrollTop = ref(0);
+
+// 保存当前滚动位置
+function saveScrollPosition() {
+  const query = uni.createSelectorQuery();
+  query.selectViewport().scrollOffset((res: any) => {
+    // 类型断言处理，确保res是对象而不是数组
+    const nodeInfo = Array.isArray(res) ? res[0] : res;
+    scrollTop.value = nodeInfo.scrollTop || 0;
+  });
+  query.exec();
+}
+
+// 恢复滚动位置
+async function restoreScrollPosition() {
+  if (scrollTop.value > 0) {
+    // 等待页面渲染完成
+    await nextTick();
+    // 延迟执行，确保内容完全渲染
+    setTimeout(() => {
+      uni.pageScrollTo({
+        scrollTop: scrollTop.value,
+        duration: 0,
+      });
+    }, 100);
+  }
+}
+
 function open() {
   // 打开逻辑，比如设置 show 为 true
   show.value = true;
@@ -250,11 +280,16 @@ function open() {
 }
 
 function showQrcode() {
+  // 在打开二维码前保存滚动位置
+  saveScrollPosition();
   open();
 }
 function close() {
   show.value = false;
-  fetchExpoDetail();
+  // 在关闭时恢复滚动位置
+  fetchExpoDetail().then(() => {
+    restoreScrollPosition();
+  });
 }
 
 // 页面加载时获取参数
@@ -416,7 +451,11 @@ async function handleRegister() {
       setTimeout(() => {
         uni.hideLoading();
         qrCode.value = res.registration.qr_code;
-        fetchExpoDetail();
+        // 保存当前滚动位置再刷新数据
+        saveScrollPosition();
+        fetchExpoDetail().then(() => {
+          restoreScrollPosition();
+        });
       }, 1500);
     }
 
@@ -433,6 +472,15 @@ async function handleRegister() {
       icon: "none",
     });
   }
+}
+function reload() {
+  setTimeout(() => {
+    // 保存当前滚动位置再刷新数据
+    saveScrollPosition();
+    fetchExpoDetail().then(() => {
+      restoreScrollPosition();
+    });
+  }, 1500);
 }
 
 // 导航到商家列表

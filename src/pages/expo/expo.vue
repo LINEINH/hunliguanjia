@@ -24,9 +24,10 @@
         :src="ongoingExpos[0].cover_image"
         mode="widthFix"
         class="ad-image"
-        @click="navigateToDetail(ongoingExpos[0].id)"
+        @click="navToDetailOn(ongoingExpos[0])"
         lazy-load
       />
+      <!-- navigateToDetail(ongoingExpos[0].id) -->
     </view>
     <view class="cardtitle">精彩回顾</view>
     <view class="cardBanner">
@@ -88,6 +89,14 @@ function navigateToCategory(category: any) {
 // 导航到商家列表
 function navigateToDetail(expoId: number) {
   uni.navigateTo({ url: `/pages/expo/expodetail?id=${expoId}` });
+}
+
+function navToDetailOn(params: any) {
+  if (params.status === 2) {
+    navToDetailhistory(params.id);
+  } else {
+    navigateToDetail(params.id);
+  }
 }
 
 //

@@ -135,7 +135,12 @@
                   </template>
                 </text>
               </view>
-              <up-icon name="star" size="24" color="#E5E5E5"></up-icon>
+              <up-icon
+                name="star"
+                size="24"
+                :color="caseItem.is_favorited ? '#BF974A' : '#E5E5E5'"
+                @click="toggleFavoriteProduct(caseItem)"
+              ></up-icon>
             </view>
           </view>
         </view>
@@ -265,6 +270,62 @@ function openDetail(caseItem: any) {
     });
   }
 }
+
+// 切换收藏状态
+async function toggleFavoriteProduct(item: any) {
+  if (!checkLogin()) {
+    navigateToLogin();
+    return;
+  }
+  // 检查是否有产品ID
+  if (!item.id) {
+    uni.showToast({
+      title: "产品信息错误",
+      icon: "none",
+    });
+    return;
+  }
+
+  try {
+    uni.showLoading({
+      title: item.is_favorited ? "取消收藏中..." : "收藏中...",
+      mask: true,
+    });
+
+    // 根据当前收藏状态调用不同的接口
+    if (item.is_favorited) {
+      // 取消收藏：target_id为商品ID，type为product
+      await unfavoriteProduct(item.id, "product");
+    } else {
+      // 收藏：target_id为商品ID，type为product
+      await favoriteProduct(item.id, "product");
+    }
+
+    // 切换收藏状态
+    item.is_favorited = !item.is_favorited;
+
+    uni.hideLoading();
+    uni.showToast({
+      title: item.is_favorited ? "收藏成功" : "已取消收藏",
+      icon: "success",
+    });
+  } catch (error) {
+    uni.hideLoading();
+    console.error("收藏操作失败:", error);
+    uni.showToast({
+      title: "操作失败，请重试",
+      icon: "none",
+    });
+  }
+}
+
+onUnload(() => {
+  // 清空酒店数据和优惠券数据
+  hotelData.value = {};
+  CouponsData.value = {};
+  isFavorited.value = false;
+  hotelId.value = null;
+});
 
 // 页面加载时获取酒店详情
 onMounted(() => {

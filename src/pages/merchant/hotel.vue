@@ -172,7 +172,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from "vue";
+import { ref, onUnload, computed, onMounted } from "vue";
 import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import {
   getHotelFilter,
@@ -336,7 +336,7 @@ async function loadMerchants(params = {}, resetPage = true) {
     if (response) {
       if (resetPage) {
         // 重置数据
-        merchantList.value = shuffle(response.list) || [];
+        merchantList.value = response.list || [];
         total.value =
           response.pagination.total ||
           (response.list && response.list.length ? response.list.length : 0);
@@ -566,6 +566,13 @@ onMounted(() => {
   loadMerchants({}, true);
   loadGetBanner();
   loadGetMRecommend();
+});
+
+onUnload(() => {
+  // 清空筛选条件和商家列表
+  filtersList.value = [];
+  merchantList.value = [];
+  recommendMerchants.value = [];
 });
 
 const filteredHotels = computed(() => {

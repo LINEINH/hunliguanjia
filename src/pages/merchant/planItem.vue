@@ -489,7 +489,7 @@ async function toggleFavorite() {
 
     if (isFavorited.value) {
       // 取消收藏
-      await unfavoriteProduct(hotelId.value, "merchant");
+      await unfavoriteProduct(hotelId.value, "product");
       isFavorited.value = false;
       uni.showToast({
         title: "已取消收藏",
@@ -497,7 +497,7 @@ async function toggleFavorite() {
       });
     } else {
       // 收藏
-      await favoriteProduct(hotelId.value, "merchant");
+      await favoriteProduct(hotelId.value, "product");
       isFavorited.value = true;
       uni.showToast({
         title: "收藏成功",
