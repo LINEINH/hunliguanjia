@@ -172,8 +172,12 @@
 </template>
 
 <script setup>
-import { ref, onUnload, computed, onMounted } from "vue";
-import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+import { ref, computed, onMounted } from "vue";
+import {
+  onShareAppMessage,
+  onShareTimeline,
+  onUnload,
+} from "@dcloudio/uni-app";
 import {
   getHotelFilter,
   getBanners,

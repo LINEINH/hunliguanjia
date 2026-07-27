@@ -207,12 +207,23 @@ const loadGetProductRecommend = async () => {
   try {
     const response = await getProductRecommend();
     // 假设响应数据格式为 { data: [...] } 或直接是数组
-    goodsList.value = response || [];
+    goodsList.value = shuffle(response) || [];
     console.log("推荐产品:", response);
   } catch (error) {
     console.error("请求推荐产品数据出错:", error);
   }
 };
+
+function shuffle(arr: any) {
+  const result = [...arr];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
 
 function openDetail(item: any) {
   if (item && item.id) {

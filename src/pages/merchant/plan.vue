@@ -254,7 +254,7 @@
 </template>
 
 <script setup >
-import { ref, reactive, onMounted, onUnload, watch } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import {
   getBanners,
@@ -262,7 +262,11 @@ import {
   getDictionary,
   getMRecommend,
 } from "@/api/product";
-import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+import {
+  onShareAppMessage,
+  onShareTimeline,
+  onUnload,
+} from "@dcloudio/uni-app";
 
 // 页面标题
 const pageTitle = ref("婚礼策划");

@@ -160,12 +160,13 @@
 </template>
 
 <script setup >
-import { ref, reactive, onMounted, onUnload, watch } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import {
   onLoad,
   onShow,
   onShareAppMessage,
   onShareTimeline,
+  onUnload,
 } from "@dcloudio/uni-app";
 import { getBanners, getProducts, getDictionary } from "@/api/product";
 import { getMerchantList } from "@/api/merchant";
