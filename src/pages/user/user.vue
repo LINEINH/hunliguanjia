@@ -394,6 +394,16 @@
         <text class="menu-text">员工扫一扫</text>
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
+
+      <view class="menu-item">
+        <image
+          src="/static/images/43.png"
+          mode="aspectFill"
+          class="menu-image"
+        />
+        <text class="menu-text">退出登录</text>
+        <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
+      </view>
     </view>
 
     <!-- 重新选择弹窗 -->

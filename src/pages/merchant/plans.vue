@@ -541,7 +541,15 @@ const loadMerchants = async (page = 1) => {
 
     if (response) {
       // 正确提取商家数据
-      merchantsData = shuffle(response.list) || [];
+      const hasSearchOrFilter =
+        searchKeyword.value || Object.keys(activeFilters).length > 0;
+      if (hasSearchOrFilter) {
+        // 有搜索或筛选条件时，不使用 shuffle
+        merchantsData = response.list || [];
+      } else {
+        // 没有搜索或筛选条件时，使用 shuffle 随机打乱
+        merchantsData = shuffle(response.list) || [];
+      }
       // 提取分页信息
       paginationInfo = response.pagination || {}; // 如果response.data不是数组而是包含分页信息的对象
     } else {

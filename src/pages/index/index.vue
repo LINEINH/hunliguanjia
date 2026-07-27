@@ -487,7 +487,7 @@ async function loadHomeInfo() {
     // 解析推荐商家数据
 
     if (response.featured_cases) {
-      momentsList.value = response.featured_cases;
+      momentsList.value = shuffle(response.featured_cases);
     }
 
     console.log("首页数据:", response);
@@ -498,6 +498,17 @@ async function loadHomeInfo() {
       icon: "none",
     });
   }
+}
+
+function shuffle(arr: any[]) {
+  const result = [...arr];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
 }
 
 // 获取婚期规划数据
