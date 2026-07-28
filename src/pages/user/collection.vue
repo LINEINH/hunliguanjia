@@ -74,7 +74,7 @@ import { getUserFavorites } from "@/api/user";
 const list = reactive([
   { name: "商家", type: "merchant" },
   { name: "产品", type: "product" },
-  { name: "服务人", type: "gold_service_provider" },
+  { name: "服务管家", type: "gold_service_provider" },
 ]);
 
 // 当前选中的tab

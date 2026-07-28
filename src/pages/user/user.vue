@@ -161,7 +161,7 @@
               </view>
             </view>
             <view class="expand-hint" @click="toggleCalendarExpand">
-              <up-icon name="arrow-down" size="16" color="#9CB2CD"></up-icon>
+              <up-icon name="arrow-down" size="28" color="#333"></up-icon>
             </view>
           </view>
 
@@ -193,7 +193,7 @@
             </view>
             <view class="collapse-hint" @click.stop="toggleCalendarExpand">
               <view class="expand-hint"
-                ><up-icon name="arrow-up" size="16" color="#9CB2CD"></up-icon
+                ><up-icon name="arrow-up" size="28" color="#333"></up-icon
               ></view>
               <view class="hint-content" v-if="currentMonthTasks.length > 0">
                 <view class="hit-title">
@@ -395,7 +395,7 @@
         <up-icon name="arrow-right" size="16" color="#9CB2CD"></up-icon>
       </view>
 
-      <view class="menu-item">
+      <view class="menu-item" @click="handleLogout">
         <image
           src="/static/images/43.png"
           mode="aspectFill"
@@ -1374,7 +1374,33 @@ function handleLogout() {
     success: (res) => {
       if (res.confirm) {
         userStore.logout();
-        uni.showToast({ title: "已退出登录", icon: "success" });
+        // 清除可能的其他缓存数据
+        uni.removeStorageSync("temp_wedding_data");
+
+        // 清空当前页面的用户相关数据
+        userProfile.value = null;
+        weddingDate.value = "";
+        selectedBudget.value = "";
+        tableCount.value = "";
+        totalBudget.value = "";
+        planningPhases.value = [];
+
+        // 发送全局事件，通知其他页面（如首页）更新状态
+        uni.$emit("userLoggedOut");
+
+        uni.showToast({
+          title: "已退出登录",
+          icon: "success",
+          success: () => {
+            // 延迟一小段时间再刷新页面，让用户看到提示
+            setTimeout(() => {
+              // 返回到首页或登录页
+              uni.switchTab({
+                url: "/pages/index/index",
+              });
+            }, 1000);
+          },
+        });
       }
     },
   });
@@ -2224,7 +2250,7 @@ onShow(() => {
     }
   }
   .user-headerBg {
-    background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/11/6a2992f936363.png");
+    background-image: url("https://web.1love.com.cn/bg2.png");
     background-size: cover;
     background-position: center;
   }

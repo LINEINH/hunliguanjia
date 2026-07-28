@@ -78,7 +78,7 @@
             </view>
             <view class="expand-hint" @click="toggleCalendarExpand">
               <!-- <text class="hint-icon"> </text> -->
-              <up-icon name="arrow-down" size="16" color="#9CB2CD"></up-icon>
+              <up-icon name="arrow-down" size="28" color="#333"></up-icon>
             </view>
           </view>
 
@@ -110,7 +110,7 @@
             </view>
             <view class="collapse-hint" @click.stop="toggleCalendarExpand">
               <view class="expand-hint"
-                ><up-icon name="arrow-up" size="16" color="#9CB2CD"></up-icon
+                ><up-icon name="arrow-up" size="28" color="#333"></up-icon
               ></view>
               <view class="hint-content" v-if="currentMonthTasks.length > 0">
                 <view class="hit-title">
@@ -377,6 +377,7 @@ import {
   onShow,
   onShareAppMessage,
   onShareTimeline,
+  onUnload,
 } from "@dcloudio/uni-app";
 import { getHomeInfo, weddingPlan, getWeddingPlan } from "@/api/index";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
@@ -473,6 +474,22 @@ interface PlanningPhase {
 
 const planningPhases = ref<PlanningPhase[]>([]);
 const currentMonthTasks = ref<any[]>([]);
+
+// 监听用户登出事件
+uni.$on("userLoggedOut", () => {
+  // 清除首页的用户相关数据
+  weddingDate.value = "";
+  selectedBudget.value = "";
+  tableCount.value = "";
+  totalBudget.value = "";
+  planningPhases.value = [];
+  currentMonthTasks.value = [];
+});
+
+// 页面卸载时移除事件监听器
+onUnload(() => {
+  uni.$off("userLoggedOut");
+});
 
 // 获取首页数据
 async function loadHomeInfo() {

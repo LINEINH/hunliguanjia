@@ -543,7 +543,8 @@ const loadMerchants = async (page = 1) => {
     if (response) {
       // 正确提取商家数据
       // 判断是否存在搜索条件或筛选条件，如果没有则使用 shuffle 随机打乱
-      const hasSearchOrFilter = searchKeyword.value || Object.keys(activeFilters).length > 0;
+      const hasSearchOrFilter =
+        searchKeyword.value || Object.keys(activeFilters).length > 0;
       if (hasSearchOrFilter) {
         // 有搜索或筛选条件时，不使用 shuffle
         merchantsData = response.list || [];
@@ -883,7 +884,7 @@ function handleCategoryClick(item) {
 function loadGetMRecommend() {
   getMRecommend().then((res) => {
     if (res) {
-      recommendMerchants.value = res;
+      recommendMerchants.value = shuffle(res) || [];
     }
   });
 }

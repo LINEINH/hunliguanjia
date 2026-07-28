@@ -466,7 +466,7 @@ onShareTimeline(() => {
 
   .cardBanner {
     margin: $spacing-md 0;
-    background-image: url("https://1love-1432414161.cos.ap-chengdu.myqcloud.com/products/2026/06/10/6a28ee2074c45.png");
+    background-image: url("https://web.1love.com.cn/test.png");
     background-size: cover;
     background-position: center;
     padding: $spacing-md;
