@@ -202,6 +202,12 @@
           @click="openDetail(merchant)"
         >
           <image
+            src="https://web.1love.com.cn/coupon.png"
+            class="couponImg"
+            mode="widthFix"
+            v-if="merchant.has_available_coupon"
+          />
+          <image
             class="hotel-img"
             :src="
               merchant.cover_image ||

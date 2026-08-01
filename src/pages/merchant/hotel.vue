@@ -142,6 +142,12 @@
           class="hotel-card"
           @click="openDetail(hotel)"
         >
+          <image
+            src="https://web.1love.com.cn/coupon.png"
+            class="couponImg"
+            mode="widthFix"
+            v-if="hotel.has_available_coupon"
+          />
           <image class="hotel-img" :src="hotel.cover_image" mode="aspectFill" />
           <view class="hotel-info">
             <view class="hotel-row">
