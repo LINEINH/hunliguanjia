@@ -834,7 +834,7 @@ function handleCategoryClick(item) {
 function loadGetMRecommend() {
   getMRecommend().then((res) => {
     if (res) {
-      recommendMerchants.value = shuffle(res) || [];
+      recommendMerchants.value = res || [];
     }
   });
 }

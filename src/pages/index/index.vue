@@ -144,6 +144,13 @@
               <view class="hint-content" v-else>
                 <view class="hint-empty">
                   <text class="empty-text">本月暂无任务安排</text>
+                  <view
+                    class="empty-info"
+                    v-if="planningPhases && planningPhases.length > 0"
+                    >您的备婚事项从{{
+                      planningPhases[planningPhases.length - 1].phase
+                    }}开始，点击右上角跳转</view
+                  >
                 </view>
               </view>
             </view>
@@ -1840,6 +1847,11 @@ onShareTimeline(() => {
         .empty-text {
           font-size: 28rpx;
           color: #999;
+        }
+        .empty-info {
+          font-size: 28rpx;
+          color: #333;
+          margin-top: 20rpx;
         }
       }
     }

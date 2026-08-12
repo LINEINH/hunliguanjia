@@ -898,7 +898,7 @@ function loadGetMRecommend() {
   getMRecommend()
     .then((res) => {
       if (res && Array.isArray(res)) {
-        recommendMerchants.value = shuffle(res) || [];
+        recommendMerchants.value = res || [];
       } else {
         recommendMerchants.value = [];
       }
