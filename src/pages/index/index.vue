@@ -958,9 +958,10 @@ const confirmBudgetInput = async () => {
 
       // 如果有warning，先显示warning
       if (response.warning) {
+        // 展示时间较长的warning信息
         uni.showToast({
           title: response.warning,
-          icon: "error",
+          duration: 5000, // 显示 3 秒
         });
       } else {
         uni.showToast({
@@ -973,7 +974,8 @@ const confirmBudgetInput = async () => {
     else if (response && response.warning) {
       uni.showToast({
         title: response.warning,
-        icon: "error",
+        icon: "none",
+        duration: 5000, // 显示 3 秒
       });
       // 清除可能存在的旧计划数据，但保留用户的选择
       planningPhases.value = [];
