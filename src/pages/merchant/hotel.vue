@@ -27,10 +27,10 @@
               name="map"
               size="14"
               :color="tempSelectedfilters === filter.id ? '#AB7E2B' : '#383838'"
-              v-if="filter.id === 1"
+              v-if="filter?.id === 1"
             >
             </up-icon>
-            {{ filter.name }}
+            {{ filter?.name }}
             <up-icon
               name="arrow-down"
               size="14"
@@ -79,7 +79,11 @@
           duration="500"
         >
           <swiper-item v-for="(item, index) in banners" :key="index">
-            <image :src="item.image_url" mode="widthFix" class="banner-image" />
+            <image
+              :src="item?.image_url"
+              mode="widthFix"
+              class="banner-image"
+            />
           </swiper-item>
         </swiper>
       </view>
@@ -88,7 +92,7 @@
       >
       <view
         v-for="hotel in filteredHotels"
-        :key="hotel.id"
+        :key="hotel?.id"
         class="hotel-card"
         @click="openDetail(hotel)"
       >
@@ -96,21 +100,21 @@
           src="https://web.1love.com.cn/coupon.png"
           class="couponImg"
           mode="widthFix"
-          v-if="hotel.has_available_coupon"
+          v-if="hotel?.has_available_coupon"
         />
-        <image class="hotel-img" :src="hotel.cover_image" mode="aspectFill" />
+        <image class="hotel-img" :src="hotel?.cover_image" mode="aspectFill" />
         <view class="hotel-info">
           <view class="hotel-row">
-            <text class="hotel-name">{{ hotel.name }}</text>
+            <text class="hotel-name">{{ hotel?.name }}</text>
           </view>
           <view class="hotel-time"
-            ><text class="rate">{{ hotel.rating }}分</text>
-            {{ hotel.business_status }} {{ hotel.business_hours }}
+            ><text class="rate">{{ hotel?.rating }}分</text>
+            {{ hotel?.business_status }} {{ hotel?.business_hours }}
           </view>
-          <view class="hotel-desc"> {{ hotel.short_description }} </view>
+          <view class="hotel-desc"> {{ hotel?.short_description }} </view>
           <view class="hotel-highlights">
             <text
-              v-for="(h, idx) in hotel.personnel_tags"
+              v-for="(h, idx) in hotel?.personnel_tags"
               :key="idx"
               class="highlight"
               >{{ h }}</text
@@ -118,7 +122,7 @@
           </view>
           <view class="hotel-address">
             <up-icon name="map" size="14" color="# AB7E2B"> </up-icon>
-            <text class="text"> {{ hotel.address }}</text></view
+            <text class="text"> {{ hotel?.address }}</text></view
           >
         </view>
       </view>
@@ -138,7 +142,7 @@
         <view class="title"> 推荐商户 </view>
         <view
           v-for="hotel in recommendMerchants"
-          :key="hotel.id"
+          :key="hotel?.id"
           class="hotel-card"
           @click="openDetail(hotel)"
         >
@@ -146,21 +150,25 @@
             src="https://web.1love.com.cn/coupon.png"
             class="couponImg"
             mode="widthFix"
-            v-if="hotel.has_available_coupon"
+            v-if="hotel?.has_available_coupon"
           />
-          <image class="hotel-img" :src="hotel.cover_image" mode="aspectFill" />
+          <image
+            class="hotel-img"
+            :src="hotel?.cover_image"
+            mode="aspectFill"
+          />
           <view class="hotel-info">
             <view class="hotel-row">
-              <text class="hotel-name">{{ hotel.name }}</text>
+              <text class="hotel-name">{{ hotel?.name }}</text>
             </view>
             <view class="hotel-time"
-              ><text class="rate">{{ hotel.rating }}分</text>
-              {{ hotel.business_status }} {{ hotel.business_hours }}
+              ><text class="rate">{{ hotel?.rating }}分</text>
+              {{ hotel?.business_status }} {{ hotel?.business_hours }}
             </view>
-            <view class="hotel-desc"> {{ hotel.short_description }} </view>
+            <view class="hotel-desc"> {{ hotel?.short_description }} </view>
             <view class="hotel-highlights">
               <text
-                v-for="(h, idx) in hotel.personnel_tags"
+                v-for="(h, idx) in hotel?.personnel_tags"
                 :key="idx"
                 class="highlight"
                 >{{ h }}</text
@@ -168,7 +176,7 @@
             </view>
             <view class="hotel-address">
               <up-icon name="map" size="14" color="# AB7E2B"> </up-icon>
-              <text class="text"> {{ hotel.address }}</text></view
+              <text class="text"> {{ hotel?.address }}</text></view
             >
           </view>
         </view>
@@ -235,26 +243,33 @@ async function loadFilterConditions() {
     loading.value = true;
     const response = await getHotelFilter();
     loading.value = false;
+
+    // 安全访问response对象的属性
+    const districts = response?.districts || [];
+    const tableCapacities = response?.table_capacities || [];
+    const mealStandards = response?.meal_standards || [];
+    const venueTypes = response?.venue_types || [];
+
     filtersList.value = [
       {
         id: 1,
         name: "区域",
-        options: response.districts,
+        options: districts,
       },
       {
         id: 2,
         name: "桌数",
-        options: response.table_capacities,
+        options: tableCapacities,
       },
       {
         id: 3,
         name: "餐标",
-        options: response.meal_standards,
+        options: mealStandards,
       },
       {
         id: 4,
         name: "场地类型",
-        options: response.venue_types,
+        options: venueTypes,
       },
     ];
     console.log("筛选条件数据:", response);
@@ -345,20 +360,26 @@ async function loadMerchants(params = {}, resetPage = true) {
     console.log(response, "response");
     if (response) {
       if (resetPage) {
-        // 重置数据
-        merchantList.value = response.list || [];
+        // 重置数据，安全访问response属性
+        const list = response?.list || [];
+        const pagination = response?.pagination || {};
+        const totalFromPagination = pagination?.total;
+
+        merchantList.value = list;
         total.value =
-          response.pagination.total ||
-          (response.list && response.list.length ? response.list.length : 0);
+          totalFromPagination || (list && list.length ? list.length : 0);
       } else {
-        // 追加数据
-        const newData = response.list || [];
-        merchantList.value = [...merchantList.value, ...newData];
+        // 追加数据，安全访问response属性
+        const list = response?.list || [];
+        const pagination = response?.pagination || {};
+        const totalFromPagination = pagination?.total;
+
+        merchantList.value = [...merchantList.value, ...list];
 
         // 判断是否还有更多数据
         if (
-          response.pagination.total &&
-          merchantList.value.length >= response.pagination.total
+          totalFromPagination &&
+          merchantList.value.length >= totalFromPagination
         ) {
           noMore.value = true;
         }
@@ -560,13 +581,19 @@ function confirmAreaSelection() {
   loadMerchants(params, true);
 }
 function loadGetMRecommend() {
-  getMRecommend().then((res) => {
-    if (res) {
-      recommendMerchants.value = shuffle(res) || [];
-      console.log(res, "lkdjflsd");
-      // recommend.value = res.data.data;
-    }
-  });
+  getMRecommend()
+    .then((res) => {
+      if (res && Array.isArray(res)) {
+        recommendMerchants.value = shuffle(res) || [];
+        console.log(res, "lkdjflsd");
+      } else {
+        recommendMerchants.value = [];
+      }
+    })
+    .catch((error) => {
+      console.error("请求推荐商家数据出错:", error);
+      recommendMerchants.value = [];
+    });
 }
 
 // 加载筛选条件数据
@@ -579,10 +606,36 @@ onMounted(() => {
 });
 
 onUnload(() => {
-  // 清空筛选条件和商家列表
+  // 清空筛选条件和商家列表，确保类型与初始化一致
   filtersList.value = [];
   merchantList.value = [];
   recommendMerchants.value = [];
+  banners.value = [];
+  searchKeyword.value = "";
+  selectedDistrict.value = "";
+  selectedTableCapacity.value = null;
+  selectedMealStandard.value = null;
+  selectedVenueType.value = "";
+  tempSelectedArea.value = -1;
+  tempSelectedTableCapacity.value = -1;
+  tempSelectedMealStandard.value = -1;
+  tempSelectedVenueType.value = -1;
+  currentPage.value = 1;
+  total.value = 0;
+  loading.value = false;
+  loadingMore.value = false;
+  noMore.value = false;
+  show.value = false;
+  showOptionsList.value = [];
+  tempSelectedfilters.value = null;
+  filterData.value = null;
+
+  // 移除可能的全局事件监听（如果有）
+  try {
+    uni.$off("userLoggedOut");
+  } catch (e) {
+    console.warn("Failed to remove event listener:", e);
+  }
 });
 
 const filteredHotels = computed(() => {
@@ -621,7 +674,10 @@ onShareAppMessage(() => {
   return {
     title: "婚礼酒店 - 壹嫁婚选",
     path: "/pages/merchant/hotel",
-    imageUrl: "",
+    imageUrl:
+      banners.value && banners.value[0]?.image_url
+        ? banners.value[0].image_url
+        : "",
   };
 });
 
@@ -630,7 +686,10 @@ onShareTimeline(() => {
   return {
     title: "婚礼酒店预订 - 壹嫁婚选",
     path: "/pages/merchant/hotel",
-    imageUrl: "",
+    imageUrl:
+      banners.value && banners.value[0]?.image_url
+        ? banners.value[0].image_url
+        : "",
   };
 });
 </script>
@@ -896,8 +955,8 @@ onShareTimeline(() => {
       border-top: 1px solid #e5e5e5;
       display: flex;
       flex-wrap: wrap;
-      padding-top: 20rpx;
       padding: 20rpx;
+      padding-top: 40rpx;
       .area-item {
         width: 28%;
         margin: 10rpx 0;

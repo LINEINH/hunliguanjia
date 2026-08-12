@@ -830,8 +830,8 @@ onUnload(() => {
     border-top: 1px solid #e5e5e5;
     display: flex;
     flex-wrap: wrap;
-    padding-top: 20rpx;
     padding: 20rpx;
+    padding-top: 40rpx;
     .area-item {
       width: 28%;
       margin: 10rpx 0;

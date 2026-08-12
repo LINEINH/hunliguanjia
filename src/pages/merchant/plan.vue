@@ -648,10 +648,32 @@ const loadGetBanner = async () => {
 
 // 离开页面清空当前页面数据
 onUnload(() => {
-  // 清空筛选条件和商家列表
+  // 清空所有响应式数据，确保类型与初始化一致
   filtersList.value = [];
   merchantList.value = [];
   recommendMerchants.value = [];
+  banners.value = [];
+  searchKeyword.value = "";
+  Object.keys(activeFilters).forEach((key) => {
+    delete activeFilters[key];
+  });
+  currentPage.value = 1;
+  totalPage.value = 1;
+  loading.value = false;
+  hasMore.value = true;
+  show.value = false;
+  showOptionsList.value = [];
+  currentFilterType.value = null;
+  activeFilterId.value = null;
+  tempSelectedValue.value = null;
+  category.value = null;
+
+  // 移除可能的全局事件监听（如果有）
+  try {
+    uni.$off("userLoggedOut");
+  } catch (e) {
+    console.warn("Failed to remove event listener:", e);
+  }
 });
 
 // 获取筛选条件
@@ -659,11 +681,11 @@ const loadGetDictionary = async () => {
   try {
     const response = await getDictionary();
     // 处理接口返回的数据，构建筛选列表
-    const { district, venue_type, feature, service_category } = response;
+    const { district, venue_type, feature, service_category } = response || {};
     // 构建筛选项列表
     const newFiltersList = [];
 
-    if (district && district.length > 0) {
+    if (district && Array.isArray(district) && district.length > 0) {
       newFiltersList.push({
         id: 1,
         name: "区域",
@@ -747,21 +769,6 @@ const loadGetDictionary = async () => {
           "7500-8500",
           "8500-9500",
           "9500以上",
-        ],
-      });
-    } else if (Number(category.value) === 4) {
-      newFiltersList.push({
-        id: 2,
-        name: "预算区间",
-        type: "meal_standard",
-        options: [
-          "3000以下",
-          "3000-4000",
-          "4000-6000",
-          "6000-8000",
-          "8000-10000",
-          "10000-12000",
-          "12000以上",
         ],
       });
     } else if (Number(category.value) === 5) {
@@ -888,12 +895,20 @@ function handleCategoryClick(item) {
 }
 
 function loadGetMRecommend() {
-  getMRecommend().then((res) => {
-    if (res) {
-      recommendMerchants.value = shuffle(res) || [];
-    }
-  });
+  getMRecommend()
+    .then((res) => {
+      if (res && Array.isArray(res)) {
+        recommendMerchants.value = shuffle(res) || [];
+      } else {
+        recommendMerchants.value = [];
+      }
+    })
+    .catch((error) => {
+      console.error("请求推荐商家数据出错:", error);
+      recommendMerchants.value = [];
+    });
 }
+
 onMounted(() => {
   loadGetBanner();
   loadGetDictionary();
@@ -914,18 +929,24 @@ onShareAppMessage(() => {
     path: `/pages/merchant/plan?title=${pageTitle.value || ""}&category=${
       category.value || ""
     }`,
-    imageUrl: banners.value[0].image_url || "",
+    imageUrl:
+      banners.value && banners.value[0] && banners.value[0].image_url
+        ? banners.value[0].image_url
+        : "",
   };
 });
 
 // 分享到朋友圈
 onShareTimeline(() => {
   return {
-    title: `${route.query.title || "婚礼服务"} - 壹嫁婚选`,
+    title: `${pageTitle.value || "婚礼服务"} - 壹嫁婚选`,
     path: `/pages/merchant/plan?title=${pageTitle.value || ""}&category=${
       category.value || ""
     }`,
-    imageUrl: banners.value[0].image_url || "",
+    imageUrl:
+      banners.value && banners.value[0] && banners.value[0].image_url
+        ? banners.value[0].image_url
+        : "",
   };
 });
 </script>
@@ -1215,8 +1236,8 @@ onShareTimeline(() => {
     border-top: 1px solid #e5e5e5;
     display: flex;
     flex-wrap: wrap;
-    padding-top: 20rpx;
     padding: 20rpx;
+    padding-top: 40rpx;
     .area-item {
       width: 28%;
       margin: 10rpx 0;
