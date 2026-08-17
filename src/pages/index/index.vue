@@ -968,6 +968,7 @@ const confirmBudgetInput = async () => {
         // 展示时间较长的warning信息
         uni.showToast({
           title: response.warning,
+          icon: "none",
           duration: 5000, // 显示 3 秒
         });
       } else {
@@ -1081,8 +1082,10 @@ const confirmReSelect = async () => {
     if (response.warning) {
       uni.showToast({
         title: response.warning,
-        icon: "error",
+        icon: "none",
+        duration: 5000, // 显示 3 秒
       });
+
       // 清除婚期和预算
       weddingDate.value = "";
       selectedBudget.value = "";

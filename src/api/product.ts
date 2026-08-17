@@ -219,3 +219,15 @@ export function getMRecommend() {
     method: 'GET'
   })
 }
+
+
+// 绑定手机号
+export function butlerBind(butler_id : string) {
+  return request<any>({
+    url: `/wechat/bind-butler-privacy-number`,
+    method: 'POST',
+    data: {
+      butler_id: butler_id
+    }
+  })
+}

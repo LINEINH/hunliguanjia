@@ -109,6 +109,8 @@ const emptyText = computed(() => {
 // 定义方法
 function click(index) {
   activeTab.value = index;
+  //清空数据列表
+  coupons.value = [];
   loadCoupons(index.index);
 }
 

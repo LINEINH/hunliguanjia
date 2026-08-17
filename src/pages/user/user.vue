@@ -1130,6 +1130,7 @@ const confirmBudgetInput = async () => {
       if (response.warning) {
         uni.showToast({
           title: response.warning,
+          icon: "none",
           duration: 5000, // 显示 3 秒
         });
         // 清除婚期和预算
@@ -1146,6 +1147,7 @@ const confirmBudgetInput = async () => {
     else if (response && response.warning) {
       uni.showToast({
         title: response.warning,
+        icon: "none",
         duration: 5000, // 显示 3 秒
       });
       // 清除婚期和预算
@@ -1566,7 +1568,8 @@ const confirmReSelect = async () => {
     if (response.warning) {
       uni.showToast({
         title: response.warning,
-        icon: "error",
+        icon: "none",
+        duration: 5000, // 显示 3 秒
       });
     } else if (response && response.planning_phases) {
       weddingDate.value = tempWeddingDate.value;

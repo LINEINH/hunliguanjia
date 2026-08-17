@@ -23,7 +23,7 @@
           <view class="search-box-btn" @click="onSearch">搜索</view>
         </view>
       </view>
-      <view class="filters">
+      <view class="filters" v-if="category !== '5'">
         <template v-for="filter in filtersList" :key="filter.id">
           <view
             class="filter-item"
@@ -92,7 +92,7 @@
       @scrolltolower="loadMore"
       :lower-threshold="100"
     >
-      <view class="banner">
+      <view class="banner" :class="category === '5' ? 'bannerHeight' : ''">
         <swiper
           class="banner-swiper"
           autoplay
@@ -979,6 +979,9 @@ onShareTimeline(() => {
     width: 100%;
     height: 100%;
   }
+}
+.bannerHeight {
+  margin-top: 260rpx;
 }
 .search-bar {
   display: flex;

@@ -44,7 +44,7 @@
             <view class="rate">
               <text class="icon-star">{{ butlerDetail?.rating || "4.4" }}</text>
               <text class="year">
-                {{ butlerDetail?.experienceYears || 16 }}年经验
+                {{ butlerDetail?.experience_years || 16 }}年经验
               </text>
             </view>
           </view>
@@ -119,7 +119,7 @@
           isFavorited ? "已收藏" : "收藏"
         }}</text>
       </view>
-      <view class="hotel-footer-tel button" @click="openDetail()">
+      <view class="hotel-footer-tel button" @click="makePhoneCall()">
         商家咨询
       </view>
       <button class="hotel-footer-online button" open-type="contact">
@@ -134,7 +134,7 @@ import { ref, reactive, computed } from "vue";
 import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 const show = ref(false);
 import { getGoldDetail, setOrders } from "@/api/user";
-import { favoriteProduct, unfavoriteProduct } from "@/api/product";
+import { favoriteProduct, unfavoriteProduct, butlerBind } from "@/api/product";
 import { checkLogin, navigateToLogin } from "@/utils/auth";
 
 // 轮播图数据
@@ -242,6 +242,54 @@ function buyNow(index, id) {
         url: `/pages/user/order?id=${res.order.id}`,
       });
     }
+  });
+}
+
+function makePhoneCall() {
+  // 这里可以添加商家咨询的功能
+  uni.showModal({
+    title: "商家咨询",
+    content: "是否拨打商家电话？请使用授权手机号拨出，以免拨打失败！",
+    success: function (res) {
+      if (res.confirm) {
+        // 调用bind获取绑定的手机号
+        butlerBind(butlerDetail.value.id)
+          .then((bindRes) => {
+            if (bindRes && bindRes.middle_number) {
+              // 获取成功
+              console.log("获取绑定手机号成功:", bindRes);
+
+              // 拨打电话
+              uni.makePhoneCall({
+                phoneNumber: bindRes.middle_number,
+                success: () => {
+                  console.log("电话拨打成功");
+                },
+                fail: (err) => {
+                  console.log("电话拨打失败或取消:", err.errMsg);
+                },
+              });
+            } else {
+              // 获取失败
+              console.log("获取绑定手机号失败:", bindRes?.message);
+              uni.showToast({
+                title: bindRes?.message || "获取手机号失败",
+                icon: "none",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("绑定异常:", error);
+            uni.showToast({
+              title: "绑定失败，请重试",
+              icon: "none",
+            });
+          });
+      } else {
+        // 用户取消拨打电话，不需要解绑（因为还没有绑定）
+        console.log("用户取消拨打电话");
+      }
+    },
   });
 }
 

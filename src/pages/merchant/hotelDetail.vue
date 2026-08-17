@@ -94,7 +94,8 @@
           class="hotel-fuli-item"
         >
           <text>满¥{{ product.min_amount }}立减¥{{ product.value }}</text>
-          <view class="recive" @click="receiveCoupon(product.id)">
+          <view class="recive" v-if="product.is_received"> 已领取 </view>
+          <view class="recive" @click="receiveCoupon(product.id)" v-else>
             领取
             <up-icon name="arrow-right" size="16" color="#BF974A"></up-icon>
           </view>
